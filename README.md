@@ -14,6 +14,14 @@ Replace a degraded original remote with a homemade one that can:
 
 The protocols aren't documented, so the first phase is reverse engineering. This repo's firmware is the toolkit for that: it captures, dumps and replays IR, and tests, scans and sniffs nRF24.
 
+## Contributing
+
+New to the project? Start here:
+
+1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate every change must pass before it's committed or deployed.
+2. **Code layout:** hardware-independent logic belongs in `lib/hdcore/` with a host unit test. Hardware-touching code goes in `src/`. See [Firmware](#firmware) below.
+3. **Hardware:** the [pin map](#pin-map) and `include/hw_config.h`, which records what's actually wired on the breadboard.
+
 ## Status
 
 | Stage | State |
@@ -100,11 +108,23 @@ Type `help` in the monitor. Sending any line stops a running capture, scan or sn
 Source layout:
 
 ```
-include/pins.h      pin map
-src/main.cpp        serial menu / dispatch
-src/ir_tools.*      IR capture, dump, replay
-src/rf_tools.*      nRF24 self-test, scanner, sniffer
+include/pins.h        pin map
+include/hw_config.h   what's wired on the breadboard (gates hardware tests)
+src/main.cpp          serial menu / dispatch
+src/ir_tools.*        IR capture, dump, replay
+src/rf_tools.*        nRF24 self-test, scanner, sniffer
+lib/hdcore/           hardware-independent logic (parsing, address order, dup filter)
+test/                 Tier 1 host tests (test_native_*) and Tier 2 device tests (test_device_*)
 ```
+
+## Testing
+
+```
+pio test -e native                          # host unit tests, no hardware
+pio test -e esp32dev --upload-port COM11    # on-device tests
+```
+
+See [TESTING.md](TESTING.md) for the three test tiers and the gate a build must pass before it's committed or deployed.
 
 ## References
 

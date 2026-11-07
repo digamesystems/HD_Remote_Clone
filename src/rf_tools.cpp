@@ -3,6 +3,9 @@
 #include <RF24.h>
 #include <SPI.h>
 
+#include "dup_filter.h"
+#include "nrf_addr.h"
+#include "parse.h"
 #include "pins.h"
 
 namespace rf {
@@ -29,26 +32,12 @@ uint8_t hits[kNumChannels];
 int sweeps = 0;
 
 // --- sniff state ---
-// Noise matches the promiscuous address constantly. The remote repeats each
-// packet ~30x, so by default only payloads seen at least twice are printed.
-constexpr uint8_t kCmpLen = 10;
-constexpr int kRecent = 32;
-struct Recent {
-  uint8_t data[32];
-  uint16_t count;
-  uint32_t firstMs;
-} recent[kRecent];
-int recentNext = 0;
+// Noise matches the promiscuous address constantly; see hd::DupFilter.
+hd::DupFilter filter;
 uint32_t rxTotal = 0;
 bool dupFilter = true;
 
-const char* rateName(rf24_datarate_e r) {
-  switch (r) {
-    case RF24_250KBPS: return "250k";
-    case RF24_1MBPS: return "1m";
-    default: return "2m";
-  }
-}
+const char* rateName(rf24_datarate_e r) { return hd::rateName(static_cast<hd::Rate>(r)); }
 
 bool ensureRadio() {
   if (radioOk) return true;
@@ -73,7 +62,7 @@ void applyRx() {
   // RF24 takes the address in register order (LSByte first); the radio sends
   // the MSByte first, so reverse the on-air bytes.
   uint8_t reg[5] = {0};
-  for (uint8_t i = 0; i < cfg.addrWidth; i++) reg[i] = cfg.addrOnAir[cfg.addrWidth - 1 - i];
+  hd::onAirToRegister(cfg.addrOnAir, cfg.addrWidth, reg);
   radio.openReadingPipe(0, reg);
   radio.startListening();
 }
@@ -91,23 +80,12 @@ void handlePacket(const uint8_t* buf) {
     Serial.println();
     return;
   }
-  uint8_t cmp = min(kCmpLen, cfg.payloadSize);
-  for (auto& r : recent) {
-    if (r.count && memcmp(r.data, buf, cmp) == 0) {
-      r.count++;
-      if (r.count == 2 || r.count % 10 == 0) {
-        Serial.printf("%8lu ch%u x%-3u ", (unsigned long)now, cfg.channel, r.count);
-        printHex(buf, cfg.payloadSize);
-        Serial.println();
-      }
-      return;
-    }
+  uint16_t count = filter.feed(buf, cfg.payloadSize);
+  if (count) {
+    Serial.printf("%8lu ch%u x%-3u ", (unsigned long)now, cfg.channel, count);
+    printHex(buf, cfg.payloadSize);
+    Serial.println();
   }
-  Recent& r = recent[recentNext];
-  recentNext = (recentNext + 1) % kRecent;
-  memcpy(r.data, buf, cfg.payloadSize);
-  r.count = 1;
-  r.firstMs = now;
 }
 
 void pollScan() {
@@ -189,7 +167,7 @@ void startScan() {
 void startSniff() {
   if (!ensureRadio()) return;
   applyRx();
-  memset(recent, 0, sizeof(recent));
+  filter.reset();
   rxTotal = 0;
   mode = Mode::Sniff;
   printConfig();
@@ -212,10 +190,9 @@ void poll() {
 void setChannel(uint8_t ch) { cfg.channel = min<uint8_t>(ch, 125); }
 
 bool setRate(const String& s) {
-  if (s == "250k") cfg.rate = RF24_250KBPS;
-  else if (s == "1m") cfg.rate = RF24_1MBPS;
-  else if (s == "2m") cfg.rate = RF24_2MBPS;
-  else return false;
+  hd::Rate r = hd::parseRate(s.c_str());
+  if (r == hd::Rate::kInvalid) return false;
+  cfg.rate = static_cast<rf24_datarate_e>(r);
   return true;
 }
 
@@ -226,16 +203,11 @@ bool setAddressWidth(uint8_t w) {
 }
 
 bool setAddress(const String& hex) {
-  if (hex.length() == 0 || hex.length() % 2 || hex.length() > 10) return false;
-  uint8_t n = hex.length() / 2;
-  for (uint8_t i = 0; i < n; i++) {
-    char tmp[3] = {hex[2 * i], hex[2 * i + 1], 0};
-    char* end;
-    long v = strtol(tmp, &end, 16);
-    if (*end) return false;
-    cfg.addrOnAir[i] = v;
-  }
-  cfg.addrWidth = max<uint8_t>(n, 2);
+  uint8_t tmp[5];
+  int n = hd::parseHex(hex.c_str(), tmp, sizeof(tmp));
+  if (n < 2) return false;  // nRF24 minimum address width is 2
+  memcpy(cfg.addrOnAir, tmp, n);
+  cfg.addrWidth = n;
   return true;
 }
 

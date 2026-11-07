@@ -2,6 +2,15 @@
 
 Context for Claude Code. Summarized from a planning conversation in Claude chat (Nov 6–7, 2026).
 
+## Working conventions (shorthand commands)
+- **"cp"**: Commit all current changes with a descriptive message, then push to GitHub (`origin/main`, private repo digamesystems/HD_Remote_Clone).
+- **"cpd"**: Same as "cp", then **deploy to the device**: build and upload with `pio run -t upload --upload-port COM11`, then reopen the serial monitor in a separate window (`Start-Process pio device monitor --port COM11 --baud 115200 --filter time`).
+  - Serial/upload must run **outside the Bash sandbox**; sandboxed reads of COM11 return nothing.
+  - A monitor window holding COM11 blocks upload. Ask the user to close it (Ctrl+C) first, or close it if they say to.
+  - If upload can't connect, have the user hold BOOT and tap EN.
+- **Gate (see TESTING.md):** before committing, run `pio run`, then `pio test -e native` (all Tier 1 suites). For "cpd", also run `pio test -e esp32dev --upload-port COM11 -f test_device_<area>` for each area changed (test_device_board always), then upload the app, since the board is left running test firmware. If any step fails, **halt**: do not commit, push, or deploy. Report the errors instead. Tier 2 tests IGNORED for absent hardware (per `include/hw_config.h`) don't block, but say plainly which areas were not verified.
+- Put hardware-independent logic in `lib/hdcore/` with Tier 1 tests, not in `src/`. The user can wire loopbacks or diagnostics on the breadboard to make hardware testable; ask when that would help, and keep `include/hw_config.h` in sync with what's wired.
+
 ## Goal
 Build a DIY replacement for a Hunter Douglas **Platinum Technology** remote (manual © 2013, pre-PowerView). One original remote works; a second is degraded (IR works only within ~30 cm, RF within ~1 m — both paths degraded, so suspect a power problem: batteries, contacts, or regulator; worth cleaning and re-testing).
 

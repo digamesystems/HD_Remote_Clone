@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "ir_tools.h"
+#include "parse.h"
 #include "pins.h"
 #include "rf_tools.h"
 
@@ -50,15 +51,9 @@ void handle(String cmdline) {
   cmdline.trim();
   if (cmdline.length() == 0) return;
 
+  auto parts = hd::tokenize(cmdline.c_str(), 4);
   String tok[4];
-  int n = 0;
-  int start = 0;
-  while (n < 4 && start < (int)cmdline.length()) {
-    int sp = cmdline.indexOf(' ', start);
-    if (sp < 0) sp = cmdline.length();
-    if (sp > start) tok[n++] = cmdline.substring(start, sp);
-    start = sp + 1;
-  }
+  for (size_t i = 0; i < parts.size(); i++) tok[i] = parts[i].c_str();
   String& c = tok[0];
   c.toLowerCase();
   bool ok = true;

@@ -1,0 +1,7 @@
+{
+  "name": "hdcore",
+  "version": "0.1.0",
+  "description": "Hardware-independent logic for the HD Platinum remote clone (host-testable)",
+  "platforms": "*",
+  "frameworks": "*"
+}
