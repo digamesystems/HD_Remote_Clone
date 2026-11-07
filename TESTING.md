@@ -50,7 +50,7 @@ These can't be automated. A feature is **done** once John confirms it and it's r
 
 | # | Check | Result | Date |
 |---|---|---|---|
-| A1 | Capture IR from the original remote in red mode, every button | Partial: format decoded; UP = 0101, DOWN = 0110 (log + analyzer); other buttons pending | 2026-11-07 |
+| A1 | Capture IR from the original remote in red mode, every button | ✅ Format decoded; UP = 0101, DOWN = 0110 (log + analyzer); no other button sends IR (analyzer) | 2026-11-07 |
 | A2 | Replay a captured IR code; target shade responds | | |
 | A3 | RF scan shows the original remote's channels | | |
 | A4 | Sniffer decodes the original remote's group up/down/release packets | | |

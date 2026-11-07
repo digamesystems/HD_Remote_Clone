@@ -20,11 +20,17 @@ User is comfortable with **ESP32 + PlatformIO** (Arduino framework assumed).
 - **Dual mode:** IR (40 kHz carrier per manual) and RF (2.4 GHz).
   - Indicator **red** = IR / point-and-press mode (individual shade, aim at its "sensor eye").
   - Indicator **green** = RF group mode. Press a group button (1–4 or All) no more than 5 s before OPEN/CLOSE.
+  - **Observed key/mode behaviour (user, Nov 7):** 7 keys: UP, DOWN, 1, 2, 3, 4, ALL.
+    - Group keys 1–4 and ALL work **only in RF**; pressing one always flashes the green LED.
+    - The arrows are **IR (red) by default**. After a group key, the arrows act in green/RF mode for a time window, then revert to red/IR.
+    - Only the arrows ever send IR (analyzer-verified).
+    - Unknown: the exact window length (manual: ~5 s), whether arrow presses extend it, whether arrows in green mode *also* send IR, and whether red-mode arrows key the radio (RF-wake question).
+    - The clone should copy this UX.
   - Manual describes IR as press-and-release; pressing the opposite button stops movement.
-- **IR protocol: OUR CAPTURES (Nov 7, working remote, red mode, VS1838B/TSOP on GPIO 32).** Log: `captures/ir_red_open_close_20261107_132807.log`.
+- **IR protocol: OUR CAPTURES (Nov 7, working remote, red mode, VS1838B/TSOP on GPIO 32).** Full write-up: `docs/IR_PROTOCOL.md` (keep it updated with new findings). Log: `captures/ir_red_open_close_20261107_132807.log`.
   - Frame = header mark ~2.75 ms + space ~2.75 ms, then **4 bits**, each a ~1.0 ms mark + space (~1.07 ms = 0, ~2.75 ms = 1). Frame period exactly **17.19 ms**, back to back, no extra gap.
   - One press = one burst of **58–103 identical frames** (1.0–1.8 s). No toggle bit, no counter, **no shade address** (fits point-and-press).
-  - **Codes (confirmed by ESP32 log + logic analyzer):** UP arrow (OPEN) = `0101`, DOWN arrow (CLOSE) = `0110`. Other buttons not yet captured.
+  - **Codes (confirmed by ESP32 log + logic analyzer):** UP arrow (OPEN) = `0101`, DOWN arrow (CLOSE) = `0110`. **No other button sends IR** (verified with the logic analyzer); stop = press the opposite arrow.
   - On release the remote stops mid-frame (last frame truncated); no release/stop frame. Analyzer files: `captures/la_ir_red_{up,down}_arrow_20261107.sr` (100 kHz, D0 = receiver OUT).
   - Timing measured through a demodulating receiver: marks read slightly short and spaces slightly long. The true carrier and duty cycle still need measuring with the analyzer on the LED drive.
   - Implication: replay can be synthesized from a 4-bit code rather than raw timings. **RF-wake question still open**; test by replaying at a shade.

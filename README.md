@@ -8,8 +8,8 @@ A DIY replacement for the handheld remote used with Hunter Douglas **Platinum Te
 
 Replace a degraded original remote with a homemade one that can:
 
-- **Point and press (IR, 40 kHz):** control a single shade by aiming at its sensor eye.
-- **Group control (RF, 2.4 GHz):** send OPEN, CLOSE and STOP to shade groups 1–4 or All, as the original does in its green-LED mode.
+- **Point and press (IR, 40 kHz):** control a single shade by aiming at its sensor eye. This is the arrows' default mode (red LED).
+- **Group control (RF, 2.4 GHz):** pressing a group key (1–4 or ALL) opens a short window in which the arrows control that group over RF (green LED), as on the original.
 - Run on batteries, sleeping deeply between presses and waking on a button press.
 
 The protocols aren't documented, so the first phase is reverse engineering. This repo's firmware is the toolkit for that: it captures, dumps and replays IR, and tests, scans and sniffs nRF24.
@@ -20,7 +20,8 @@ New to the project? Start here:
 
 1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate every change must pass before it's committed or deployed.
 2. **Code layout:** hardware-independent logic belongs in `lib/hdcore/` with a host unit test. Hardware-touching code goes in `src/`. See [Firmware](#firmware) below.
-3. **Hardware:** the [pin map](#pin-map) and `include/hw_config.h`, which records what's actually wired on the breadboard.
+3. **Protocols:** [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) describes the decoded IR frame format and codes.
+4. **Hardware:** the [pin map](#pin-map) and `include/hw_config.h`, which records what's actually wired on the breadboard.
 
 ## Status
 
@@ -28,7 +29,8 @@ New to the project? Start here:
 |---|---|
 | PlatformIO project, serial-menu firmware | ✅ builds |
 | ESP32 board identified (DevKitC, WROOM-32D) | ✅ |
-| IR capture / replay of the original remote | ⏳ hardware arriving |
+| IR protocol decoded (UP `0101`, DOWN `0110`), see [IR_PROTOCOL.md](docs/IR_PROTOCOL.md) | ✅ |
+| IR transmit to a shade | ⏳ LED driver parts needed |
 | nRF24 module screening (likely Si24R1 clones) | ⏳ modules arriving |
 | RF channel / address / data-rate discovery | 🔲 |
 | RF transmit emulation | 🔲 |
