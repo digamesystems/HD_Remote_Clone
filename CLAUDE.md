@@ -23,8 +23,11 @@ User is comfortable with **ESP32 + PlatformIO** (Arduino framework assumed).
   - **Observed key/mode behaviour (user, Nov 7):** 7 keys: UP, DOWN, 1, 2, 3, 4, ALL.
     - Group keys 1–4 and ALL work **only in RF**; pressing one always flashes the green LED.
     - The arrows are **IR (red) by default**. After a group key, the arrows act in green/RF mode for a time window, then revert to red/IR.
-    - Only the arrows ever send IR (analyzer-verified).
-    - Unknown: the exact window length (manual: ~5 s), whether arrow presses extend it, whether arrows in green mode *also* send IR, and whether red-mode arrows key the radio (RF-wake question).
+    - Only the arrows ever send IR (analyzer-verified). **Arrows in green mode (right after a group key) send no IR** (verified with `ir quiet`, Nov 7): green = RF only.
+    - **A/B slide switch** on top selects a second group bank, so 2 × (1–4) = **8 groups** (plus ALL). It has **no effect on IR** (user-observed); it's RF-only.
+      - Hypothesis to verify with the analyzer: the forum's group byte is a bitmask (1/2/4/8 for bank A), so bank B may be 16/32/64/128 or use a different byte; ALL = 255 might cover both banks or only one.
+    - **RF window ≈ 6.5 s** from a group-key press until the arrows send IR again (user stopwatch, Nov 7; the manual says 5 s). **Pressing a group key again during the window restarts it** (it's a retriggerable timer).
+    - Unknown: whether arrow presses extend the window, and whether red-mode arrows key the radio (RF-wake question).
     - The clone should copy this UX.
   - Manual describes IR as press-and-release; pressing the opposite button stops movement.
 - **IR protocol: OUR CAPTURES (Nov 7, working remote, red mode, VS1838B/TSOP on GPIO 32).** Full write-up: `docs/IR_PROTOCOL.md` (keep it updated with new findings). Log: `captures/ir_red_open_close_20261107_132807.log`.
@@ -46,6 +49,15 @@ User is comfortable with **ESP32 + PlatformIO** (Arduino framework assumed).
 Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, an HD automation dealer) say battery-powered Platinum shades ignore IR unless the remote first sends a brief RF burst to wake them, which is why learning remotes fail. No capture or timing details found. **Unconfirmed.** The user's observation (the degraded remote works in IR at 30 cm) doesn't discriminate, since its RF still reaches ~1 m.
 
 **Test:** sniff RF while pressing buttons in IR (red) mode, then replay captured IR alone at a shade.
+
+**Our shades are battery models converted to DC power:** the user replaced the battery pack with an always-on DC brick and a compatible cable, because battery changes meant ladder work. They have the **same electronics and firmware as battery shades**, so any power-saving or wake-up behaviour would still be active; constant power does *not* weaken the hypothesis. The original batteries drained quickly, which weakly suggests a receiver that's often awake (the motor and the packs also matter).
+
+Current assessment (Nov 7): **open**; slight lean toward IR-alone working. Reasons:
+- Duty-cycling would target the ~13 mA radio, not the <1 mA IR receiver.
+- The long repeated IR bursts suit a sleepy receiver.
+- Learning-remote failures are explained by burst length and timing quirks.
+
+The decisive test is `send up` alone at a shade (acceptance A2/A5). Results apply to battery Platinum shades in general. If it fails, check the TX timings with the analyzer on the remote's LED drive before blaming RF.
 
 ## Hardware
 

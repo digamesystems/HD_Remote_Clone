@@ -13,15 +13,14 @@ Reverse engineered on 2026-11-07 from the original Platinum remote. The source o
 
 ## When the remote sends IR
 
-The remote has 7 keys: **UP, DOWN, 1, 2, 3, 4, ALL**.
+The remote has 7 keys: **UP, DOWN, 1, 2, 3, 4, ALL**, plus an **A/B slide switch** that selects a second bank of groups (8 groups in total). The A/B switch has **no effect on IR**: it only changes RF behaviour, consistent with IR frames carrying no address.
 
-- **Group keys (1–4, ALL) are RF-only.** Pressing one always flashes the green LED and opens a short **RF window** (the manual says ~5 s).
+- **Group keys (1–4, ALL) are RF-only.** Pressing one always flashes the green LED and opens an **RF window of ≈ 6.5 s** (stopwatch measurement, 2026-11-07; the manual says 5 s). Pressing a group key again during the window **restarts** it.
 - **The arrow keys are IR by default (red LED).** During an RF window they act as RF group commands instead (green). Once the window expires, they go back to IR.
-- So IR is sent **only by UP or DOWN pressed with no recent group key**.
+- So IR is sent **only by UP or DOWN pressed with no recent group key**. Arrows pressed during an RF window send **no IR** (verified 2026-11-07 with the receiver and `ir quiet`).
 
 Not yet known:
-- the exact window length, and whether arrow presses extend it
-- whether arrows in green mode also send IR
+- whether arrow presses extend the window
 - whether red-mode arrows also key the radio (the RF wake-up question)
 
 ## Frame structure
