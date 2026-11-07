@@ -42,18 +42,21 @@ Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, a
   - TSOP38238 is a 38 kHz part; fine for capturing a 40 kHz remote at close range
   - TSAL6200: 100 mA continuous, 200 mA peak, ±17° beam
   - Unbranded kit; parts may not be genuine Vishay
+- Gikfun EK8460 (arrived Nov 7): 10× **VS1838B** 38 kHz demodulating receivers (metal X shield; pinout facing front: OUT, GND, VCC; 2.7–5.5 V) + 10× 5 mm 940 nm IR LEDs (spares, good for loopback). A second receiver type to cross-check captures. Raw carrier frequency and duty cycle come from the logic analyzer on the remote's LED drive instead.
+- 38 kHz "round dot" long-range IR receivers, CH0038K-compatible (arriving Sun Nov 8). A second demodulating receiver to cross-check captures against the unbranded TSOP38238s.
 - hiBCTR 10-pack "NRF24L01+" PCB-antenna modules (arriving Mon Nov 9)
   - Spec "+7 dB max TX" suggests **Si24R1 clones** (genuine nRF24L01+ maxes at 0 dBm). Inference, not confirmed.
   - One verified-buyer review: 5 of 10 failed SPI comms on a test bench; genuine units passed the same bench. Single data point.
   - Plan: screen every module on arrival. Fallback for flaky sniffing: a genuine Nordic module from Digi-Key.
+- **Logic analyzer (owned):** 24 MS/s, 8-channel, works with sigrok/PulseView (`fx2lafw` driver). USB 0925:3881; WinUSB installed via Zadig and working in PulseView as "Saleae Logic", D0–D7 (Nov 7). Inputs −0.5 to 5.25 V. Primary tool for RF reverse engineering (see firmware plan step 4).
 - Still needed: NPN (2N2222 / PN2222 preferred, 2N3904 OK for 1 LED), resistors (1 kΩ, 33 Ω, 2× 10 kΩ, 100 Ω), caps (100 µF, 10 µF, 2× 100 nF ceramic), 2 momentary N.O. pushbuttons, optional nRF24 adapter bases (onboard 3.3 V regulator).
 
 ### Pin map (original ESP32)
 | Function | GPIO | Notes |
 |---|---|---|
-| IR receive (TSOP38238 OUT) | 14 | |
+| IR receive (TSOP38238 / VS1838B OUT) | 32 | moved from 14 on Nov 7 (user wiring choice) |
 | IR transmit (NPN base via 1 kΩ) | 4 | |
-| Button UP | 32 | active-HIGH, external 10 kΩ pull-down, RTC-capable |
+| Button UP | 14 | active-HIGH, external 10 kΩ pull-down, RTC-capable (RTC_GPIO16); swapped with IR RX |
 | Button DOWN | 33 | active-HIGH, external 10 kΩ pull-down, RTC-capable |
 | nRF24 SCK | 18 | VSPI default |
 | nRF24 MOSI | 23 | VSPI default |
@@ -65,11 +68,11 @@ Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, a
 Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_ANY_HIGH` (original ESP32's ext1 only supports ANY_HIGH or ALL_LOW). On S3/C3, revisit pins and polarity.
 
 ### Netlist (sheet 1: IR + buttons)
-- TSOP38238 (pinout facing dome: OUT, GND, VS): VS ← 100 Ω ← 3V3; 100 nF VS→GND at the TSOP; GND→GND; OUT→GPIO 14.
+- TSOP38238 (pinout facing dome: OUT, GND, VS): VS ← 100 Ω ← 3V3; 100 nF VS→GND at the TSOP; GND→GND; OUT→GPIO 32.
 - IR LED: 5V/VIN → 33 Ω (22 Ω if fed from 3.3 V) → TSAL6200 anode; cathode → NPN collector; emitter → GND. GPIO 4 → 1 kΩ → base. ~100 mA pulses.
   - 100 µF bulk + 100 nF ceramic across 5V–GND; ceramic placed at the top of the 33 Ω, grounded near the emitter.
   - Two LEDs: duplicate the 33 Ω + LED branch, same collector; use a 2N2222 (≈200 mA).
-- Buttons: 3V3 → switch → GPIO 32/33; 10 kΩ GPIO → GND each. Debounce in software (~20–30 ms).
+- Buttons: 3V3 → switch → GPIO 14 (UP) / 33 (DOWN); 10 kΩ GPIO → GND each. Debounce in software (~20–30 ms).
 
 ### Netlist (sheet 2: nRF24)
 - VCC → 3V3 (3.3 V only!). With an adapter base: feed 5 V, omit the cap.
@@ -81,8 +84,12 @@ One PlatformIO project, serial-menu driven, usable from this weekend through Mon
 1. **IR capture/dump.** IRremoteESP8266, IRrecvDumpV2-style. Raise capture buffer and timeout; dump raw mark/space timings (protocol is proprietary). Capture every button × both modes, short press vs 2 s hold, several repeats each, to detect toggle bits or counters and repeat behavior.
 2. **IR replay.** `sendRaw(data, len, 40)`: 40 kHz carrier, exact raw timings, optionally 2–3 back-to-back sends.
 3. **nRF24 module self-test.** RF24 lib: `begin()`, `isChipConnected()`, `printDetails()`; label pass/fail.
-4. **nRF24 sniffer.** Start at channel 7. Data rate and address width unknown; consider a promiscuous-mode approach or the SPI piggyback register dump of the original remote. Also run it during IR-mode presses (wake-burst test).
-5. Later: RF transmit emulation (group up/down, held-repeat + release packets), button handling, deep sleep with ext1 wake.
+4. **RF config via logic analyzer (preferred first step).** Open the *degraded* remote and clip onto its nRF24 SPI bus (SCK, MOSI, MISO, CSN), plus CE, IRQ and the IR LED drive. PulseView's nRF24L01 decoder (on top of SPI) shows RF_CH (channels and hopping), RF_SETUP (rate), SETUP_AW/TX_ADDR (address), EN_AA/CONFIG (CRC), and W_TX_PAYLOAD (packets with timing).
+   - **Wake-burst test:** capture CE/SPI together with the IR LED drive during red-mode presses. RF activity before IR confirms the hypothesis and gives its timing.
+   - Also gives the exact IR carrier frequency and duty cycle.
+   - Caveat: 24 MS/s is fine for SPI ≤ ~4 MHz. QFN-20 nRF24 pins 1–6 = CE, CSN, SCK, MOSI, MISO, IRQ.
+5. **nRF24 sniffer.** Use the config from step 4 for exact-match sniffing (start at channel 7 if unknown). Promiscuous mode (`promisc aa|55`) is the fallback if the remote can't be probed.
+6. Later: RF transmit emulation (group up/down, held-repeat + release packets), button handling, deep sleep with ext1 wake.
 
 ## Open questions
 - Remote's RF ID, channel(s), data rate, and address — get these from the SPI piggyback or a sniff.

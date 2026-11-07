@@ -71,9 +71,9 @@ New to the project? Start here:
 
 | Function | GPIO | Notes |
 |---|---|---|
-| IR receive (TSOP OUT) | 14 | TSOP VS via 100 Ω, 100 nF decoupling |
+| IR receive (TSOP OUT) | 32 | TSOP VS via 100 Ω, 100 nF decoupling |
 | IR transmit (NPN base) | 4 | via 1 kΩ; LED + 33 Ω from 5 V |
-| Button UP | 32 | active-high, 10 kΩ pull-down, RTC wake |
+| Button UP | 14 | active-high, 10 kΩ pull-down, RTC wake |
 | Button DOWN | 33 | active-high, 10 kΩ pull-down, RTC wake |
 | nRF24 SCK / MISO / MOSI | 18 / 19 / 23 | VSPI |
 | nRF24 CSN | 5 | |

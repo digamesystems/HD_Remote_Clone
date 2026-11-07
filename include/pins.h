@@ -4,9 +4,9 @@
 
 #include <stdint.h>
 
-constexpr uint8_t PIN_IR_RX   = 14;  // TSOP38238 OUT
+constexpr uint8_t PIN_IR_RX   = 32;  // IR receiver OUT (TSOP38238 / VS1838B)
 constexpr uint8_t PIN_IR_TX   = 4;   // NPN base via 1 kOhm (HIGH = LED on)
-constexpr uint8_t PIN_BTN_UP  = 32;  // active-HIGH, external 10k pull-down
+constexpr uint8_t PIN_BTN_UP  = 14;  // active-HIGH, external 10k pull-down, RTC-capable
 constexpr uint8_t PIN_BTN_DN  = 33;  // active-HIGH, external 10k pull-down
 
 // nRF24 on VSPI (SCK 18, MISO 19, MOSI 23 are the SPI defaults)
