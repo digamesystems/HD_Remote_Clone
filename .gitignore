@@ -1,0 +1,15 @@
+# PlatformIO build output and downloaded libs
+.pio/
+
+# VS Code (PlatformIO regenerates these)
+.vscode/
+!.vscode/extensions.json
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+# Local capture logs (keep out of git unless deliberately added)
+captures/*.log
