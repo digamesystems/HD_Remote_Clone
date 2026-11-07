@@ -14,6 +14,7 @@ These run on the PC with Unity and the MSYS2 gcc compiler, and take seconds. The
 |---|---|
 | `test_native_parse` | serial command tokenizing, hex parsing, data-rate parsing |
 | `test_native_rf` | nRF24 on-air ↔ register address byte order, sniffer duplicate filter |
+| `test_native_ir` | HD IR frame encode/decode: layout, period, round trip of all 16 codes, decoding of real captured frames (including phase-shifted and truncated ones) |
 
 **Rule:** logic that can run without hardware goes in `lib/hdcore/`, with a Tier 1 test, rather than in `src/`. This includes protocol encoding, IR frame analysis and state machines.
 
@@ -37,7 +38,7 @@ Update `hw_config.h` whenever the breadboard changes. We can add loopbacks or ot
 |---|---|---|
 | `test_device_board` | board only | chip is the original ESP32 (D0WD), no PSRAM (so not WROVER), flash ≥ 4 MB |
 | `test_device_rf` | `HW_NRF24` | `begin()`, `isChipConnected()`, 200× register read-back, sniffer RX config |
-| `test_device_ir` | `HW_IR_LOOPBACK` | TSAL6200 → TSOP38238 round trip of a synthetic frame within ±max(200 µs, 25%); 10/10 reliability |
+| `test_device_ir` | `HW_IR_LOOPBACK` | TSAL6200 → receiver round trip of a synthetic frame within ±max(200 µs, 25%); 10/10 reliability; HD UP/DOWN bursts decode correctly |
 
 Planned: RF loopback (a second nRF24 on HSPI receives what the first sends) to verify TX emulation; button and deep-sleep wake tests (`HW_BUTTONS`).
 
@@ -49,7 +50,7 @@ These can't be automated. A feature is **done** once John confirms it and it's r
 
 | # | Check | Result | Date |
 |---|---|---|---|
-| A1 | Capture IR from the original remote in red mode, every button | | |
+| A1 | Capture IR from the original remote in red mode, every button | Partial: format decoded; UP = 0101, DOWN = 0110 (log + analyzer); other buttons pending | 2026-11-07 |
 | A2 | Replay a captured IR code; target shade responds | | |
 | A3 | RF scan shows the original remote's channels | | |
 | A4 | Sniffer decodes the original remote's group up/down/release packets | | |

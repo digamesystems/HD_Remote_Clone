@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "hd_ir.h"
 #include "hw_config.h"
 #include "pins.h"
 
@@ -87,12 +88,27 @@ void test_ir_loopback_reliable() {
   TEST_ASSERT_EQUAL_MESSAGE(10, ok, "not all of 10 round trips matched");
 }
 
+void test_hd_frames_loopback_decode() {
+  // What `send up` transmits must decode back to UP through the receiver.
+  for (uint8_t code : {hd::ir::kCodeUp, hd::ir::kCodeDown}) {
+    auto burst = hd::ir::encodeBurst(code, 10);
+    auto got = roundTrip(burst);
+    TEST_ASSERT_FALSE_MESSAGE(got.empty(), "nothing received");
+    auto s = hd::ir::summarize(got.data(), got.size());
+    TEST_ASSERT_EQUAL_MESSAGE(code, s.code, "decoded code differs");
+    TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(9, s.frames, "too few frames decoded");
+    TEST_ASSERT_EQUAL_MESSAGE(0, s.otherFrames, "frames with wrong code");
+    delay(100);
+  }
+}
+
 void setup() {
   delay(2000);
   irsend.begin();
   UNITY_BEGIN();
   RUN_TEST(test_ir_loopback_timings_match);
   RUN_TEST(test_ir_loopback_reliable);
+  RUN_TEST(test_hd_frames_loopback_decode);
   UNITY_END();
 }
 

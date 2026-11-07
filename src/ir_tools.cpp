@@ -7,24 +7,27 @@
 
 #include <vector>
 
+#include "hd_ir.h"
 #include "pins.h"
 
 namespace ir {
 namespace {
 
-// Large buffer: the protocol is proprietary and frames may be long.
-constexpr uint16_t kCaptureBufferSize = 1024;
+// HD bursts are continuous for as long as a button is held (10 entries per
+// 17.19 ms frame), so 4096 entries holds ~7 s without overflowing.
+constexpr uint16_t kCaptureBufferSize = 4096;
 // Gap (ms) that ends a capture. Shorter than the inter-frame gap splits each
 // repeat into its own capture (useful for spotting toggle bits / counters).
 // Raise toward 100+ to see a whole burst of repeats as one capture.
 constexpr uint8_t kTimeoutMs = 50;
-constexpr uint16_t kCarrierKhz = 40;  // per Platinum manual
+constexpr uint16_t kCarrierKhz = hd::ir::kCarrierKhz;  // 40 kHz per Platinum manual
 
 IRrecv irrecv(PIN_IR_RX, kCaptureBufferSize, kTimeoutMs, true);
 IRsend irsend(PIN_IR_TX);
 decode_results results;
 
 bool capturing = false;
+bool rawDump = true;
 uint32_t captureCount = 0;
 uint32_t lastCaptureMs = 0;
 
@@ -53,11 +56,12 @@ void begin() {
   irrecv.setUnknownThreshold(6);  // report even short unknown frames
 }
 
-void startCapture() {
+void startCapture(bool raw) {
+  rawDump = raw;
   irrecv.enableIRIn();
   capturing = true;
-  Serial.printf("IR capture ON (timeout %u ms, buffer %u). Send any line to stop.\n",
-                kTimeoutMs, kCaptureBufferSize);
+  Serial.printf("IR capture ON (timeout %u ms, buffer %u, %s). Send any line to stop.\n",
+                kTimeoutMs, kCaptureBufferSize, raw ? "summary + raw" : "summary only");
 }
 
 void stopCapture() {
@@ -90,8 +94,32 @@ void pollCapture() {
                   results.bits);
   }
   Serial.println();
-  printTimings(last);
+  uint32_t totalUs = 0;
+  for (uint16_t v : last) totalUs += v;
+  hd::ir::Summary s = hd::ir::summarize(last.data(), last.size());
+  if (s.code >= 0) {
+    Serial.printf("HD: code=%s (%s) frames=%d other=%d duration=%.2f s\n",
+                  hd::ir::codeToBits(s.code).c_str(), hd::ir::codeName(s.code), s.frames,
+                  s.otherFrames, totalUs / 1e6);
+  } else {
+    Serial.printf("HD: no valid frames (duration=%.2f s)\n", totalUs / 1e6);
+  }
+  if (rawDump) printTimings(last);
   irrecv.resume();
+}
+
+void sendCode(uint8_t code, uint32_t durationMs) {
+  int frames = hd::ir::framesForDuration(durationMs);
+  std::vector<uint16_t> burst = hd::ir::encodeBurst(code, frames);
+  bool wasCapturing = capturing;
+  if (wasCapturing) irrecv.disableIRIn();  // don't receive our own transmission
+  uint32_t t0 = millis();
+  irsend.sendRaw(burst.data(), burst.size(), kCarrierKhz);
+  uint32_t took = millis() - t0;
+  if (wasCapturing) irrecv.enableIRIn();
+  Serial.printf("Sent HD code %s (%s): %d frames, %lu ms, %u kHz\n",
+                hd::ir::codeToBits(code).c_str(), hd::ir::codeName(code), frames,
+                (unsigned long)took, kCarrierKhz);
 }
 
 void play(int slot, int repeats, int gapMs) {

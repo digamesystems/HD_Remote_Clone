@@ -21,6 +21,13 @@ User is comfortable with **ESP32 + PlatformIO** (Arduino framework assumed).
   - Indicator **red** = IR / point-and-press mode (individual shade, aim at its "sensor eye").
   - Indicator **green** = RF group mode. Press a group button (1–4 or All) no more than 5 s before OPEN/CLOSE.
   - Manual describes IR as press-and-release; pressing the opposite button stops movement.
+- **IR protocol: OUR CAPTURES (Nov 7, working remote, red mode, VS1838B/TSOP on GPIO 32).** Log: `captures/ir_red_open_close_20261107_132807.log`.
+  - Frame = header mark ~2.75 ms + space ~2.75 ms, then **4 bits**, each a ~1.0 ms mark + space (~1.07 ms = 0, ~2.75 ms = 1). Frame period exactly **17.19 ms**, back to back, no extra gap.
+  - One press = one burst of **58–103 identical frames** (1.0–1.8 s). No toggle bit, no counter, **no shade address** (fits point-and-press).
+  - **Codes (confirmed by ESP32 log + logic analyzer):** UP arrow (OPEN) = `0101`, DOWN arrow (CLOSE) = `0110`. Other buttons not yet captured.
+  - On release the remote stops mid-frame (last frame truncated); no release/stop frame. Analyzer files: `captures/la_ir_red_{up,down}_arrow_20261107.sr` (100 kHz, D0 = receiver OUT).
+  - Timing measured through a demodulating receiver: marks read slightly short and spaces slightly long. The true carrier and duty cycle still need measuring with the analyzer on the LED drive.
+  - Implication: replay can be synthesized from a 4-bit code rather than raw timings. **RF-wake question still open**; test by replaying at a shade.
 - **RF uses an nRF24L01+ inside the remote.** Per Arduino forum reverse engineering (one hobbyist, ~2020):
   - Channel 7 (2.407 GHz) on his remote. **Verify on ours; do not assume.**
   - Remote cycles three channels, one 5-byte transfer per channel, cycle repeats ~30×.
@@ -82,7 +89,7 @@ Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_
 ## Firmware plan (next step)
 One PlatformIO project, serial-menu driven, usable from this weekend through Monday:
 1. **IR capture/dump.** IRremoteESP8266, IRrecvDumpV2-style. Raise capture buffer and timeout; dump raw mark/space timings (protocol is proprietary). Capture every button × both modes, short press vs 2 s hold, several repeats each, to detect toggle bits or counters and repeat behavior.
-2. **IR replay.** `sendRaw(data, len, 40)`: 40 kHz carrier, exact raw timings, optionally 2–3 back-to-back sends.
+2. **IR replay.** `send up|down|bbbb [ms]` synthesizes HD frames from the 4-bit code (`lib/hdcore/src/hd_ir.*`) and sends them at 40 kHz. Raw `play` of captures also exists. Needs the IR LED driver to test on a shade (acceptance A2/A5).
 3. **nRF24 module self-test.** RF24 lib: `begin()`, `isChipConnected()`, `printDetails()`; label pass/fail.
 4. **RF config via logic analyzer (preferred first step).** Open the *degraded* remote and clip onto its nRF24 SPI bus (SCK, MOSI, MISO, CSN), plus CE, IRQ and the IR LED drive. PulseView's nRF24L01 decoder (on top of SPI) shows RF_CH (channels and hopping), RF_SETUP (rate), SETUP_AW/TX_ADDR (address), EN_AA/CONFIG (CRC), and W_TX_PAYLOAD (packets with timing).
    - **Wake-burst test:** capture CE/SPI together with the IR LED drive during red-mode presses. RF activity before IR confirms the hypothesis and gives its timing.

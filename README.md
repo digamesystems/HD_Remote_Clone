@@ -95,7 +95,8 @@ Type `help` in the monitor. Sending any line stops a running capture, scan or sn
 
 | Command | What it does |
 |---|---|
-| `ir` | Capture IR and dump each frame as a `uint16_t rawData[]` array |
+| `ir [quiet]` | Capture IR; print the decoded HD frame summary (code, frames, duration) plus the raw `uint16_t rawData[]` (`quiet`: summary only) |
+| `send <up\|down\|bbbb> [ms]` | Transmit HD frames at 40 kHz for `ms` (default 1000) |
 | `play [slot\|last] [n] [gap_ms]` | Replay a capture at 40 kHz |
 | `save <slot>` / `list` / `dump [slot]` | Keep up to 8 captures in RAM |
 | `test [label]` | nRF24 self-test (200× register read-back) → PASS/FAIL |
@@ -113,7 +114,7 @@ include/hw_config.h   what's wired on the breadboard (gates hardware tests)
 src/main.cpp          serial menu / dispatch
 src/ir_tools.*        IR capture, dump, replay
 src/rf_tools.*        nRF24 self-test, scanner, sniffer
-lib/hdcore/           hardware-independent logic (parsing, address order, dup filter)
+lib/hdcore/           hardware-independent logic (HD IR frame codec, parsing, address order, dup filter)
 test/                 Tier 1 host tests (test_native_*) and Tier 2 device tests (test_device_*)
 ```
 

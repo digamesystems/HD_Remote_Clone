@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+#include "hd_ir.h"
 #include "ir_tools.h"
 #include "parse.h"
 #include "pins.h"
@@ -17,7 +18,8 @@ void help() {
   Serial.println(F(
       "\nCommands (any line stops a running mode):\n"
       " IR\n"
-      "  ir                      start IR capture/dump\n"
+      "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
+      "  send <up|down|bbbb> [ms]  transmit HD frames at 40 kHz (default 1000 ms)\n"
       "  play [slot|last] [n] [gap_ms]  replay at 40 kHz (default last, 1x, 40 ms)\n"
       "  save <slot>             copy last capture to slot 0-7 (RAM only)\n"
       "  list                    show slot sizes\n"
@@ -59,7 +61,17 @@ void handle(String cmdline) {
   bool ok = true;
 
   if (c == "help" || c == "?") help();
-  else if (c == "ir") { ir::startCapture(); mode = Mode::IrCapture; }
+  else if (c == "ir") {
+    tok[1].toLowerCase();
+    ir::startCapture(tok[1] != "quiet");
+    mode = Mode::IrCapture;
+  }
+  else if (c == "send") {
+    int code = hd::ir::parseCode(tok[1].c_str());
+    long ms = tok[2].length() ? tok[2].toInt() : 1000;
+    if (code < 0 || ms <= 0 || ms > 10000) ok = false;
+    else ir::sendCode(code, ms);
+  }
   else if (c == "play") {
     int reps = tok[2].length() ? tok[2].toInt() : 1;
     int gap = tok[3].length() ? tok[3].toInt() : 40;
