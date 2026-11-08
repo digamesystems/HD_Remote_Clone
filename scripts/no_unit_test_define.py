@@ -1,4 +1,4 @@
-# PlatformIO pre-script (esp32dev only).
+# PlatformIO pre-script (ESP32 envs: esp32dev, esp32dev_test).
 #
 # `pio test` adds the deprecated UNIT_TEST define, which makes IRremoteESP8266
 # compile in host-stub mode (typedef std::string String, no real IR output).

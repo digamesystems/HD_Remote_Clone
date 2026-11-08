@@ -21,8 +21,8 @@ These run on the PC with Unity and the MSYS2 gcc compiler, and take seconds. The
 ## Tier 2: on-device tests (ESP32, extra hardware optional)
 
 ```
-pio test -e esp32dev --upload-port COM11                         # all device suites
-pio test -e esp32dev --upload-port COM11 -f test_device_ir       # one suite
+pio test -e esp32dev_test --upload-port COM11                         # all device suites
+pio test -e esp32dev_test --upload-port COM11 -f test_device_ir       # one suite
 ```
 
 These flash a **test firmware** to the board, run Unity on it and report over serial. Afterwards the board is left running the test firmware, so re-upload the app (`pio run -t upload`).
@@ -42,7 +42,7 @@ Update `hw_config.h` whenever the breadboard changes. We can add loopbacks or ot
 
 Planned: RF loopback (a second nRF24 on HSPI receives what the first sends) to verify TX emulation; button and deep-sleep wake tests (`HW_BUTTONS`).
 
-**Implementation note:** `pio test` defines `UNIT_TEST`, which switches IRremoteESP8266 into a host-stub mode. [`scripts/no_unit_test_define.py`](scripts/no_unit_test_define.py) strips that define for the esp32dev environment so device tests use the real library.
+**Implementation note:** `pio test` defines `UNIT_TEST`, which switches IRremoteESP8266 into a host-stub mode. [`scripts/no_unit_test_define.py`](scripts/no_unit_test_define.py) strips that define for the ESP32 environments so device tests use the real library.
 
 ## Tier 3: manual acceptance (real shades, original remote)
 

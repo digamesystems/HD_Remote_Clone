@@ -124,7 +124,7 @@ test/                 Tier 1 host tests (test_native_*) and Tier 2 device tests 
 
 ```
 pio test -e native                          # host unit tests, no hardware
-pio test -e esp32dev --upload-port COM11    # on-device tests
+pio test -e esp32dev_test --upload-port COM11    # on-device tests
 ```
 
 See [TESTING.md](TESTING.md) for the three test tiers and the gate a build must pass before it's committed or deployed.
