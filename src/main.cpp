@@ -127,14 +127,25 @@ void loop() {
   while (Serial.available()) {
     char ch = Serial.read();
     if (ch == '\r') continue;
+    // Echo input: terminals like `pio device monitor` don't echo locally, and
+    // the echo also records each command in serial logs.
+    if (ch == '\b' || ch == 0x7F) {
+      if (line.length()) {
+        line.remove(line.length() - 1);
+        Serial.print("\b \b");
+      }
+      continue;
+    }
     if (ch == '\n') {
+      Serial.println();
       bool wasBusy = mode != Mode::Idle;
       stopAll();
       handle(line);
       line = "";
       if (!wasBusy || mode == Mode::Idle) Serial.print("> ");
-    } else if (line.length() < 120) {
+    } else if (line.length() < 120 && isprint((unsigned char)ch)) {
       line += ch;
+      Serial.write(ch);
     }
   }
 

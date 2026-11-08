@@ -10,6 +10,7 @@ Context for Claude Code. Summarized from a planning conversation in Claude chat 
   - If upload can't connect, have the user hold BOOT and tap EN.
 - **Gate (see TESTING.md):** before committing, run `pio run`, then `pio test -e native` (all Tier 1 suites). For "cpd", also run `pio test -e esp32dev --upload-port COM11 -f test_device_<area>` for each area changed (test_device_board always), then upload the app, since the board is left running test firmware. If any step fails, **halt**: do not commit, push, or deploy. Report the errors instead. Tier 2 tests IGNORED for absent hardware (per `include/hw_config.h`) don't block, but say plainly which areas were not verified.
 - Put hardware-independent logic in `lib/hdcore/` with Tier 1 tests, not in `src/`. The user can wire loopbacks or diagnostics on the breadboard to make hardware testable; ask when that would help, and keep `include/hw_config.h` in sync with what's wired.
+- **Community contribution is a goal, not just solving our own problem.** Little public work exists on Platinum IR/RF (scattered, mostly dormant forum threads; no published IR protocol found). Write docs and captures so outsiders can reuse them: state what's confirmed vs hypothesis, keep evidence files committed, and keep code reusable (`lib/hdcore/`). Later options: make the repo public, upstream the IR protocol to IRremoteESP8266, post write-ups on the Arduino/HA threads where people got stuck, maybe an ESPHome component.
 
 ## Goal
 Build a DIY replacement for a Hunter Douglas **Platinum Technology** remote (manual © 2013, pre-PowerView). One original remote works; a second is degraded (IR works only within ~30 cm, RF within ~1 m — both paths degraded, so suspect a power problem: batteries, contacts, or regulator; worth cleaning and re-testing).
@@ -50,6 +51,8 @@ Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, a
 
 **Test:** sniff RF while pressing buttons in IR (red) mode, then replay captured IR alone at a shade.
 
+**Foil-shield test (planned for Nov 8 AM, user's idea):** wrap the working remote in foil (2–3 layers, seams folded, or a cookie tin) with a few-mm hole over the IR LED. Control first: group key + arrow (RF only) from closer than the test distance must NOT move the shade (proves the shield). Confirm IR exits the hole with `ir quiet` on GPIO 32. Then a red-mode arrow at the sensor eye: shade moves → IR alone works. Record the method, distances and results in docs/IR_PROTOCOL.md. Independent of the clone `send up` test; two agreeing methods make a stronger community write-up.
+
 **Our shades are battery models converted to DC power:** the user replaced the battery pack with an always-on DC brick and a compatible cable, because battery changes meant ladder work. They have the **same electronics and firmware as battery shades**, so any power-saving or wake-up behaviour would still be active; constant power does *not* weaken the hypothesis. The original batteries drained quickly, which weakly suggests a receiver that's often awake (the motor and the packs also matter).
 
 Current assessment (Nov 7): **open**; slight lean toward IR-alone working. Reasons:
@@ -63,7 +66,7 @@ The decisive test is `send up` alone at a shade (acceptance A2/A5). Results appl
 
 ### Parts on hand / arriving
 - ESP32 dev board: **ESP32-DevKitC with ESP32-WROOM-32D** — confirmed Nov 7 from the can marking and the ROM boot banner (`ets Jun 8 2016`, original ESP32). No PSRAM; PlatformIO `board = esp32dev`; pin map applies as-is. Enumerates as CP210x on COM11.
-- Bridgold kit: TSOP38238 IR receivers + TSAL6200 940 nm IR LEDs (arriving Sat Nov 7)
+- Bridgold kit (arrived Nov 7): 5× TSOP38238 IR receivers (black, pinout facing dome: OUT, GND, VS) + 5× TSAL6200 940 nm IR LEDs (clear blue-tint, long leg = anode)
   - TSOP38238 is a 38 kHz part; fine for capturing a 40 kHz remote at close range
   - TSAL6200: 100 mA continuous, 200 mA peak, ±17° beam
   - Unbranded kit; parts may not be genuine Vishay
