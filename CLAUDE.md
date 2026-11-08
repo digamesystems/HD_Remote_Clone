@@ -87,9 +87,9 @@ The decisive test is `send up` alone at a shade (acceptance A2/A5). Results appl
 ### Pin map (original ESP32)
 | Function | GPIO | Notes |
 |---|---|---|
-| IR receive (TSOP38238 / VS1838B OUT) | 32 | moved from 14 on Nov 7 (user wiring choice) |
+| IR receive (TSOP38238 / VS1838B OUT) | 14 | moved 14→32 on Nov 7, back to 14 on Nov 8 (user wiring choice) |
 | IR transmit (NPN base via 1 kΩ) | 4 | |
-| Button UP | 14 | active-HIGH, external 10 kΩ pull-down, RTC-capable (RTC_GPIO16); swapped with IR RX |
+| Button UP | 32 | active-HIGH, external 10 kΩ pull-down, RTC-capable (RTC_GPIO9); swapped with IR RX (not wired yet) |
 | Button DOWN | 33 | active-HIGH, external 10 kΩ pull-down, RTC-capable |
 | nRF24 SCK | 18 | VSPI default |
 | nRF24 MOSI | 23 | VSPI default |
@@ -101,11 +101,11 @@ The decisive test is `send up` alone at a shade (acceptance A2/A5). Results appl
 Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_ANY_HIGH` (original ESP32's ext1 only supports ANY_HIGH or ALL_LOW). On S3/C3, revisit pins and polarity.
 
 ### Netlist (sheet 1: IR + buttons)
-- TSOP38238 (pinout facing dome: OUT, GND, VS): VS ← 100 Ω ← 3V3; 100 nF VS→GND at the TSOP; GND→GND; OUT→GPIO 32.
+- TSOP38238 (pinout facing dome: OUT, GND, VS): VS ← 100 Ω ← 3V3; 100 nF VS→GND at the TSOP; GND→GND; OUT→GPIO 14.
 - IR LED: 5V/VIN → 33 Ω (22 Ω if fed from 3.3 V) → TSAL6200 anode; cathode → NPN collector; emitter → GND. GPIO 4 → 1 kΩ → base. ~100 mA pulses.
   - 100 µF bulk + 100 nF ceramic across 5V–GND; ceramic placed at the top of the 33 Ω, grounded near the emitter.
   - Two LEDs: duplicate the 33 Ω + LED branch, same collector; use a 2N2222 (≈200 mA).
-- Buttons: 3V3 → switch → GPIO 14 (UP) / 33 (DOWN); 10 kΩ GPIO → GND each. Debounce in software (~20–30 ms).
+- Buttons: 3V3 → switch → GPIO 32 (UP) / 33 (DOWN); 10 kΩ GPIO → GND each. Debounce in software (~20–30 ms).
 
 ### Netlist (sheet 2: nRF24)
 - VCC → 3V3 (3.3 V only!). With an adapter base: feed 5 V, omit the cap.

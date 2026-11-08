@@ -1,5 +1,5 @@
 // Tier 2 (device): IR TX -> RX loopback. Ignored unless HW_IR_LOOPBACK is true.
-// Wiring: IR LED driver on GPIO 4 aimed at the IR receiver (GPIO 32), a few cm apart.
+// Wiring: IR LED driver on GPIO 4 aimed at the IR receiver (GPIO 14), a few cm apart.
 #include <Arduino.h>
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>

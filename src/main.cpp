@@ -34,6 +34,7 @@ void help() {
       "  crc <0|1|2> | pl <1-32> | filter <on|off> | cfg\n"
       " Misc\n"
       "  btn                     show UP/DOWN button state\n"
+      "  pin <gpio> [ms]         logic probe: level, edges, % low (default 3000 ms)\n"
       "  help\n"));
 }
 
@@ -41,6 +42,25 @@ void stopAll() {
   if (mode == Mode::IrCapture) ir::stopCapture();
   if (mode == Mode::RfBusy) rf::stop();
   mode = Mode::Idle;
+}
+
+// Software logic probe: sets `pin` to INPUT and polls it for `ms`, reporting
+// the starting level, edge count and time spent low. An IR receiver idles
+// HIGH and pulses LOW while it sees a remote.
+void probePin(int pin, uint32_t ms) {
+  pinMode(pin, INPUT);
+  int start = digitalRead(pin), prev = start;
+  uint32_t edges = 0, lowUs = 0, t0 = micros(), last = t0;
+  Serial.printf("Probing GPIO %d for %lu ms (start level %d)...\n", pin, (unsigned long)ms, start);
+  while (micros() - t0 < ms * 1000UL) {
+    int v = digitalRead(pin);
+    uint32_t now = micros();
+    if (prev == LOW) lowUs += now - last;
+    last = now;
+    if (v != prev) { edges++; prev = v; }
+  }
+  Serial.printf("GPIO %d: start=%d end=%d edges=%lu low=%.1f%%\n", pin, start, prev,
+                (unsigned long)edges, 100.0 * lowUs / (ms * 1000.0));
 }
 
 // slot argument: "" / "last" -> -1, else number
@@ -98,6 +118,15 @@ void handle(String cmdline) {
   else if (c == "pl") ok = rf::setPayloadSize(tok[1].toInt());
   else if (c == "filter") { tok[1].toLowerCase(); rf::setDupFilter(tok[1] != "off"); }
   else if (c == "cfg") rf::printConfig();
+  else if (c == "pin") {
+    int p = tok[1].length() ? tok[1].toInt() : -1;
+    long ms = tok[2].length() ? tok[2].toInt() : 3000;
+    // Refuse flash pins (6-11), the IR LED driver and nRF24 outputs.
+    bool bad = p < 0 || p > 39 || (p >= 6 && p <= 11) || p == PIN_IR_TX ||
+               p == PIN_NRF_CSN || p == PIN_NRF_CE || p == 18 || p == 23;
+    if (bad || ms <= 0 || ms > 30000) ok = false;
+    else probePin(p, ms);
+  }
   else if (c == "btn") {
     Serial.printf("UP=%d DOWN=%d\n", digitalRead(PIN_BTN_UP), digitalRead(PIN_BTN_DN));
   }
