@@ -3,12 +3,17 @@
 Context for Claude Code. Summarized from a planning conversation in Claude chat (Nov 6–7, 2026).
 
 ## Working conventions (shorthand commands)
-- **"cp"**: Commit all current changes with a descriptive message, then push to GitHub (`origin/main`, private repo digamesystems/HD_Remote_Clone).
-- **"cpd"**: Same as "cp", then **deploy to the device**: build and upload with `pio run -t upload --upload-port COM11`, then reopen the serial monitor in a separate window (`Start-Process pio device monitor --port COM11 --baud 115200 --filter time`).
-  - Serial/upload must run **outside the Bash sandbox**; sandboxed reads of COM11 return nothing.
-  - A monitor window holding COM11 blocks upload. Ask the user to close it (Ctrl+C) first, or close it if they say to.
+- **Single-letter commands** (fast dev loop; letters combine, e.g. "cp", "cpd", "t1 d"; run in the order c → p → d):
+  - **"d"**: deploy. One step, no tests: `pio run -t upload --upload-port COM11` (builds and uploads; a failed build uploads nothing), then reopen the serial monitor in a separate window (`Start-Process pio device monitor --port COM11 --baud 115200 --filter time`).
+  - **"c"**: local git commit of all current changes with a descriptive message. Runs `pio run` first and halts if the build fails (the user's rule: never commit a broken build). No tests.
+  - **"p"**: push to GitHub (`origin/main`, private repo digamesystems/HD_Remote_Clone). If any pushed commit hasn't passed t1, say so.
+  - **"t1"**: Tier 1 native tests, `pio test -e native`.
+  - **"t2"**: Tier 2 board tests, `pio test -e esp32dev_test --upload-port COM11` (all device suites). Leaves **test firmware** on the board; say so, and that "d" restores the app.
+  - **"cpdt"**: the full gated release: `pio run`, t1, then t2 for test_device_board plus each changed area (`-f test_device_<area>`), then c, p, d. If any step fails, **halt**: no commit, push, or deploy; report the errors. Tier 2 tests IGNORED for absent hardware (per `include/hw_config.h`) don't block, but say plainly which areas were not verified.
+  - Typical times (incremental): build 13 s, t1 15 s, t2 ~20 s per suite, d ~25 s.
+- Serial/upload must run **outside the Bash sandbox**; sandboxed reads of COM11 return nothing.
+  - A monitor window holding COM11 blocks upload/t2. Ask the user to close it (Ctrl+C) first, or close it if they say to.
   - If upload can't connect, have the user hold BOOT and tap EN.
-- **Gate (see TESTING.md):** before committing, run `pio run`, then `pio test -e native` (all Tier 1 suites). For "cpd", also run `pio test -e esp32dev_test --upload-port COM11 -f test_device_<area>` for each area changed (test_device_board always), then upload the app, since the board is left running test firmware. If any step fails, **halt**: do not commit, push, or deploy. Report the errors instead. Tier 2 tests IGNORED for absent hardware (per `include/hw_config.h`) don't block, but say plainly which areas were not verified.
 - Put hardware-independent logic in `lib/hdcore/` with Tier 1 tests, not in `src/`. The user can wire loopbacks or diagnostics on the breadboard to make hardware testable; ask when that would help, and keep `include/hw_config.h` in sync with what's wired.
 - **Community contribution is a goal, not just solving our own problem.** Little public work exists on Platinum IR/RF (scattered, mostly dormant forum threads; no published IR protocol found). Write docs and captures so outsiders can reuse them: state what's confirmed vs hypothesis, keep evidence files committed, and keep code reusable (`lib/hdcore/`). Later options: make the repo public, upstream the IR protocol to IRremoteESP8266, post write-ups on the Arduino/HA threads where people got stuck, maybe an ESPHome component.
 

@@ -18,7 +18,7 @@ The protocols aren't documented, so the first phase is reverse engineering. This
 
 New to the project? Start here:
 
-1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate every change must pass before it's committed or deployed.
+1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate a release must pass.
 2. **Code layout:** hardware-independent logic belongs in `lib/hdcore/` with a host unit test. Hardware-touching code goes in `src/`. See [Firmware](#firmware) below.
 3. **Protocols:** [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) describes the decoded IR frame format and codes.
 4. **Hardware:** the [pin map](#pin-map) and `include/hw_config.h`, which records what's actually wired on the breadboard.
@@ -127,7 +127,7 @@ pio test -e native                          # host unit tests, no hardware
 pio test -e esp32dev_test --upload-port COM11    # on-device tests
 ```
 
-See [TESTING.md](TESTING.md) for the three test tiers and the gate a build must pass before it's committed or deployed.
+See [TESTING.md](TESTING.md) for the three test tiers and the gate a release must pass.
 
 ## References
 

@@ -58,13 +58,15 @@ These can't be automated. A feature is **done** once John confirms it and it's r
 
 ## Gate rules
 
+Day-to-day development uses fast, ungated steps; the full gate runs on a release (`cpdt`). The shorthand commands are defined in [CLAUDE.md](CLAUDE.md).
+
 | Step | Must pass |
 |---|---|
-| Any change | `pio run` builds |
-| **cp** (commit + push) | build + **all** Tier 1 suites |
-| **cpd** (+ deploy) | the above + Tier 2 suites for the areas changed (`-f test_device_<area>`), then upload the app |
+| Deploy for a quick try (`d`) | `pio run` builds (no tests) |
+| Commit (`c`) | `pio run` builds (no tests) |
+| **Gated release (`cpdt`)** | build + **all** Tier 1 suites + Tier 2 suites for `board` and the areas changed (`-f test_device_<area>`), then commit, push and upload the app |
 | Feature "done" | its Tier 3 row confirmed |
 
-If any required step fails: **halt**. No commit, push or deploy. Report the failure.
+Ungated commits may reach GitHub between releases; `cpdt` is what certifies a build. If any required step fails: **halt**. No commit, push or deploy. Report the failure.
 
 If Tier 2 tests are ignored because hardware is absent, the build may still be deployed, but the report must say plainly which areas were **not verified**.
