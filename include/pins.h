@@ -13,3 +13,12 @@ constexpr uint8_t PIN_BTN_DN  = 33;  // active-HIGH, external 10k pull-down
 constexpr uint8_t PIN_NRF_CSN = 5;
 constexpr uint8_t PIN_NRF_CE  = 17;
 constexpr uint8_t PIN_NRF_IRQ = 16;  // optional, unused for now
+
+// Optional second nRF24 ("radio B") for loopback checks: B transmits, the main
+// radio receives. Own SPI bus (HSPI) on remapped pins: HSPI's default SCK is
+// GPIO 14 (our IR receiver) and its MISO is GPIO 12, a boot strapping pin.
+constexpr uint8_t PIN_NRF_B_SCK  = 25;
+constexpr uint8_t PIN_NRF_B_MISO = 26;
+constexpr uint8_t PIN_NRF_B_MOSI = 27;
+constexpr uint8_t PIN_NRF_B_CSN  = 13;
+constexpr uint8_t PIN_NRF_B_CE   = 21;

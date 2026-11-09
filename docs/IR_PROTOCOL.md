@@ -9,8 +9,8 @@ Reverse engineered on 2026-11-07 from the original Platinum remote. The source o
 | UP / DOWN codes, channel B | ✅ ESP32 capture only (2026-11-08) |
 | Other buttons | ✅ **none send IR in normal use**; only the up/down arrows transmit (logic analyzer, 2026-11-07). Setup-mode presses not captured yet. |
 | Carrier frequency / duty cycle | 🔲 not measured (manual says 40 kHz) |
-| Shade responds to synthesized frames | ❌ no response in one test (2026-11-08), which may have had no travel available; see [Shade tests](#shade-tests) |
-| RF needed alongside IR? | ⚠️ **well supported, not proven** (2026-11-09 foil-tube test): the remote's own IR fails when its RF is blocked. The RF burst itself hasn't been observed (acceptance A5) |
+| Shade responds to synthesized frames | ✅ **yes, when the original remote's RF is present** (2026-11-09); ❌ never on their own (0 of 20). See [Shade tests](#shade-tests) |
+| RF needed alongside IR? | ✅ **shown by two independent tests** (2026-11-09): foil tube (remote's IR fails when its RF is blocked) and clone IR + remote RF. The RF itself hasn't been captured yet (acceptance A5) |
 
 ## When the remote sends IR
 
@@ -137,9 +137,44 @@ All tests used one shade, with the remote's switch on A. The shade is a battery 
 
 ### Summary
 
-**IR carries the command, and the shade also needs RF alongside it.** The original remote moves the shade when bare, but not when sealed in a foil tube that blocks its RF while its IR still gets out. Point-and-press moves only the aimed shade, and the IR frames carry the direction bits, so IR selects the shade and gives the command. What the RF carries is still open: a bare wake-up, the command, or the remote's pairing ID. That decides what a replacement must transmit.
+**IR carries the command, and the shade also needs the remote's RF alongside it.** Two independent tests on 2026-11-09 agree:
+
+1. **Foil tube:** the original remote moves the shade when bare, but not when sealed in a foil tube that blocks its RF while its IR still gets out.
+2. **Clone IR + remote RF:** our synthesized IR never moves the shade on its own (0 of 20), but does whenever the original remote is pressed at the same moment with its IR aimed away. When the two disagree (clone UP, remote DOWN), the shade follows the clone.
+
+So IR selects the shade and gives the direction, and our IR encoding is correct. The RF from a red-mode press doesn't override the IR's direction; it acts as an enable or wake-up. Its content (a bare wake-up, or something tied to the remote's pairing ID) is still unknown, and decides what a replacement must transmit.
 
 This is the first hands-on evidence we know of for the RF wake-up claim, which until now existed only as secondhand forum reports.
+
+### 2026-11-09: clone IR + remote RF
+
+Suggested by a reviewer as the direct test of both the wake-up and our IR encoding. Shade mid-travel. The clone's LED was aimed at the sensor eye and driven from the PC arrow keys (500 ms `up` / `down` bursts on channel A). The original remote, unmodified, was held in red mode with its IR window aimed away from the shade.
+
+| Trial | Shade |
+|---|---|
+| Remote alone, aimed away, about 10 presses of each arrow (control: no stray IR reaches the shade) | no response |
+| Clone alone, 10 UP + 10 DOWN (control: IR alone) | **no response, 0 of 20** |
+| Clone + remote pressed at the same time, same direction | **moves**, both directions |
+| Clone UP + remote DOWN (and the reverse) | **follows the clone** |
+
+**Reading.**
+- Our synthesized IR is accepted, so the frame format and codes in this document are right (acceptance A2, with RF present).
+- IR alone fails and IR with the remote's RF works: the second, independent confirmation that the shade needs RF alongside IR.
+- The shade obeys the IR's direction when the two disagree, so the red-mode RF acts as an enable, not as the command.
+- The remote was aimed away, and its own presses moved nothing, so the clone's IR is what the shade decoded.
+
+**One RF enable, one IR command, within a second** (follow-ups, same session):
+
+| Question | Result |
+|---|---|
+| Second clone command after one is accepted (e.g. UP after DOWN)? | ignored until a remote arrow is pressed again; either arrow works |
+| Same direction twice (DOWN, DOWN)? | also needs a new remote press |
+| Opposite arrow while the shade moves ("stop")? | ignored without a new remote press |
+| Delay between the remote press and the clone's IR | must be short: **under about 1 s** (rough, by hand) |
+
+So the RF arms the shade for a single IR command, briefly. A replacement must send its RF enable immediately before **every** IR command, stops and repeats included, as the original remote presumably does on each red-mode press.
+
+**Still to measure:** the exact receptive window and the original remote's RF-to-IR timing (logic analyzer on its nRF24 and LED drive, or our sniffer plus IR receiver), and the exact number of combined trials.
 
 ### 2026-11-09: foil tube ("burrito")
 
@@ -202,8 +237,8 @@ The small-hole result agrees with the foil tube, but on its own it was weak: the
 
 ### Next
 
-1. **IR clone plus the remote's RF.** Cover only the remote's IR window with a small foil patch. Check the patch with `ir quiet` (receiver against the window: no captures), and check that group key + arrow still moves the shade. Then send the clone's IR while pressing the same arrow on the patched remote in red mode. Controls: the clone alone, the patched remote alone, and opposite directions to see which device the shade obeys. If the shade follows the clone, our IR encoding works once the shade is awake.
-2. **nRF24 sniff.** Screen the modules, check the carrier scan and promiscuous mode by having one module transmit to another, then scan and sniff during red-mode presses for the burst's timing, channel and payload, and whether it carries the remote's pairing ID.
+1. **Receptive window.** Press the remote in red mode (aimed away), wait 1, 2, 5 s, then send the clone's IR. How long does the RF enable last?
+2. **nRF24 sniff** at the published Platinum RF settings (channels 33/52/71, 2 Mbps, address `E7E7E7`; see the [README](../README.md#what-the-original-remote-does)). Screen the modules, then prove the receiver with a second module transmitting known packets at those settings (`beacon`). Sniff a group command as a positive control, then red-mode presses for the RF's payload, count and timing. Prediction to test: red-mode presses send `ID 01 00 80` (no group selected).
 3. **Measure the foil directly** with a module at the tube's mouth, remote bare vs. wrapped.
 4. **Probe the remote's own LED drive** for the true carrier frequency, duty cycle and timings.
 

@@ -30,9 +30,9 @@ New to the project? Start here:
 | PlatformIO project, serial-menu firmware | ✅ builds |
 | ESP32 board identified (DevKitC, WROOM-32D) | ✅ |
 | IR protocol decoded (UP `0101`, DOWN `0110`), see [IR_PROTOCOL.md](docs/IR_PROTOCOL.md) | ✅ |
-| IR transmit to a shade | ⏳ LED driver parts needed |
+| IR transmit to a shade | ✅ works with the original remote's RF present; needs our own RF next |
 | nRF24 module screening (likely Si24R1 clones) | ⏳ modules arriving |
-| RF channel / address / data-rate discovery | 🔲 |
+| RF channel / address / data-rate discovery | ⏳ published settings adopted (spitcool); verify on our remote |
 | RF transmit emulation | 🔲 |
 | Final remote: buttons, deep sleep, enclosure | 🔲 |
 
@@ -41,26 +41,40 @@ New to the project? Start here:
 ### What the original remote does
 
 - **IR mode (red LED):** a proprietary IR code on a 40 kHz carrier, aimed at one shade. Pressing the opposite button stops movement.
-- **RF mode (green LED):** an nRF24L01+ inside the remote. You select a group, then press OPEN or CLOSE within 5 s. Prior community work ([Arduino forum](https://forum.arduino.cc/t/nrf24l01-hack-on-hunter-douglas-shades/676940)) reports:
-  - The remote rotates through three channels, sending one 5-byte packet per channel, and repeats that cycle ~30×.
-  - While a button is held, the command packet repeats. On release, a separate "release" packet is sent ~60×.
-  - Example payload: `03 C1 20 <group> <cmd>`. Group is `01/02/04/08` or `FF` for All; the command is `A1` for up, `A2` for down, and has bit 7 cleared on release.
-  - One remote used channel 7. **All of this has to be verified against our own remote.**
+- **RF mode (green LED):** an nRF24L01+ inside the remote. You select a group, then press OPEN or CLOSE within 5 s. Prior community work ([spitcool/hd-platinum-rf](https://github.com/spitcool/hd-platinum-rf), `docs/rf-protocol.md`, citing FCC filings, a register dump and SDR captures; and the [Arduino forum](https://forum.arduino.cc/t/nrf24l01-hack-on-hunter-douglas-shades/676940)) reports:
+
+  | Parameter | Platinum handheld |
+  |---|---|
+  | Channels | 33, 52, 71 (2433 / 2452 / 2471 MHz), one packet per channel in rotation, ~30 rotations per action |
+  | Data rate | 2 Mbps |
+  | Address | 3 bytes, `E7 E7 E7` (the nRF24 power-on default) |
+  | Payload | 5 bytes, static: `ID0 ID1 MODE GROUP ACTION` |
+  | CRC / auto-ack | CRC-16 / off |
+  | Original TX power | about −6 dBm |
+
+  - `ID0 ID1` identify the remote; the shades reportedly ignore unknown IDs.
+  - `MODE` is `20` with a group active. `GROUP` is `01/02/04/08` for groups 1–4, `FF` for All. `ACTION` is `A1` up held, `A2` down held, then `21` / `22` as a release tail.
+  - Example from the forum (another remote's ID): `03 C1 20 01 A1`, group 1 up.
+  - Channel 7 / 1 Mbps, quoted in one forum thread, conflicts with this. spitcool's notes associate those settings with the later PowerView Pebble remote.
+  - **Not yet verified on our remote.**
 
 ### Open questions
 
-- **Our remote's RF parameters:** channel(s), data rate, address and remote ID.
-- **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Well supported, not proven* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). Next: sniff the RF sent during IR-mode presses.
+- **Our remote's RF parameters:** confirm the published settings above, and read our remote ID.
+- **What RF does an IR-mode press send?** spitcool's notes record an unexplained `ID 01 00 80` frame (mode `01`, no group). Our prediction: that's the RF sent alongside IR.
+- **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Yes, by two tests* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. And our clone's IR moves the shade only when the original remote is pressed at the same time (aimed away); alone, 0 of 20. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). Next: capture the RF sent during IR-mode presses.
 - **IR behavior on hold:** repeat frames, toggle bits or counters.
 
 ### Reverse-engineering plan
 
 1. **Capture IR.** A TSOP38238 receiver records raw mark and space timings for every button in both modes, short press and held, several times each, to find any changing bits.
 2. **Replay IR.** Send the raw timings back at 40 kHz through a TSAL6200 940 nm LED and confirm a shade responds.
-3. **Screen the nRF24 modules.** The batch is probably clones, with a reported ~50% SPI failure rate, so every module gets tested first.
-4. **Find the RF channels.** Sweep carrier detect (RPD) across channels 0–125 while pressing remote buttons.
-5. **Sniff RF packets.** Use the 2-byte-address "promiscuous" trick to catch packets without knowing the address, then lock in the real address, CRC and payload size. The fallback is to tap the original remote's nRF24 SPI bus and read its register configuration directly.
-6. **Emulate.** Transmit group commands with the original's timing: held repeats, then release packets.
+3. **Screen the nRF24 modules.** The batch is probably clones, with a reported ~50% SPI failure rate, so every module gets tested. 2 Mbps is the rate that matters.
+4. **Prove the sniffer.** A second module (radio B) transmits known packets at the Platinum settings while the first receives (`beacon`). Without this, an empty sniff means nothing.
+5. **Sniff a group command** (positive control): group 1 + UP should show `ID 20 01 A1`, then the release tail. This also gives us our remote ID.
+6. **Sniff an IR-mode press**, the RF wake-up experiment: record the payload, count and timing.
+7. **Fallbacks:** promiscuous sniffing (`promisc`) if the published settings catch nothing, or tapping the remote's own nRF24 SPI bus.
+8. **Emulate.** Transmit with the original's timing: held repeats, then release packets.
 
 ## Hardware
 
@@ -81,6 +95,8 @@ New to the project? Start here:
 | nRF24 CSN | 5 | |
 | nRF24 CE | 17 | |
 | nRF24 IRQ (optional) | 16 | |
+| Radio B SCK / MISO / MOSI | 25 / 26 / 27 | optional second nRF24 for loopback checks, on HSPI |
+| Radio B CSN / CE | 13 / 21 | |
 
 Buttons are active-high so the original ESP32 can wake from deep sleep with `ext1` / `ESP_EXT1_WAKEUP_ANY_HIGH`.
 
@@ -103,11 +119,13 @@ Type `help` in the monitor. Sending any line stops a running capture, scan or sn
 | `# <note>` | Comment for the serial log. Doesn't stop a running capture, scan or sniff |
 | `play [slot\|last] [n] [gap_ms]` | Replay a capture at 40 kHz |
 | `save <slot>` / `list` / `dump [slot]` | Keep up to 8 captures in RAM |
-| `test [label]` | nRF24 self-test (200× register read-back) → PASS/FAIL |
+| `test [label]` | nRF24 self-test: register read-back per data rate → PASS/FAIL (needs 2 Mbps) |
 | `info` | Print the nRF24 register details |
 | `scan` | Carrier-detect sweep over channels 0–125 |
-| `sniff` | Receive and print payloads with the current settings |
-| `promisc aa\|55` | Preset for address-less sniffing |
+| `sniff` | Receive with the current settings. Prints one line per run of identical packets: count, payload, decoded fields, span and packet gaps |
+| `beacon [n]` | Loopback check: radio B sends `n` packets (default 100) with the current settings; prints sent / received |
+| `hd` | Preset for the Platinum handheld (the default): ch 33, 2 Mbps, `E7E7E7`, CRC-16, 5 bytes. Use `ch 52` / `ch 71` for the other channels |
+| `promisc aa\|55` | Fallback preset for address-less sniffing; turns the duplicate filter on |
 | `ch`, `rate`, `aw`, `addr`, `crc`, `pl`, `filter`, `cfg` | Sniffer settings |
 
 Source layout:
@@ -117,8 +135,9 @@ include/pins.h        pin map
 include/hw_config.h   what's wired on the breadboard (gates hardware tests)
 src/main.cpp          serial menu / dispatch
 src/ir_tools.*        IR capture, dump, replay
-src/rf_tools.*        nRF24 self-test, scanner, sniffer
-lib/hdcore/           hardware-independent logic (HD IR frame codec, parsing, address order, dup filter)
+src/rf_tools.*        nRF24 self-test, scanner, sniffer, loopback beacon
+lib/hdcore/           hardware-independent logic (HD IR frame codec, Platinum RF payloads, parsing,
+                      address order, dup filter, packet runs)
 test/                 Tier 1 host tests (test_native_*) and Tier 2 device tests (test_device_*)
 ```
 

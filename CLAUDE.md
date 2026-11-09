@@ -43,15 +43,18 @@ User is comfortable with **ESP32 + PlatformIO** (Arduino framework assumed).
   - On release the remote stops mid-frame (last frame truncated); no release/stop frame. Analyzer files: `captures/la_ir_red_{up,down}_arrow_20261107.sr` (100 kHz, D0 = receiver OUT).
   - Timing measured through a demodulating receiver: marks read slightly short and spaces slightly long. The true carrier and duty cycle still need measuring with the analyzer on the LED drive.
   - Implication: replay can be synthesized from a 4-bit code rather than raw timings. **RF-wake question still open** (see below).
-- **RF uses an nRF24L01+ inside the remote.** Per Arduino forum reverse engineering (one hobbyist, ~2020):
-  - Channel 7 (2.407 GHz) on his remote. **Verify on ours; do not assume.**
-  - Remote cycles three channels, one 5-byte transfer per channel, cycle repeats ~30×.
-  - Holding UP sends the command packet repeatedly (shade moves immediately). On release, a different "release" packet is sent ~60×.
-  - Example bytes from that thread: `3 193 32 1 161` (group 1 up, repeated while held), `3 193 32 1 33` (release). Group byte: 1/2/4/8 for groups, 255 for All; 161 = up, 162 = down.
-  - Method used: SPI piggyback on the remote's nRF24 (SCK, CSN, MOSI) to dump its register config.
-  - A follow-up project emulates part no. 2984495100 with NodeMCU + nRF24L01+, configurable for the remote's ID.
+- **RF uses an nRF24L01+ inside the remote.** Working parameters (Nov 9) come from spitcool/hd-platinum-rf `docs/rf-protocol.md` (2026-10-25), whose evidence includes FCC filings, a community register dump and their own SDR captures. Firmware defaults and `hd` preset use them (`lib/hdcore/src/hd_rf.h`). **Not yet verified on our remote.**
+  - Channels 33, 52, 71 (2433/2452/2471 MHz), one packet per channel in rotation, ~30 rotations per action, ~193 µs between packets. A single-channel listener sees ~1 in 3.
+  - 2 Mbps; 3-byte address `E7 E7 E7`; static 5-byte payload; CRC-16; auto-ack off; TX ~−6 dBm. Frames have no packet-control field (88 bits on air), which clones may handle differently: the group-mode sniff is the real proof our modules can hear the remote.
+  - Payload `ID0 ID1 MODE GROUP ACTION`: MODE `20` group active, `01` reportedly no group; GROUP one-hot `01/02/04/08`, `FF` All, `00` none; ACTION `A1`/`A2` held up/down, `21`/`22` release tail; `80` seen with mode 01 / group 00 (trigger unknown). No rolling code seen.
+  - **Shades reportedly reject unknown IDs, so the clone must use our remote's ID. Treat the ID as private: redact it (`xx xx`) in anything published.**
+  - The Arduino forum thread's example `3 193 32 1 161` = `03 C1 20 01 A1` fits this layout, but its "channel 7, 1 Mbps" doesn't; spitcool associates those with the later PowerView Pebble. Ignore channel 7.
+  - **Hypothesis to test:** red-mode arrow presses send `ID 01 00 80` (no group selected), and that's the RF needed alongside IR. If the payload differs, record it exactly.
+  - Licensing: spitcool's docs are CC BY-SA 4.0 / AGPL. Use the facts, cite the source; don't copy their prose or code. Our repo has no LICENSE yet: add one before exchanging code. John opened spitcool/hd-platinum-rf#1 ("sister project"); a follow-up comment waits on today's red-mode sniff.
 
-### RF "wake-up" for IR: well supported (Nov 9), not proven
+### RF "wake-up" for IR: confirmed by two tests (Nov 9)
+**Clone IR + remote RF (Nov 9):** clone alone 0/20; remote alone aimed away, ~20 presses, nothing; clone + remote pressed together moves the shade; clone UP + remote DOWN → shade follows the clone. So our IR encoding is correct, and the red-mode RF is an enable, not the command. **One RF enable arms one IR command, briefly:** a second clone command needs another remote arrow press (either arrow), including same-direction repeats and stop-while-moving; the IR must follow the remote press within ~1 s (rough). The clone must send RF immediately before every IR command. Next unknowns: the receptive window after the RF (1/2/5 s delay test), and the RF's content (sniff or SPI tap).
+
 Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, an HD automation dealer) say battery-powered Platinum shades ignore IR unless the remote also sends a brief RF burst to wake them, which is why learning remotes fail. No capture or timing details found anywhere.
 
 **Our evidence (foil-tube test, Nov 9, user's design; full write-up in `docs/IR_PROTOCOL.md`, Shade tests):** the remote sealed in a ~5 cm foil tube, back twisted shut, front open. Its IR decodes cleanly on our receiver at 30 cm; group key + arrow from inside the tube does NOT move the shade (RF blocked); a red-mode arrow at 30 cm from the sensor eye does NOT move the shade; the bare remote moves it both ways. Repeated bare/wrapped/bare. So: **IR carries the command (and selects the shade); RF is required alongside it.** Open: is the RF a bare wake-up, or does it carry the command or the pairing ID? That decides what the clone transmits.
@@ -64,7 +67,7 @@ Public summary page (private until shared): https://claude.ai/artifact/X8bRVQXfk
 
 Next:
 1. **Clone IR + remote RF** (Claude web's idea, modified): small foil patch over only the remote's IR window (verify with `ir quiet`: no captures; verify group key + arrow still moves the shade). Then clone `send` while pressing the same arrow on the patched remote in red mode. Controls: clone alone, patched remote alone, opposite directions. Shade follows the clone → our IR encoding works once awake.
-2. **nRF24 sniff** (modules arriving Nov 9): screen modules, validate scan/promiscuous with one module transmitting to another, then sniff during red-mode presses (timing, channel, payload, pairing ID?).
+2. **nRF24 bring-up** (modules arriving Nov 9; one ESP32, the user prefers not to use a second): (a) screen modules with `test n`, keep those passing at 2 Mbps; (b) wire a second module as radio B and run `beacon` (loopback at the HD config, ch 33/52/71); (c) positive control: group 1 + UP should sniff as `ID 20 01 A1` then `21`, giving our ID; (d) red-mode arrow sniff: payload, count, timing, test the `01 00 80` hypothesis; (e) optional: `scan` at the foil tube's mouth.
 3. Measure foil attenuation with a module at the tube's mouth; probe the remote's LED drive; optionally scope its battery current for radio-shaped steps.
 
 **Manual notes for the clone:** holding OPEN 6 s at a fully open shade resets its stops and limits (p. 21), so `send` caps OPEN codes at 5 s (`play` isn't capped). Group assignment uses SETUP + group key + aimed arrow (p. 5), so IR selects the shade. A backup remote copies identity over RF (Master Reset, then OPEN on the original within 18", p. 7): a good sniffing target, but don't Master Reset either remote before capturing, since it may erase pairing.
@@ -99,6 +102,8 @@ Next:
 | nRF24 CSN | 5 | VSPI default CS |
 | nRF24 CE | 17 | **move (e.g. 21) on WROVER boards; 16/17 used by PSRAM** |
 | nRF24 IRQ (optional) | 16 | **move (e.g. 22) on WROVER boards** |
+| Radio B SCK / MISO / MOSI | 25 / 26 / 27 | optional second nRF24 for loopback (`beacon`, t2), own SPI bus (HSPI, remapped: default SCK 14 is IR RX, MISO 12 is a strapping pin) |
+| Radio B CSN / CE | 13 / 21 | `HW_NRF24_B` in hw_config.h |
 
 Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_ANY_HIGH` (original ESP32's ext1 only supports ANY_HIGH or ALL_LOW). On S3/C3, revisit pins and polarity.
 
@@ -113,6 +118,7 @@ Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_
 - VCC → 3V3 (3.3 V only!). With an adapter base: feed 5 V, omit the cap.
 - 10 µF across VCC/GND soldered at the module (stripe to GND).
 - SPI per pin map. Keep SPI wires short (< ~15 cm); retest "failed" modules on short wires before discarding.
+- Radio B (optional, loopback): same power rules and its own 10 µF cap; SCK 25, MISO 26, MOSI 27, CSN 13, CE 21. A few cm from the main module is fine (beacon uses PA_MIN).
 
 ## Firmware plan (next step)
 One PlatformIO project, serial-menu driven, usable from this weekend through Monday:
@@ -123,11 +129,12 @@ One PlatformIO project, serial-menu driven, usable from this weekend through Mon
    - **Wake-burst test:** capture CE/SPI together with the IR LED drive during red-mode presses. RF activity before IR confirms the hypothesis and gives its timing.
    - Also gives the exact IR carrier frequency and duty cycle.
    - Caveat: 24 MS/s is fine for SPI ≤ ~4 MHz. QFN-20 nRF24 pins 1–6 = CE, CSN, SCK, MOSI, MISO, IRQ.
-5. **nRF24 sniffer.** Use the config from step 4 for exact-match sniffing (start at channel 7 if unknown). Promiscuous mode (`promisc aa|55`) is the fallback if the remote can't be probed.
+5. **nRF24 sniffer.** Exact-match sniffing at the published Platinum settings (the default, `hd` preset); output is one line per run of identical packets (count, decoded payload, span, gaps), so no packet is dropped by printing. Promiscuous mode (`promisc aa|55`) is the fallback if that catches nothing; the SPI piggyback (step 4) confirms the settings directly.
 6. Later: RF transmit emulation (group up/down, held-repeat + release packets), button handling, deep sleep with ext1 wake.
 
 ## Open questions
-- Remote's RF ID, channel(s), data rate, and address — get these from the SPI piggyback or a sniff.
+- Our remote's RF ID; confirm the published channels, rate and address on it (sniff, or SPI piggyback).
+- What RF a red-mode arrow press sends (`ID 01 00 80`?), and whether its timing precedes the IR.
 - Does IR need an RF wake burst? (see above)
 - IR repeat/continuation behavior on hold.
 - Exact ESP32 board/module (WROOM vs WROVER vs S3/C3).

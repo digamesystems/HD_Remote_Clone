@@ -1,10 +1,13 @@
-// Tier 1 (host): RF helper logic — address byte order, sniffer dup filter.
+// Tier 1 (host): RF helper logic — address byte order, sniffer dup filter,
+// Platinum payload decoding, packet runs.
 #include <unity.h>
 
 #include <cstring>
 
 #include "dup_filter.h"
+#include "hd_rf.h"
 #include "nrf_addr.h"
+#include "run_tracker.h"
 
 using namespace hd;
 
@@ -94,8 +97,119 @@ void test_dup_filter_reset() {
   TEST_ASSERT_EQUAL(0, f.feed(p, 3));
 }
 
+// --- Platinum payload decoding ---
+
+void test_hd_address_same_in_either_byte_order() {
+  uint8_t reg[3];
+  onAirToRegister(rf::kAddress, rf::kAddrWidth, reg);
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(rf::kAddress, reg, 3);
+}
+
+void test_describe_forum_example() {
+  // Arduino forum example (a different remote's ID): group 1, UP held.
+  const uint8_t p[5] = {0x03, 0xC1, 0x20, 0x01, 0xA1};
+  TEST_ASSERT_EQUAL_STRING("ID 03C1  mode 20  group 1  UP held", rf::describePayload(p, 5).c_str());
+}
+
+void test_describe_no_group_state() {
+  const uint8_t p[5] = {0x12, 0x34, 0x01, 0x00, 0x80};
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 01  group none  no-group state",
+                           rf::describePayload(p, 5).c_str());
+}
+
+void test_group_names() {
+  TEST_ASSERT_EQUAL_STRING("1", rf::groupName(0x01).c_str());
+  TEST_ASSERT_EQUAL_STRING("3", rf::groupName(0x04).c_str());
+  TEST_ASSERT_EQUAL_STRING("4", rf::groupName(0x08).c_str());
+  TEST_ASSERT_EQUAL_STRING("All", rf::groupName(0xFF).c_str());
+  TEST_ASSERT_EQUAL_STRING("mask 0x03", rf::groupName(0x03).c_str());
+}
+
+void test_action_names() {
+  TEST_ASSERT_EQUAL_STRING("DOWN held", rf::actionName(0xA2));
+  TEST_ASSERT_EQUAL_STRING("UP release", rf::actionName(0x21));
+  TEST_ASSERT_EQUAL_STRING("DOWN release", rf::actionName(0x22));
+  TEST_ASSERT_EQUAL_STRING("?", rf::actionName(0x42));
+}
+
+void test_describe_needs_five_bytes() {
+  const uint8_t p[6] = {0};
+  TEST_ASSERT_EQUAL_STRING("", rf::describePayload(p, 4).c_str());
+  TEST_ASSERT_EQUAL_STRING("", rf::describePayload(p, 6).c_str());
+}
+
+void test_beacon_is_not_a_known_command() {
+  TEST_ASSERT_EQUAL_STRING("?", rf::actionName(rf::kBeaconPayload[4]));
+  TEST_ASSERT_EQUAL_STRING("none", rf::groupName(rf::kBeaconPayload[3]).c_str());
+}
+
+// --- packet runs ---
+
+void test_runs_count_identical_packets() {
+  RunTracker t;
+  PacketRun r;
+  const uint8_t p[5] = {3, 193, 32, 1, 161};
+  TEST_ASSERT_FALSE(t.feed(p, 5, 1000, &r));
+  TEST_ASSERT_FALSE(t.feed(p, 5, 1580, &r));
+  TEST_ASSERT_FALSE(t.feed(p, 5, 2200, &r));
+  TEST_ASSERT_TRUE(t.flush(&r));
+  TEST_ASSERT_EQUAL(3, r.count);
+  TEST_ASSERT_EQUAL(1000, r.firstUs);
+  TEST_ASSERT_EQUAL(2200, r.lastUs);
+  TEST_ASSERT_EQUAL(580, r.minGapUs);
+  TEST_ASSERT_EQUAL(620, r.maxGapUs);
+  TEST_ASSERT_FALSE(t.flush(&r));  // nothing left
+}
+
+void test_runs_split_on_new_payload() {
+  RunTracker t;
+  PacketRun r;
+  const uint8_t held[5] = {3, 193, 32, 1, 0xA1};
+  const uint8_t rel[5] = {3, 193, 32, 1, 0x21};
+  t.feed(held, 5, 0, &r);
+  t.feed(held, 5, 600, &r);
+  TEST_ASSERT_TRUE(t.feed(rel, 5, 1200, &r));
+  TEST_ASSERT_EQUAL(2, r.count);
+  TEST_ASSERT_EQUAL_HEX8(0xA1, r.payload[4]);
+  TEST_ASSERT_TRUE(t.flush(&r));
+  TEST_ASSERT_EQUAL(1, r.count);
+  TEST_ASSERT_EQUAL_HEX8(0x21, r.payload[4]);
+  TEST_ASSERT_EQUAL(0, r.minGapUs);
+}
+
+void test_runs_flush_when_idle() {
+  RunTracker t;
+  PacketRun r;
+  const uint8_t p[3] = {1, 2, 3};
+  t.feed(p, 3, 100, &r);
+  TEST_ASSERT_FALSE(t.flushIfIdle(20000, 30000, &r));
+  TEST_ASSERT_TRUE(t.flushIfIdle(30100, 30000, &r));
+  TEST_ASSERT_EQUAL(1, r.count);
+}
+
+void test_runs_survive_micros_wrap() {
+  RunTracker t;
+  PacketRun r;
+  const uint8_t p[1] = {7};
+  t.feed(p, 1, 0xFFFFFF00u, &r);
+  t.feed(p, 1, 0x00000100u, &r);  // 512 us later, after the wrap
+  TEST_ASSERT_TRUE(t.flush(&r));
+  TEST_ASSERT_EQUAL(512, r.maxGapUs);
+}
+
 int main() {
   UNITY_BEGIN();
+  RUN_TEST(test_hd_address_same_in_either_byte_order);
+  RUN_TEST(test_describe_forum_example);
+  RUN_TEST(test_describe_no_group_state);
+  RUN_TEST(test_group_names);
+  RUN_TEST(test_action_names);
+  RUN_TEST(test_describe_needs_five_bytes);
+  RUN_TEST(test_beacon_is_not_a_known_command);
+  RUN_TEST(test_runs_count_identical_packets);
+  RUN_TEST(test_runs_split_on_new_payload);
+  RUN_TEST(test_runs_flush_when_idle);
+  RUN_TEST(test_runs_survive_micros_wrap);
   RUN_TEST(test_on_air_to_register_reverses);
   RUN_TEST(test_on_air_to_register_promiscuous_preset);
   RUN_TEST(test_dup_filter_single_packet_not_reported);

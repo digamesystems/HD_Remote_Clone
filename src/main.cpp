@@ -31,12 +31,14 @@ void help() {
       "  save <slot>             copy last capture to slot 0-7 (RAM only)\n"
       "  list                    show slot sizes\n"
       "  dump [slot|last]        print timings as C array\n"
-      " nRF24\n"
-      "  test [label]            module self-test, prints PASS/FAIL\n"
+      " nRF24 (defaults: Platinum handheld, ch 33 / 2 Mbps / E7E7E7 / CRC16 / 5 B)\n"
+      "  test [label]            module self-test per data rate, prints PASS/FAIL\n"
       "  info                    printPrettyDetails()\n"
       "  scan                    RPD carrier sweep over ch 0-125\n"
       "  sniff                   listen with current config\n"
-      "  promisc <aa|55>         preset: 2-byte addr 00 AA / 00 55, no CRC, 32 B\n"
+      "  beacon [n]              loopback: radio B sends n packets (default 100)\n"
+      "  hd                      preset: Platinum handheld (also 'ch 52' / 'ch 71')\n"
+      "  promisc <aa|55>         fallback preset: 2-byte addr 00 AA / 00 55, no CRC, 32 B\n"
       "  ch <0-125> | rate <250k|1m|2m> | aw <2-5> | addr <hex, on-air order>\n"
       "  crc <0|1|2> | pl <1-32> | filter <on|off> | cfg\n"
       " Misc\n"
@@ -136,6 +138,11 @@ void handle(String cmdline) {
   else if (c == "info") rf::printDetails();
   else if (c == "scan") { rf::startScan(); mode = Mode::RfBusy; }
   else if (c == "sniff") { rf::startSniff(); mode = Mode::RfBusy; }
+  else if (c == "beacon") {
+    ok = rf::startBeacon(tok[1].length() ? tok[1].toInt() : 100);
+    if (ok) mode = Mode::RfBusy;
+  }
+  else if (c == "hd") { rf::presetHd(); rf::printConfig(); }
   else if (c == "promisc") {
     tok[1].toLowerCase();
     if (tok[1] == "55") rf::presetPromiscuous(0x55);
@@ -220,5 +227,11 @@ void loop() {
   }
 
   if (mode == Mode::IrCapture) ir::pollCapture();
-  else if (mode == Mode::RfBusy) rf::poll();
+  else if (mode == Mode::RfBusy) {
+    rf::poll();
+    if (!rf::busy()) {  // finished on its own (loopback) or failed to start
+      mode = Mode::Idle;
+      Serial.print("> ");
+    }
+  }
 }

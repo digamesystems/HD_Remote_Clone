@@ -13,7 +13,7 @@ These run on the PC with Unity and the MSYS2 gcc compiler, and take seconds. The
 | Suite | Covers |
 |---|---|
 | `test_native_parse` | serial command tokenizing, hex parsing, data-rate parsing |
-| `test_native_rf` | nRF24 on-air ↔ register address byte order, sniffer duplicate filter |
+| `test_native_rf` | nRF24 on-air ↔ register address byte order, sniffer duplicate filter, Platinum RF payload decoding, packet runs (counts, gaps, idle flush, `micros()` wrap) |
 | `test_native_ir` | HD IR frame encode/decode: layout, period, round trip of all 16 codes, decoding of real captured frames (including phase-shifted and truncated ones) |
 
 **Rule:** logic that can run without hardware goes in `lib/hdcore/`, with a Tier 1 test, rather than in `src/`. This includes protocol encoding, IR frame analysis and state machines.
@@ -37,10 +37,10 @@ Update `hw_config.h` whenever the breadboard changes. We can add loopbacks or ot
 | Suite | Needs | Covers |
 |---|---|---|
 | `test_device_board` | board only | chip is the original ESP32 (D0WD), no PSRAM (so not WROVER), flash ≥ 4 MB |
-| `test_device_rf` | `HW_NRF24` | `begin()`, `isChipConnected()`, 200× register read-back, sniffer RX config |
+| `test_device_rf` | `HW_NRF24` (+ `HW_NRF24_B` for loopback) | `begin()`, `isChipConnected()`, 200× register read-back at 1 and 2 Mbps, Platinum RX config applies; loopback: radio B → main radio at the Platinum settings, ≥ 45/50 packets on each of ch 33, 52, 71 |
 | `test_device_ir` | `HW_IR_LOOPBACK` | TSAL6200 → receiver round trip of a synthetic frame within ±max(200 µs, 25%); 10/10 reliability; HD UP/DOWN bursts decode correctly |
 
-Planned: RF loopback (a second nRF24 on HSPI receives what the first sends) to verify TX emulation; button and deep-sleep wake tests (`HW_BUTTONS`).
+A loopback between two clone modules shows the sniffer works, but not that it hears the original remote, whose frames may differ in detail; acceptance A4 (group-mode sniff) is the real check. Planned: button and deep-sleep wake tests (`HW_BUTTONS`).
 
 **Implementation note:** `pio test` defines `UNIT_TEST`, which switches IRremoteESP8266 into a host-stub mode. [`scripts/no_unit_test_define.py`](scripts/no_unit_test_define.py) strips that define for the ESP32 environments so device tests use the real library.
 
@@ -51,10 +51,10 @@ These can't be automated. A feature is **done** once John confirms it and it's r
 | # | Check | Result | Date |
 |---|---|---|---|
 | A1 | Capture IR from the original remote in red mode, every button | ✅ Format decoded; UP = 0101, DOWN = 0110 (log + analyzer); no other button sends IR (analyzer) | 2026-11-07 |
-| A2 | Replay a captured IR code; target shade responds | ❌ Not yet: `send down` at ~1 ft, no response, but the shade may have had no travel. IR alone isn't expected to work (A5); next, clone IR plus the remote's RF (see docs/IR_PROTOCOL.md, Shade tests) | 2026-11-09 |
+| A2 | Replay a captured IR code; target shade responds | ✅ With the original remote's RF present (remote aimed away): shade moves both ways and follows the clone when the two disagree. Clone alone: 0 of 20 (see docs/IR_PROTOCOL.md, Shade tests) | 2026-11-09 |
 | A3 | RF scan shows the original remote's channels | | |
 | A4 | Sniffer decodes the original remote's group up/down/release packets | | |
-| A5 | RF-wake hypothesis: IR replay alone vs. with RF burst | ⚠️ Well supported: the original remote's IR fails when a foil tube blocks its RF, and works bare. RF burst not yet observed; clone IR plus RF not tried yet | 2026-11-09 |
+| A5 | RF-wake hypothesis: IR replay alone vs. with RF burst | ✅ Confirmed by two tests: clone IR alone 0/20, clone IR + remote RF works; remote's IR fails when a foil tube blocks its RF. Still to do: capture the RF itself and send it from our own radio | 2026-11-09 |
 
 ## Gate rules
 
