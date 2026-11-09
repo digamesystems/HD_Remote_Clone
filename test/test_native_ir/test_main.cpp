@@ -33,6 +33,24 @@ void test_code_to_bits() {
   TEST_ASSERT_EQUAL_STRING("0110", codeToBits(kCodeDown).c_str());
 }
 
+void test_code_names() {
+  TEST_ASSERT_EQUAL_STRING("A UP", codeName(0b0101));
+  TEST_ASSERT_EQUAL_STRING("A DOWN", codeName(0b0110));
+  TEST_ASSERT_EQUAL_STRING("B UP", codeName(0b1001));
+  TEST_ASSERT_EQUAL_STRING("B DOWN", codeName(0b1010));
+  TEST_ASSERT_EQUAL_STRING("?", codeName(0b0000));
+}
+
+void test_max_send_limits() {
+  TEST_ASSERT_EQUAL_UINT32(5000, maxSendMs(kCodeUp));
+  TEST_ASSERT_EQUAL_UINT32(5000, maxSendMs(kCodeUpB));
+  TEST_ASSERT_EQUAL_UINT32(10000, maxSendMs(kCodeDown));
+  TEST_ASSERT_EQUAL_UINT32(10000, maxSendMs(kCodeDownB));
+  // The longest allowed OPEN must stay clear of the manual's 6 s reset hold.
+  uint32_t longestUs = framesForDuration(kMaxOpenSendMs) * kFramePeriodUs;
+  TEST_ASSERT_TRUE(longestUs < 6000000UL);
+}
+
 void test_parse_code() {
   TEST_ASSERT_EQUAL(kCodeUp, parseCode("up"));
   TEST_ASSERT_EQUAL(kCodeDown, parseCode("DOWN"));
@@ -131,6 +149,8 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_code_to_bits);
   RUN_TEST(test_parse_code);
+  RUN_TEST(test_code_names);
+  RUN_TEST(test_max_send_limits);
   RUN_TEST(test_encode_frame_layout);
   RUN_TEST(test_encoded_frame_period_matches_measurement);
   RUN_TEST(test_encode_burst_and_frames_for_duration);

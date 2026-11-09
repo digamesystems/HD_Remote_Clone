@@ -5,6 +5,7 @@
 
 #include "hd_ir.h"
 #include "ir_tools.h"
+#include "key_parser.h"
 #include "parse.h"
 #include "pins.h"
 #include "rf_tools.h"
@@ -13,13 +14,19 @@ namespace {
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
+hd::KeyParser keys;
+
+constexpr uint32_t kArrowBurstMs = 500;  // IR burst for one PC arrow key press
+constexpr uint32_t kArrowQuietMs = 100;  // input silence that ends a held key's repeats
 
 void help() {
   Serial.println(F(
       "\nCommands (any line stops a running mode):\n"
       " IR\n"
       "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
-      "  send <up|down|bbbb> [ms]  transmit HD frames at 40 kHz (default 1000 ms)\n"
+      "  send <up|down|bbbb> [ms]  transmit HD frames at 40 kHz (default 1000 ms;\n"
+      "                            up/down = channel A; max 5000 ms for OPEN, 10000 otherwise)\n"
+      "  Up/Down arrow keys      send up/down for 500 ms (works at the prompt or during capture)\n"
       "  play [slot|last] [n] [gap_ms]  replay at 40 kHz (default last, 1x, 40 ms)\n"
       "  save <slot>             copy last capture to slot 0-7 (RAM only)\n"
       "  list                    show slot sizes\n"
@@ -63,6 +70,27 @@ void probePin(int pin, uint32_t ms) {
                 (unsigned long)edges, 100.0 * lowUs / (ms * 1000.0));
 }
 
+// One burst per key press. A held key repeats, and those repeats pile up during
+// the blocking send, so discard input until it goes quiet. That also drops any
+// partial escape sequence, which would otherwise land in the command line.
+void sendArrow(uint8_t code) {
+  Serial.println();
+  ir::sendCode(code, kArrowBurstMs);
+  uint32_t lastInput = millis();
+  while (millis() - lastInput < kArrowQuietMs) {
+    if (Serial.available()) {
+      Serial.read();
+      lastInput = millis();
+    } else {
+      delay(1);
+    }
+  }
+  if (mode == Mode::Idle) {
+    Serial.print("> ");
+    Serial.print(line);  // restore anything typed before the arrow
+  }
+}
+
 // slot argument: "" / "last" -> -1, else number
 int parseSlot(const String& s) {
   if (s.length() == 0 || s == "last") return -1;
@@ -89,7 +117,10 @@ void handle(String cmdline) {
   else if (c == "send") {
     int code = hd::ir::parseCode(tok[1].c_str());
     long ms = tok[2].length() ? tok[2].toInt() : 1000;
-    if (code < 0 || ms <= 0 || ms > 10000) ok = false;
+    if (code < 0 || ms <= 0) ok = false;
+    else if ((uint32_t)ms > hd::ir::maxSendMs(code))
+      Serial.printf("Not sent: limit for %s is %lu ms (OPEN held 6 s can reset a shade).\n",
+                    hd::ir::codeToBits(code).c_str(), (unsigned long)hd::ir::maxSendMs(code));
     else ir::sendCode(code, ms);
   }
   else if (c == "play") {
@@ -155,6 +186,10 @@ void setup() {
 void loop() {
   while (Serial.available()) {
     char ch = Serial.read();
+    hd::KeyEvent key = keys.feed(ch);
+    if (key == hd::KeyEvent::Up) { sendArrow(hd::ir::kCodeUp); continue; }
+    if (key == hd::KeyEvent::Down) { sendArrow(hd::ir::kCodeDown); continue; }
+    if (key == hd::KeyEvent::Consumed) continue;
     if (ch == '\r') continue;
     // Echo input: terminals like `pio device monitor` don't echo locally, and
     // the echo also records each command in serial logs.

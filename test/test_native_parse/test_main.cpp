@@ -1,6 +1,7 @@
 // Tier 1 (host): command-line and value parsing.
 #include <unity.h>
 
+#include "key_parser.h"
 #include "parse.h"
 
 using namespace hd;
@@ -73,8 +74,56 @@ void test_rate_values_match_rf24_enum() {
   TEST_ASSERT_EQUAL(2, static_cast<int>(Rate::k250k));
 }
 
+static KeyEvent feedAll(KeyParser& p, const char* s) {
+  KeyEvent last = KeyEvent::Pass;
+  for (; *s; s++) last = p.feed(*s);
+  return last;
+}
+
+void test_key_parser_arrows() {
+  KeyParser p;
+  TEST_ASSERT_TRUE(feedAll(p, "\x1b[A") == KeyEvent::Up);
+  TEST_ASSERT_TRUE(feedAll(p, "\x1b[B") == KeyEvent::Down);
+  TEST_ASSERT_TRUE(feedAll(p, "\x1bOA") == KeyEvent::Up);  // application cursor mode
+  TEST_ASSERT_TRUE(feedAll(p, "\x1bOB") == KeyEvent::Down);
+}
+
+void test_key_parser_passes_plain_text() {
+  KeyParser p;
+  for (const char* s = "send AB [O]\n"; *s; s++) {
+    TEST_ASSERT_TRUE(p.feed(*s) == KeyEvent::Pass);
+  }
+}
+
+void test_key_parser_swallows_other_sequences() {
+  KeyParser p;
+  TEST_ASSERT_TRUE(feedAll(p, "\x1b[D") == KeyEvent::Consumed);    // left arrow
+  TEST_ASSERT_TRUE(feedAll(p, "\x1b[3~") == KeyEvent::Consumed);   // delete
+  TEST_ASSERT_TRUE(feedAll(p, "\x1b[1;5C") == KeyEvent::Consumed);  // ctrl+right
+  TEST_ASSERT_TRUE(p.feed('x') == KeyEvent::Pass);                 // back to normal
+}
+
+void test_key_parser_lone_escape_keeps_next_char() {
+  KeyParser p;
+  TEST_ASSERT_TRUE(p.feed(0x1b) == KeyEvent::Consumed);
+  TEST_ASSERT_TRUE(p.feed('s') == KeyEvent::Pass);
+  TEST_ASSERT_TRUE(p.feed('e') == KeyEvent::Pass);
+}
+
+void test_key_parser_newline_aborts_sequence() {
+  KeyParser p;
+  TEST_ASSERT_TRUE(feedAll(p, "\x1b[") == KeyEvent::Consumed);
+  TEST_ASSERT_TRUE(p.feed('\n') == KeyEvent::Pass);
+  TEST_ASSERT_TRUE(p.feed('A') == KeyEvent::Pass);
+}
+
 int main() {
   UNITY_BEGIN();
+  RUN_TEST(test_key_parser_arrows);
+  RUN_TEST(test_key_parser_passes_plain_text);
+  RUN_TEST(test_key_parser_swallows_other_sequences);
+  RUN_TEST(test_key_parser_lone_escape_keeps_next_char);
+  RUN_TEST(test_key_parser_newline_aborts_sequence);
   RUN_TEST(test_tokenize_basic);
   RUN_TEST(test_tokenize_extra_whitespace_and_crlf);
   RUN_TEST(test_tokenize_empty);

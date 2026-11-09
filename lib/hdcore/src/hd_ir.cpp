@@ -31,9 +31,15 @@ int parseCode(const std::string& in) {
 }
 
 const char* codeName(uint8_t code) {
-  if (code == kCodeUp) return "UP";
-  if (code == kCodeDown) return "DOWN";
+  if (code == kCodeUp) return "A UP";
+  if (code == kCodeDown) return "A DOWN";
+  if (code == kCodeUpB) return "B UP";
+  if (code == kCodeDownB) return "B DOWN";
   return "?";
+}
+
+uint32_t maxSendMs(uint8_t code) {
+  return (code & 0b11) == 0b01 ? kMaxOpenSendMs : kMaxSendMs;
 }
 
 std::vector<uint16_t> encodeFrame(uint8_t code) {

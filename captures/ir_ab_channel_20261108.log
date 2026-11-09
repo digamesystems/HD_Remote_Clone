@@ -1,0 +1,34 @@
+13:42:37.432 > > ir quiet
+13:42:48.903 > IR capture ON (timeout 50 ms, buffer 4096, summary only). Send any line to stop.
+13:42:48.913 > >
+13:42:51.027 > === IR capture #1  t=14004 ms  (+0 ms since prev)  entries=201 ===
+13:42:51.027 > protocol: UNKNOWN
+13:42:51.027 > HD: code=0101 (UP) frames=20 other=0 duration=0.35 s
+13:42:52.149 >
+13:42:52.149 > === IR capture #2  t=15169 ms  (+1165 ms since prev)  entries=211 ===
+13:42:52.165 > protocol: UNKNOWN
+13:42:52.165 > HD: code=0110 (DOWN) frames=21 other=0 duration=0.36 s
+13:42:53.449 >
+13:42:53.449 > === IR capture #3  t=16459 ms  (+1290 ms since prev)  entries=201 ===
+13:42:53.458 > protocol: UNKNOWN
+13:42:53.458 > HD: code=0101 (UP) frames=20 other=0 duration=0.35 s
+13:42:54.393 >
+13:42:54.393 > === IR capture #4  t=17400 ms  (+941 ms since prev)  entries=205 ===
+13:42:54.400 > protocol: UNKNOWN
+13:42:54.403 > HD: code=0110 (DOWN) frames=20 other=0 duration=0.35 s
+13:42:58.158 >
+13:42:58.163 > === IR capture #5  t=21170 ms  (+3770 ms since prev)  entries=413 ===
+13:42:58.168 > protocol: UNKNOWN
+13:42:58.169 > HD: code=1001 (?) frames=41 other=0 duration=0.71 s
+13:42:59.703 >
+13:42:59.723 > === IR capture #6  t=22723 ms  (+1553 ms since prev)  entries=205 ===
+13:42:59.725 > protocol: UNKNOWN
+13:42:59.725 > HD: code=1010 (?) frames=20 other=0 duration=0.35 s
+13:43:24.332 >
+13:43:24.338 > === IR capture #7  t=47343 ms  (+24620 ms since prev)  entries=201 ===
+13:43:24.340 > protocol: UNKNOWN
+13:43:24.346 > HD: code=1001 (?) frames=20 other=0 duration=0.35 s
+13:43:25.470 >
+13:43:25.483 > === IR capture #8  t=48489 ms  (+1146 ms since prev)  entries=203 ===
+13:43:25.486 > protocol: UNKNOWN
+13:43:25.513 > HD: code=1010 (?) frames=20 other=0 duration=0.35 s

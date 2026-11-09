@@ -29,20 +29,20 @@ User is comfortable with **ESP32 + PlatformIO** (Arduino framework assumed).
   - **Observed key/mode behaviour (user, Nov 7):** 7 keys: UP, DOWN, 1, 2, 3, 4, ALL.
     - Group keys 1–4 and ALL work **only in RF**; pressing one always flashes the green LED.
     - The arrows are **IR (red) by default**. After a group key, the arrows act in green/RF mode for a time window, then revert to red/IR.
-    - Only the arrows ever send IR (analyzer-verified). **Arrows in green mode (right after a group key) send no IR** (verified with `ir quiet`, Nov 7): green = RF only.
-    - **A/B slide switch** on top selects a second group bank, so 2 × (1–4) = **8 groups** (plus ALL). It has **no effect on IR** (user-observed); it's RF-only.
-      - Hypothesis to verify with the analyzer: the forum's group byte is a bitmask (1/2/4/8 for bank A), so bank B may be 16/32/64/128 or use a different byte; ALL = 255 might cover both banks or only one.
+    - In normal use, only the arrows send IR (analyzer-verified; setup-mode presses not captured yet). **Arrows in green mode (right after a group key) send no IR** (verified with `ir quiet`, Nov 7): green = RF only.
+    - **A/B slide switch** is the **Infrared Channel Selector** (manual pp. 1, 18, 22). It changes the IR code (captured Nov 8). The manual lists **4 groups**, not 8. Whether it affects RF is unknown.
+      - The forum's group byte (1/2/4/8, 255 = All) still needs verifying on our remote.
     - **RF window ≈ 6.5 s** from a group-key press until the arrows send IR again (user stopwatch, Nov 7; the manual says 5 s). **Pressing a group key again during the window restarts it** (it's a retriggerable timer).
     - Unknown: whether arrow presses extend the window, and whether red-mode arrows key the radio (RF-wake question).
     - The clone should copy this UX.
   - Manual describes IR as press-and-release; pressing the opposite button stops movement.
 - **IR protocol: OUR CAPTURES (Nov 7, working remote, red mode, VS1838B/TSOP on GPIO 32).** Full write-up: `docs/IR_PROTOCOL.md` (keep it updated with new findings). Log: `captures/ir_red_open_close_20261107_132807.log`.
   - Frame = header mark ~2.75 ms + space ~2.75 ms, then **4 bits**, each a ~1.0 ms mark + space (~1.07 ms = 0, ~2.75 ms = 1). Frame period exactly **17.19 ms**, back to back, no extra gap.
-  - One press = one burst of **58–103 identical frames** (1.0–1.8 s). No toggle bit, no counter, **no shade address** (fits point-and-press).
-  - **Codes (confirmed by ESP32 log + logic analyzer):** UP arrow (OPEN) = `0101`, DOWN arrow (CLOSE) = `0110`. **No other button sends IR** (verified with the logic analyzer); stop = press the opposite arrow.
+  - One press = one burst of identical frames, lasting as long as the key is held (about 20 frames / 0.35 s for a quick press). No toggle bit, no counter, **no shade address** (fits point-and-press).
+  - **Codes:** switch A: UP (OPEN) = `0101`, DOWN (CLOSE) = `0110` (ESP32 log + logic analyzer). Switch B: UP = `1001`, DOWN = `1010` (ESP32 log, `captures/ir_ab_channel_20261108.log`). Inferred layout: bits 3–2 = channel (`01` A, `10` B), bits 1–0 = command (`01` OPEN, `10` CLOSE). Our shade listens on A. **No other button sends IR in normal use** (logic analyzer); stop = press the opposite arrow.
   - On release the remote stops mid-frame (last frame truncated); no release/stop frame. Analyzer files: `captures/la_ir_red_{up,down}_arrow_20261107.sr` (100 kHz, D0 = receiver OUT).
   - Timing measured through a demodulating receiver: marks read slightly short and spaces slightly long. The true carrier and duty cycle still need measuring with the analyzer on the LED drive.
-  - Implication: replay can be synthesized from a 4-bit code rather than raw timings. **RF-wake question still open**; test by replaying at a shade.
+  - Implication: replay can be synthesized from a 4-bit code rather than raw timings. **RF-wake question still open** (see below).
 - **RF uses an nRF24L01+ inside the remote.** Per Arduino forum reverse engineering (one hobbyist, ~2020):
   - Channel 7 (2.407 GHz) on his remote. **Verify on ours; do not assume.**
   - Remote cycles three channels, one 5-byte transfer per channel, cycle repeats ~30×.
@@ -56,16 +56,17 @@ Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, a
 
 **Test:** sniff RF while pressing buttons in IR (red) mode, then replay captured IR alone at a shade.
 
-**Foil-shield test (planned for Nov 8 AM, user's idea):** wrap the working remote in foil (2–3 layers, seams folded, or a cookie tin) with a few-mm hole over the IR LED. Control first: group key + arrow (RF only) from closer than the test distance must NOT move the shade (proves the shield). Confirm IR exits the hole with `ir quiet` on GPIO 32. Then a red-mode arrow at the sensor eye: shade moves → IR alone works. Record the method, distances and results in docs/IR_PROTOCOL.md. Independent of the clone `send up` test; two agreeing methods make a stronger community write-up.
+**Foil-shield test (user's idea; run Nov 8, inconclusive so far):** wrap the working remote in foil (2–3 layers, seams folded, or a cookie tin) with a few-mm hole over the IR LED. Control first: group key + arrow (RF only) from closer than the test distance must NOT move the shade (proves the shield). Confirm IR exits the hole with `ir quiet`. Then a red-mode arrow at the sensor eye: shade moves → IR alone works. Record the method, distances and results in docs/IR_PROTOCOL.md. Independent of the clone `send up` test; two agreeing methods make a stronger community write-up.
 
 **Our shades are battery models converted to DC power:** the user replaced the battery pack with an always-on DC brick and a compatible cable, because battery changes meant ladder work. They have the **same electronics and firmware as battery shades**, so any power-saving or wake-up behaviour would still be active; constant power does *not* weaken the hypothesis. The original batteries drained quickly, which weakly suggests a receiver that's often awake (the motor and the packs also matter).
 
-Current assessment (Nov 7): **open**; slight lean toward IR-alone working. Reasons:
-- Duty-cycling would target the ~13 mA radio, not the <1 mA IR receiver.
-- The long repeated IR bursts suit a sleepy receiver.
-- Learning-remote failures are explained by burst length and timing quirks.
+Current assessment (Nov 8): **open; RF wake-up is now the leading explanation, not proven.** Results and caveats are in `docs/IR_PROTOCOL.md` (Shade tests).
+- For: `send down` (correct channel A code, 97 mA peak, 40 kHz) did nothing at ~1 ft, while the original works from >10 ft. The foil-wrapped original also failed in red mode at ~30 cm with the LED face exposed and RF blocked.
+- Not ruled out: the wrapped remote's IR output through the small hole was never verified, and the original's LED drive (carrier, duty cycle, true timings, any preamble hidden by receiver AGC) hasn't been measured.
+- A 1.5 cm foil hole passes both RF and IR, so it can't separate them. Foil is awkward; a metal tube over the LED (waveguide below cutoff) is the fallback.
+- Next: scope the remote's battery current (2 AAA, 1 Ω shunt or 3.0 V bench supply) during red-mode presses for radio-shaped steps; then probe the LED drive; then try RF + IR once nRF24 modules arrive.
 
-The decisive test is `send up` alone at a shade (acceptance A2/A5). Results apply to battery Platinum shades in general. If it fails, check the TX timings with the analyzer on the remote's LED drive before blaming RF.
+**Manual notes for the clone:** holding OPEN 6 s at a fully open shade resets its stops and limits (p. 21), so `send` caps OPEN codes at 5 s (`play` isn't capped). Group assignment uses SETUP + group key + aimed arrow (p. 5), so IR selects the shade. A backup remote copies identity over RF (Master Reset, then OPEN on the original within 18", p. 7): a good sniffing target, but don't Master Reset either remote before capturing, since it may erase pairing.
 
 ## Hardware
 
