@@ -21,7 +21,7 @@ constexpr uint32_t kArrowQuietMs = 100;  // input silence that ends a held key's
 
 void help() {
   Serial.println(F(
-      "\nCommands (any line stops a running mode):\n"
+      "\nCommands (any line except a # comment stops a running mode):\n"
       " IR\n"
       "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
       "  send <up|down|bbbb> [ms]  transmit HD frames at 40 kHz (default 1000 ms;\n"
@@ -42,6 +42,7 @@ void help() {
       " Misc\n"
       "  btn                     show UP/DOWN button state\n"
       "  pin <gpio> [ms]         logic probe: level, edges, % low (default 3000 ms)\n"
+      "  # <note>                comment for the log; works during capture\n"
       "  help\n"));
 }
 
@@ -202,6 +203,11 @@ void loop() {
     }
     if (ch == '\n') {
       Serial.println();
+      if (hd::isComment(line.c_str())) {  // log note: leave any running mode alone
+        line = "";
+        if (mode == Mode::Idle) Serial.print("> ");
+        continue;
+      }
       bool wasBusy = mode != Mode::Idle;
       stopAll();
       handle(line);

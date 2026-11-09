@@ -1,0 +1,203 @@
+# 2026-11-09 IR shielding tests, original remote (switch A, red mode)
+# Receiver on GPIO 14, `ir quiet`. Lines starting with "#" in the log are
+# comments typed during the test; earlier notes without "#" ran as commands.
+#
+# Part 1: hand as an IR blocker. Baseline (bare remote), then a hand wrapped
+# around the front of the remote.
+
+08:05:43.141 > > ir quiet
+08:05:46.047 > IR capture ON (timeout 50 ms, buffer 4096, summary only). Send any line to stop.
+08:05:46.047 > >
+08:05:51.644 > === IR capture #22  t=802417 ms  (+61898 ms since prev)  entries=203 ===
+08:05:51.645 > protocol: UNKNOWN
+08:05:51.645 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:05:52.819 >
+08:05:52.819 > === IR capture #23  t=803605 ms  (+1188 ms since prev)  entries=205 ===
+08:05:52.836 > protocol: UNKNOWN
+08:05:52.836 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:05:55.542 >
+08:05:55.550 > === IR capture #24  t=806322 ms  (+2717 ms since prev)  entries=203 ===
+08:05:55.551 > protocol: UNKNOWN
+08:05:55.551 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:05:56.439 >
+08:05:56.447 > === IR capture #25  t=807216 ms  (+894 ms since prev)  entries=205 ===
+08:05:56.447 > protocol: UNKNOWN
+08:05:56.447 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:06:00.215 >
+08:06:00.215 > IR capture OFF
+08:06:00.215 > >
+08:06:04.683 > > Hand wrapped around front of remote:
+08:06:24.057 > Unknown command 'hand'. Type help.
+08:06:24.057 > > ir quiet
+08:06:32.323 > IR capture ON (timeout 50 ms, buffer 4096, summary only). Send any line to stop.
+08:06:32.323 > >
+08:06:37.454 > === IR capture #26  t=848235 ms  (+41019 ms since prev)  entries=209 ===
+08:06:37.465 > protocol: UNKNOWN
+08:06:37.465 > HD: code=0101 (A UP) frames=18 other=2 duration=0.35 s
+08:06:38.949 >
+08:06:38.949 > === IR capture #27  t=849725 ms  (+1490 ms since prev)  entries=213 ===
+08:06:38.949 > protocol: UNKNOWN
+08:06:38.949 > HD: code=0110 (A DOWN) frames=17 other=0 duration=0.35 s
+08:06:40.929 >
+08:06:40.929 > === IR capture #28  t=851704 ms  (+1979 ms since prev)  entries=209 ===
+08:06:40.929 > protocol: UNKNOWN
+08:06:40.929 > HD: code=0101 (A UP) frames=18 other=2 duration=0.35 s
+08:06:42.146 >
+08:06:42.146 > === IR capture #29  t=852924 ms  (+1220 ms since prev)  entries=203 ===
+08:06:42.146 > protocol: UNKNOWN
+08:06:42.146 > HD: code=0110 (A DOWN) frames=14 other=1 duration=0.35 s
+
+# Part 2: remote sealed in the foil tube ("burrito"), open end ~30 cm from
+# the receiver. Aimed at it, then pointed up (90 degrees off), then into free
+# space, then swept up and down out of the receiver's plane.
+
+08:32:12.298 > > # IR Burrito Tests: Point open end at receiver:
+08:38:21.559 > >
+08:38:27.912 > > IR quiet
+08:38:34.342 > IR capture ON (timeout 50 ms, buffer 4096, summary only). Send any line to stop.
+08:38:34.350 > >
+08:38:45.480 > === IR capture #48  t=1578061 ms  (+614610 ms since prev)  entries=203 ===
+08:38:45.480 > protocol: UNKNOWN
+08:38:45.480 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:38:48.064 >
+08:38:48.064 > === IR capture #49  t=1580644 ms  (+2583 ms since prev)  entries=203 ===
+08:38:48.069 > protocol: UNKNOWN
+08:38:48.069 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:38:49.033 >
+08:38:49.033 > === IR capture #50  t=1581616 ms  (+972 ms since prev)  entries=203 ===
+08:38:49.033 > protocol: UNKNOWN
+08:38:49.033 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:38:50.588 >
+08:38:50.588 > === IR capture #51  t=1583166 ms  (+1550 ms since prev)  entries=205 ===
+08:38:50.595 > protocol: UNKNOWN
+08:38:50.596 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:38:51.543 >
+08:38:51.543 > === IR capture #52  t=1584135 ms  (+969 ms since prev)  entries=205 ===
+08:38:51.558 > protocol: UNKNOWN
+08:38:51.558 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:38:52.358 >
+08:38:52.358 > === IR capture #53  t=1584937 ms  (+802 ms since prev)  entries=205 ===
+08:38:52.358 > protocol: UNKNOWN
+08:38:52.358 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:39:02.792 > # Point burrito up. 90 degrees from reciever. c.a. 30cm away.
+08:40:07.325 >
+08:40:07.327 > === IR capture #54  t=1659906 ms  (+74969 ms since prev)  entries=203 ===
+08:40:07.333 > protocol: UNKNOWN
+08:40:07.335 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:40:09.454 >
+08:40:09.454 > === IR capture #55  t=1662035 ms  (+2129 ms since prev)  entries=203 ===
+08:40:09.454 > protocol: UNKNOWN
+08:40:09.454 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:40:10.291 >
+08:40:10.293 > === IR capture #56  t=1662872 ms  (+837 ms since prev)  entries=203 ===
+08:40:10.294 > protocol: UNKNOWN
+08:40:10.294 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:40:12.543 >
+08:40:12.543 > === IR capture #57  t=1665125 ms  (+2253 ms since prev)  entries=205 ===
+08:40:12.543 > protocol: UNKNOWN
+08:40:12.543 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:40:13.309 >
+08:40:13.309 > === IR capture #58  t=1665891 ms  (+766 ms since prev)  entries=207 ===
+08:40:13.309 > protocol: UNKNOWN
+08:40:13.309 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:40:14.106 >
+08:40:14.106 > === IR capture #59  t=1666695 ms  (+804 ms since prev)  entries=205 ===
+08:40:14.122 > protocol: UNKNOWN
+08:40:14.122 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:40:19.877 > #Point burrito into free space away from receiver
+08:41:26.328 >
+08:41:26.330 > IR capture OFF
+08:41:26.331 > > no response when pointed away.
+08:41:37.617 > Unknown command 'no'. Type help.
+08:41:37.617 > > ir quiet
+08:41:42.684 > IR capture ON (timeout 50 ms, buffer 4096, summary only). Send any line to stop.
+08:41:42.697 > > #
+08:42:18.152 > === IR capture #60  t=1790745 ms  (+124050 ms since prev)  entries=189 ===
+08:42:18.170 > protocol: UNKNOWN
+08:42:18.170 > HD: code=0101 (A UP) frames=10 other=1 duration=0.34 s
+08:42:34.080 >
+08:42:34.080 > === IR capture #61  t=1806665 ms  (+15920 ms since prev)  entries=205 ===
+08:42:34.084 > protocol: UNKNOWN
+08:42:34.084 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:42:36.054 >
+08:42:36.060 > === IR capture #62  t=1808642 ms  (+1977 ms since prev)  entries=205 ===
+08:42:36.062 > protocol: UNKNOWN
+08:42:36.068 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:42:39.028 >
+08:42:39.028 > === IR capture #63  t=1811618 ms  (+2976 ms since prev)  entries=203 ===
+08:42:39.037 > protocol: UNKNOWN
+08:42:39.037 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:42:40.977 >
+08:42:40.977 > === IR capture #64  t=1813573 ms  (+1955 ms since prev)  entries=209 ===
+08:42:40.995 > protocol: UNKNOWN
+08:42:40.995 > HD: code=0101 (A UP) frames=17 other=0 duration=0.35 s
+08:42:41.909 >
+08:42:41.909 > === IR capture #65  t=1814495 ms  (+922 ms since prev)  entries=203 ===
+08:42:41.915 > protocol: UNKNOWN
+08:42:41.915 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:42:51.858 >
+08:42:51.858 > === IR capture #66  t=1824446 ms  (+9951 ms since prev)  entries=203 ===
+08:42:51.858 > protocol: UNKNOWN
+08:42:51.858 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:42:54.121 >
+08:42:54.121 > === IR capture #67  t=1826714 ms  (+2268 ms since prev)  entries=61 ===
+08:42:54.132 > protocol: UNKNOWN
+08:42:54.132 > HD: code=0101 (A UP) frames=6 other=0 duration=0.10 s
+08:42:56.578 >
+08:42:56.578 > === IR capture #68  t=1829161 ms  (+2447 ms since prev)  entries=13 ===
+08:42:56.578 > protocol: UNKNOWN
+08:42:56.578 > HD: no valid frames (duration=0.07 s)
+08:42:58.667 >
+08:42:58.667 > === IR capture #69  t=1831257 ms  (+2096 ms since prev)  entries=17 ===
+08:42:58.676 > protocol: UNKNOWN
+08:42:58.676 > HD: no valid frames (duration=0.13 s)
+08:42:58.772 >
+08:42:58.772 > === IR capture #70  t=1831360 ms  (+103 ms since prev)  entries=5 ===
+08:42:58.772 > protocol: UNKNOWN
+08:42:58.772 > HD: no valid frames (duration=0.05 s)
+08:43:00.554 >
+08:43:00.569 > === IR capture #71  t=1833153 ms  (+1793 ms since prev)  entries=23 ===
+08:43:00.569 > protocol: UNKNOWN
+08:43:00.569 > HD: no valid frames (duration=0.13 s)
+08:43:25.158 > These last commands were pointing the burrito along the axis pointing at the receiver, but raising an dlowering the
+08:44:19.375 >
+08:44:19.375 > IR capture OFF
+08:44:19.375 > > burrito out of the plane of the receiver.
+
+# Part 3: burrito aimed at the receiver from 30 cm, the same distance at which
+# the shade ignored it.
+
+08:57:14.329 > > ir quiet
+08:57:22.604 > IR capture ON (timeout 50 ms, buffer 4096, summary only). Send any line to stop.
+08:57:22.604 > >
+08:57:24.710 > === IR capture #72  t=2697324 ms  (+864171 ms since prev)  entries=203 ===
+08:57:24.725 > protocol: UNKNOWN
+08:57:24.725 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:57:26.258 >
+08:57:26.274 > === IR capture #73  t=2698876 ms  (+1552 ms since prev)  entries=241 ===
+08:57:26.274 > protocol: UNKNOWN
+08:57:26.274 > HD: code=0101 (A UP) frames=24 other=0 duration=0.42 s
+08:57:27.305 >
+08:57:27.305 > === IR capture #74  t=2699913 ms  (+1037 ms since prev)  entries=203 ===
+08:57:27.305 > protocol: UNKNOWN
+08:57:27.305 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:57:28.380 >
+08:57:28.383 > === IR capture #75  t=2700985 ms  (+1072 ms since prev)  entries=203 ===
+08:57:28.387 > protocol: UNKNOWN
+08:57:28.389 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+08:57:30.704 >
+08:57:30.704 > === IR capture #76  t=2703310 ms  (+2325 ms since prev)  entries=205 ===
+08:57:30.704 > protocol: UNKNOWN
+08:57:30.704 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:57:31.486 >
+08:57:31.498 > === IR capture #77  t=2704101 ms  (+791 ms since prev)  entries=205 ===
+08:57:31.502 > protocol: UNKNOWN
+08:57:31.502 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:57:32.217 >
+08:57:32.219 > === IR capture #78  t=2704822 ms  (+721 ms since prev)  entries=205 ===
+08:57:32.219 > protocol: UNKNOWN
+08:57:32.219 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s
+08:57:32.690 >
+08:57:32.690 > === IR capture #79  t=2705305 ms  (+483 ms since prev)  entries=205 ===
+08:57:32.705 > protocol: UNKNOWN
+08:57:32.705 > HD: code=0110 (A DOWN) frames=20 other=0 duration=0.35 s

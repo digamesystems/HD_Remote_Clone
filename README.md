@@ -50,7 +50,7 @@ New to the project? Start here:
 ### Open questions
 
 - **Our remote's RF parameters:** channel(s), data rate, address and remote ID.
-- **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote first sends a short RF burst to wake them, which would explain why learning remotes fail. *Unconfirmed.* The test: sniff RF while pressing buttons in IR mode, then replay the captured IR on its own at a shade.
+- **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Well supported, not proven* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). Next: sniff the RF sent during IR-mode presses.
 - **IR behavior on hold:** repeat frames, toggle bits or counters.
 
 ### Reverse-engineering plan
@@ -93,13 +93,14 @@ pio run -t upload
 pio device monitor        # 115200 baud
 ```
 
-Type `help` in the monitor. Sending any line stops a running capture, scan or sniff.
+Type `help` in the monitor. Sending any line stops a running capture, scan or sniff, except a `#` comment.
 
 | Command | What it does |
 |---|---|
 | `ir [quiet]` | Capture IR; print the decoded HD frame summary (code, frames, duration) plus the raw `uint16_t rawData[]` (`quiet`: summary only) |
 | `send <up\|down\|bbbb> [ms]` | Transmit HD frames at 40 kHz for `ms` (default 1000). `up`/`down` are channel A; use `1001`/`1010` for B. Max 5000 ms for OPEN, 10000 otherwise |
 | Up / Down arrow keys | Send `up` / `down` (channel A) for 500 ms per press, at the prompt or during capture |
+| `# <note>` | Comment for the serial log. Doesn't stop a running capture, scan or sniff |
 | `play [slot\|last] [n] [gap_ms]` | Replay a capture at 40 kHz |
 | `save <slot>` / `list` / `dump [slot]` | Keep up to 8 captures in RAM |
 | `test [label]` | nRF24 self-test (200× register read-back) → PASS/FAIL |

@@ -14,6 +14,12 @@ std::vector<std::string> tokenize(const std::string& line, size_t maxTokens = 8)
 
 std::string toLower(std::string s);
 
+// True if the first non-blank character is '#': a note for the serial log.
+inline bool isComment(const std::string& line) {
+  size_t i = line.find_first_not_of(" \t");
+  return i != std::string::npos && line[i] == '#';
+}
+
 // Parse an even-length hex string (no separators, case-insensitive, optional
 // leading "0x") into bytes. Returns the byte count, or -1 on error.
 int parseHex(const std::string& s, uint8_t* out, size_t maxOut);

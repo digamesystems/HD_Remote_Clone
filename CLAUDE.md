@@ -51,20 +51,21 @@ User is comfortable with **ESP32 + PlatformIO** (Arduino framework assumed).
   - Method used: SPI piggyback on the remote's nRF24 (SCK, CSN, MOSI) to dump its register config.
   - A follow-up project emulates part no. 2984495100 with NodeMCU + nRF24L01+, configurable for the remote's ID.
 
-### Open hypothesis: RF "wake-up" burst for IR
-Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, an HD automation dealer) say battery-powered Platinum shades ignore IR unless the remote first sends a brief RF burst to wake them, which is why learning remotes fail. No capture or timing details found. **Unconfirmed.** The user's observation (the degraded remote works in IR at 30 cm) doesn't discriminate, since its RF still reaches ~1 m.
+### RF "wake-up" for IR: well supported (Nov 9), not proven
+Three independent but **secondhand** sources (AVS forum 2007, Bond forum 2022, an HD automation dealer) say battery-powered Platinum shades ignore IR unless the remote also sends a brief RF burst to wake them, which is why learning remotes fail. No capture or timing details found anywhere.
 
-**Test:** sniff RF while pressing buttons in IR (red) mode, then replay captured IR alone at a shade.
+**Our evidence (foil-tube test, Nov 9, user's design; full write-up in `docs/IR_PROTOCOL.md`, Shade tests):** the remote sealed in a ~5 cm foil tube, back twisted shut, front open. Its IR decodes cleanly on our receiver at 30 cm; group key + arrow from inside the tube does NOT move the shade (RF blocked); a red-mode arrow at 30 cm from the sensor eye does NOT move the shade; the bare remote moves it both ways. Repeated bare/wrapped/bare. So: **IR carries the command (and selects the shade); RF is required alongside it.** Open: is the RF a bare wake-up, or does it carry the command or the pairing ID? That decides what the clone transmits.
 
-**Foil-shield test (user's idea; run Nov 8, inconclusive so far):** wrap the working remote in foil (2–3 layers, seams folded, or a cookie tin) with a few-mm hole over the IR LED. Control first: group key + arrow (RF only) from closer than the test distance must NOT move the shade (proves the shield). Confirm IR exits the hole with `ir quiet`. Then a red-mode arrow at the sensor eye: shade moves → IR alone works. Record the method, distances and results in docs/IR_PROTOCOL.md. Independent of the clone `send up` test; two agreeing methods make a stronger community write-up.
+Lessons: a hand barely blocks IR (14–18 of 20 frames still decode), and a foil hole ≥1.5 cm leaks RF. Always verify a shield with the receiver (IR) and the green-mode control (RF). These shades are **top-down/bottom-up with reversed arrows (DOWN opens, UP closes)**: test from mid-travel, because the Nov 8 `send down` on an open shade may have had no travel.
+
+Public summary page (private until shared): https://claude.ai/artifact/X8bRVQXfk2P1AV8owhsCF2. Exact trial counts, tube width and the remote's insertion depth weren't recorded.
 
 **Our shades are battery models converted to DC power:** the user replaced the battery pack with an always-on DC brick and a compatible cable, because battery changes meant ladder work. They have the **same electronics and firmware as battery shades**, so any power-saving or wake-up behaviour would still be active; constant power does *not* weaken the hypothesis. The original batteries drained quickly, which weakly suggests a receiver that's often awake (the motor and the packs also matter).
 
-Current assessment (Nov 8): **open; RF wake-up is now the leading explanation, not proven.** Results and caveats are in `docs/IR_PROTOCOL.md` (Shade tests).
-- For: `send down` (correct channel A code, 97 mA peak, 40 kHz) did nothing at ~1 ft, while the original works from >10 ft. The foil-wrapped original also failed in red mode at ~30 cm with the LED face exposed and RF blocked.
-- Not ruled out: the wrapped remote's IR output through the small hole was never verified, and the original's LED drive (carrier, duty cycle, true timings, any preamble hidden by receiver AGC) hasn't been measured.
-- A 1.5 cm foil hole passes both RF and IR, so it can't separate them. Foil is awkward; a metal tube over the LED (waveguide below cutoff) is the fallback.
-- Next: scope the remote's battery current (2 AAA, 1 Ω shunt or 3.0 V bench supply) during red-mode presses for radio-shaped steps; then probe the LED drive; then try RF + IR once nRF24 modules arrive.
+Next:
+1. **Clone IR + remote RF** (Claude web's idea, modified): small foil patch over only the remote's IR window (verify with `ir quiet`: no captures; verify group key + arrow still moves the shade). Then clone `send` while pressing the same arrow on the patched remote in red mode. Controls: clone alone, patched remote alone, opposite directions. Shade follows the clone → our IR encoding works once awake.
+2. **nRF24 sniff** (modules arriving Nov 9): screen modules, validate scan/promiscuous with one module transmitting to another, then sniff during red-mode presses (timing, channel, payload, pairing ID?).
+3. Measure foil attenuation with a module at the tube's mouth; probe the remote's LED drive; optionally scope its battery current for radio-shaped steps.
 
 **Manual notes for the clone:** holding OPEN 6 s at a fully open shade resets its stops and limits (p. 21), so `send` caps OPEN codes at 5 s (`play` isn't capped). Group assignment uses SETUP + group key + aimed arrow (p. 5), so IR selects the shade. A backup remote copies identity over RF (Master Reset, then OPEN on the original within 18", p. 7): a good sniffing target, but don't Master Reset either remote before capturing, since it may erase pairing.
 

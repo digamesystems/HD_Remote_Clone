@@ -51,10 +51,10 @@ These can't be automated. A feature is **done** once John confirms it and it's r
 | # | Check | Result | Date |
 |---|---|---|---|
 | A1 | Capture IR from the original remote in red mode, every button | ✅ Format decoded; UP = 0101, DOWN = 0110 (log + analyzer); no other button sends IR (analyzer) | 2026-11-07 |
-| A2 | Replay a captured IR code; target shade responds | ❌ Not yet: `send down` at ~1 ft, no response (see docs/IR_PROTOCOL.md, Shade tests) | 2026-11-08 |
+| A2 | Replay a captured IR code; target shade responds | ❌ Not yet: `send down` at ~1 ft, no response, but the shade may have had no travel. IR alone isn't expected to work (A5); next, clone IR plus the remote's RF (see docs/IR_PROTOCOL.md, Shade tests) | 2026-11-09 |
 | A3 | RF scan shows the original remote's channels | | |
 | A4 | Sniffer decodes the original remote's group up/down/release packets | | |
-| A5 | RF-wake hypothesis: IR replay alone vs. with RF burst | 🔲 Open: IR alone failed; IR with RF burst not tried yet | 2026-11-08 |
+| A5 | RF-wake hypothesis: IR replay alone vs. with RF burst | ⚠️ Well supported: the original remote's IR fails when a foil tube blocks its RF, and works bare. RF burst not yet observed; clone IR plus RF not tried yet | 2026-11-09 |
 
 ## Gate rules
 

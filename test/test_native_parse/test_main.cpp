@@ -74,6 +74,15 @@ void test_rate_values_match_rf24_enum() {
   TEST_ASSERT_EQUAL(2, static_cast<int>(Rate::k250k));
 }
 
+void test_is_comment() {
+  TEST_ASSERT_TRUE(isComment("# hand over remote"));
+  TEST_ASSERT_TRUE(isComment("#"));
+  TEST_ASSERT_TRUE(isComment(" \t# indented"));
+  TEST_ASSERT_FALSE(isComment(""));
+  TEST_ASSERT_FALSE(isComment("   "));
+  TEST_ASSERT_FALSE(isComment("ir quiet # trailing"));
+}
+
 static KeyEvent feedAll(KeyParser& p, const char* s) {
   KeyEvent last = KeyEvent::Pass;
   for (; *s; s++) last = p.feed(*s);
@@ -119,6 +128,7 @@ void test_key_parser_newline_aborts_sequence() {
 
 int main() {
   UNITY_BEGIN();
+  RUN_TEST(test_is_comment);
   RUN_TEST(test_key_parser_arrows);
   RUN_TEST(test_key_parser_passes_plain_text);
   RUN_TEST(test_key_parser_swallows_other_sequences);
