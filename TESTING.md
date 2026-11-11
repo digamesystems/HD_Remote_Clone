@@ -54,7 +54,7 @@ These can't be automated. A feature is **done** once John confirms it and it's r
 | A2 | Replay a captured IR code; target shade responds | ✅ With the original remote's RF present (remote aimed away): shade moves both ways and follows the clone when the two disagree. Clone alone: 0 of 20 (see docs/IR_PROTOCOL.md, Shade tests) | 2026-11-09 |
 | A3 | RF scan shows the original remote's channels | | |
 | A4 | Sniffer decodes the original remote's group up/down/release packets | | |
-| A5 | RF-wake hypothesis: IR replay alone vs. with RF burst | ✅ Confirmed by two tests: clone IR alone 0/20, clone IR + remote RF works; remote's IR fails when a foil tube blocks its RF. Still to do: capture the RF itself and send it from our own radio | 2026-11-09 |
+| A5 | RF-wake hypothesis: IR replay alone vs. with RF burst | ✅ Confirmed by two tests: clone IR alone 0/20, clone IR + remote RF works; remote's IR fails when a foil tube blocks its RF. RF captured 2026-11-11 (`ID 01 00 80`, docs/RF_PROTOCOL.md); our own wake + IR moves the shade with no original remote, reliably at ~1 ft (2026-11-11) | 2026-11-11 |
 
 ## Gate rules
 

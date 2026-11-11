@@ -20,8 +20,8 @@ New to the project? Start here:
 
 1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate a release must pass.
 2. **Code layout:** hardware-independent logic belongs in `lib/hdcore/` with a host unit test. Hardware-touching code goes in `src/`. See [Firmware](#firmware) below.
-3. **Protocols:** [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) describes the decoded IR frame format and codes.
-4. **Hardware:** the [pin map](#pin-map) and `include/hw_config.h`, which records what's actually wired on the breadboard.
+3. **Protocols:** [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) describes the decoded IR frame format and codes, plus the shade tests. [docs/RF_PROTOCOL.md](docs/RF_PROTOCOL.md) covers the 2.4 GHz side, including the RF wake the shade needs alongside IR.
+4. **Hardware:** the [pin map](#pin-map), [docs/WIRING.md](docs/WIRING.md) for connecting the nRF24 modules, and `include/hw_config.h`, which records what's actually wired on the breadboard.
 
 ## Status
 
@@ -30,10 +30,11 @@ New to the project? Start here:
 | PlatformIO project, serial-menu firmware | ✅ builds |
 | ESP32 board identified (DevKitC, WROOM-32D) | ✅ |
 | IR protocol decoded (UP `0101`, DOWN `0110`), see [IR_PROTOCOL.md](docs/IR_PROTOCOL.md) | ✅ |
-| IR transmit to a shade | ✅ works with the original remote's RF present; needs our own RF next |
-| nRF24 module screening (likely Si24R1 clones) | ⏳ modules arriving |
-| RF channel / address / data-rate discovery | ⏳ published settings adopted (spitcool); verify on our remote |
-| RF transmit emulation | 🔲 |
+| IR transmit to a shade | ✅ works with our own RF wake, no original remote (2026-11-11); reliable at ~1 ft, range limited by IR aim/power |
+| nRF24 module screening (marked `NRF24L01+`, possibly clones) | ⏳ first module passes; rest to test |
+| RF settings on our remotes | ✅ published settings confirmed by sniffing (2026-11-11) |
+| RF wake frame for IR (`ID 01 00 80`) | ✅ sniffed from both remotes, see [RF_PROTOCOL.md](docs/RF_PROTOCOL.md) |
+| RF transmit emulation | ✅ red-mode wake works (`wake`, `send`); 🔲 group commands |
 | Final remote: buttons, deep sleep, enclosure | 🔲 |
 
 ## Technical approach
@@ -52,17 +53,17 @@ New to the project? Start here:
   | CRC / auto-ack | CRC-16 / off |
   | Original TX power | about −6 dBm |
 
-  - `ID0 ID1` identify the remote; the shades reportedly ignore unknown IDs.
+  - `ID0 ID1` identify the remote; the shades reportedly ignore unknown IDs. Our two remotes have different IDs, and both work.
   - `MODE` is `20` with a group active. `GROUP` is `01/02/04/08` for groups 1–4, `FF` for All. `ACTION` is `A1` up held, `A2` down held, then `21` / `22` as a release tail.
+  - **A red-mode (IR) arrow press also sends RF:** `ID 01 00 80` while held, with no direction. The shade needs it before it will act on the IR. Our finding, 2026-11-11.
   - Example from the forum (another remote's ID): `03 C1 20 01 A1`, group 1 up.
   - Channel 7 / 1 Mbps, quoted in one forum thread, conflicts with this. spitcool's notes associate those settings with the later PowerView Pebble remote.
-  - **Not yet verified on our remote.**
+  - **Confirmed on both our remotes** by sniffing ch 33 (2026-11-11). Details in [RF_PROTOCOL.md](docs/RF_PROTOCOL.md).
 
 ### Open questions
 
-- **Our remote's RF parameters:** confirm the published settings above, and read our remote ID.
-- **What RF does an IR-mode press send?** spitcool's notes record an unexplained `ID 01 00 80` frame (mode `01`, no group). Our prediction: that's the RF sent alongside IR.
-- **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Yes, by two tests* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. And our clone's IR moves the shade only when the original remote is pressed at the same time (aimed away); alone, 0 of 20. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). Next: capture the RF sent during IR-mode presses.
+- **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Yes, by two tests* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. And our clone's IR moves the shade only when the original remote is pressed at the same time (aimed away); alone, 0 of 20. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). The RF it sends is `ID 01 00 80` (sniffed 2026-11-11; spitcool's notes had recorded this frame without knowing its trigger).
+- **Can the clone send the wake itself?** *Yes* (2026-11-11): the clone's own `ID 01 00 80` followed by its IR moves the shade with no original remote, including stops. Next: does the shade check the ID, and how to get more IR range (aim, LED power, beam width)?
 - **IR behavior on hold:** repeat frames, toggle bits or counters.
 
 ### Reverse-engineering plan
@@ -71,10 +72,10 @@ New to the project? Start here:
 2. **Replay IR.** Send the raw timings back at 40 kHz through a TSAL6200 940 nm LED and confirm a shade responds.
 3. **Screen the nRF24 modules.** The batch is probably clones, with a reported ~50% SPI failure rate, so every module gets tested. 2 Mbps is the rate that matters.
 4. **Prove the sniffer.** A second module (radio B) transmits known packets at the Platinum settings while the first receives (`beacon`). Without this, an empty sniff means nothing.
-5. **Sniff a group command** (positive control): group 1 + UP should show `ID 20 01 A1`, then the release tail. This also gives us our remote ID.
-6. **Sniff an IR-mode press**, the RF wake-up experiment: record the payload, count and timing.
-7. **Fallbacks:** promiscuous sniffing (`promisc`) if the published settings catch nothing, or tapping the remote's own nRF24 SPI bus.
-8. **Emulate.** Transmit with the original's timing: held repeats, then release packets.
+5. ✅ **Sniff a group command** (positive control): group 1 + UP showed `ID 20 01 A1`, then the release tail. This also gave us our remote IDs.
+6. ✅ **Sniff an IR-mode press**, the RF wake-up experiment: `ID 01 00 80` while the arrow is held.
+7. **Fallbacks:** promiscuous sniffing (`promisc`) if the published settings catch nothing, or tapping the remote's own nRF24 SPI bus. Not needed so far.
+8. **Emulate.** Transmit with the original's timing: the wake before each IR command (✅ works), then group commands with held repeats and release packets.
 
 ## Hardware
 
@@ -114,8 +115,10 @@ Type `help` in the monitor. Sending any line stops a running capture, scan or sn
 | Command | What it does |
 |---|---|
 | `ir [quiet]` | Capture IR; print the decoded HD frame summary (code, frames, duration) plus the raw `uint16_t rawData[]` (`quiet`: summary only) |
-| `send <up\|down\|bbbb> [ms]` | Transmit HD frames at 40 kHz for `ms` (default 1000). `up`/`down` are channel A; use `1001`/`1010` for B. Max 5000 ms for OPEN, 10000 otherwise |
-| Up / Down arrow keys | Send `up` / `down` (channel A) for 500 ms per press, at the prompt or during capture |
+| `send <up\|down\|bbbb> [ms]` | Send the RF wake, then HD frames at 40 kHz for `ms` (default 1000). `up`/`down` are channel A; use `1001`/`1010` for B. Max 5000 ms for OPEN, 10000 otherwise |
+| Up / Down arrow keys | Send the wake, then `up` / `down` (channel A) for 500 ms per press, at the prompt or during capture |
+| `id [hex\|clear]` | Show or set the remote ID used in the wake frame (from a sniff). Saved in the ESP32's flash, not in the source |
+| `wake [ms\|on\|off]` | Send the RF wake (`ID 01 00 80` on ch 33/52/71) alone for `ms` (default 450), or turn the automatic wake before `send` / arrow keys on or off |
 | `# <note>` | Comment for the serial log. Doesn't stop a running capture, scan or sniff |
 | `play [slot\|last] [n] [gap_ms]` | Replay a capture at 40 kHz |
 | `save <slot>` / `list` / `dump [slot]` | Keep up to 8 captures in RAM |

@@ -111,10 +111,20 @@ void test_describe_forum_example() {
   TEST_ASSERT_EQUAL_STRING("ID 03C1  mode 20  group 1  UP held", rf::describePayload(p, 5).c_str());
 }
 
-void test_describe_no_group_state() {
-  const uint8_t p[5] = {0x12, 0x34, 0x01, 0x00, 0x80};
-  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 01  group none  no-group state",
-                           rf::describePayload(p, 5).c_str());
+void test_describe_wake_frames() {
+  const uint8_t held[5] = {0x12, 0x34, 0x01, 0x00, 0x80};
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 01  group none  wake held",
+                           rf::describePayload(held, 5).c_str());
+  const uint8_t tail[5] = {0x12, 0x34, 0x01, 0x00, 0x00};
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 01  group none  wake release",
+                           rf::describePayload(tail, 5).c_str());
+}
+
+void test_wake_payload_layout() {
+  uint8_t p[5];
+  rf::wakePayload(0x12, 0x34, p);
+  const uint8_t expect[5] = {0x12, 0x34, 0x01, 0x00, 0x80};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(expect, p, 5);
 }
 
 void test_group_names() {
@@ -141,6 +151,8 @@ void test_describe_needs_five_bytes() {
 void test_beacon_is_not_a_known_command() {
   TEST_ASSERT_EQUAL_STRING("?", rf::actionName(rf::kBeaconPayload[4]));
   TEST_ASSERT_EQUAL_STRING("none", rf::groupName(rf::kBeaconPayload[3]).c_str());
+  TEST_ASSERT_NOT_EQUAL(rf::kModeGroup, rf::kBeaconPayload[2]);
+  TEST_ASSERT_NOT_EQUAL(rf::kModeNoGroup, rf::kBeaconPayload[2]);
 }
 
 // --- packet runs ---
@@ -201,7 +213,8 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_hd_address_same_in_either_byte_order);
   RUN_TEST(test_describe_forum_example);
-  RUN_TEST(test_describe_no_group_state);
+  RUN_TEST(test_describe_wake_frames);
+  RUN_TEST(test_wake_payload_layout);
   RUN_TEST(test_group_names);
   RUN_TEST(test_action_names);
   RUN_TEST(test_describe_needs_five_bytes);

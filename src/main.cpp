@@ -18,15 +18,22 @@ hd::KeyParser keys;
 
 constexpr uint32_t kArrowBurstMs = 500;  // IR burst for one PC arrow key press
 constexpr uint32_t kArrowQuietMs = 100;  // input silence that ends a held key's repeats
+// RF wake before each IR command. The working remote sends ~440 ms for a quick tap.
+constexpr uint32_t kWakeMs = 450;
+constexpr uint32_t kMaxWakeMs = 5000;
+bool autoWake = true;
 
 void help() {
   Serial.println(F(
       "\nCommands (any line except a # comment stops a running mode):\n"
       " IR\n"
       "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
-      "  send <up|down|bbbb> [ms]  transmit HD frames at 40 kHz (default 1000 ms;\n"
+      "  send <up|down|bbbb> [ms]  RF wake, then HD frames at 40 kHz (default 1000 ms;\n"
       "                            up/down = channel A; max 5000 ms for OPEN, 10000 otherwise)\n"
       "  Up/Down arrow keys      send up/down for 500 ms (works at the prompt or during capture)\n"
+      "  wake [ms|on|off]        send the RF wake alone (default 450 ms), or turn the\n"
+      "                          automatic wake before send / arrow keys on or off\n"
+      "  id [hex|clear]          show or set the remote ID used by wake (saved in flash)\n"
       "  play [slot|last] [n] [gap_ms]  replay at 40 kHz (default last, 1x, 40 ms)\n"
       "  save <slot>             copy last capture to slot 0-7 (RAM only)\n"
       "  list                    show slot sizes\n"
@@ -73,12 +80,19 @@ void probePin(int pin, uint32_t ms) {
                 (unsigned long)edges, 100.0 * lowUs / (ms * 1000.0));
 }
 
+// The shade ignores IR unless RF from a paired remote arrives just before it,
+// so send the wake first (one wake arms one IR command).
+void sendIr(uint8_t code, uint32_t ms) {
+  if (autoWake) rf::sendWake(kWakeMs);
+  ir::sendCode(code, ms);
+}
+
 // One burst per key press. A held key repeats, and those repeats pile up during
 // the blocking send, so discard input until it goes quiet. That also drops any
 // partial escape sequence, which would otherwise land in the command line.
 void sendArrow(uint8_t code) {
   Serial.println();
-  ir::sendCode(code, kArrowBurstMs);
+  sendIr(code, kArrowBurstMs);
   uint32_t lastInput = millis();
   while (millis() - lastInput < kArrowQuietMs) {
     if (Serial.available()) {
@@ -124,7 +138,24 @@ void handle(String cmdline) {
     else if ((uint32_t)ms > hd::ir::maxSendMs(code))
       Serial.printf("Not sent: limit for %s is %lu ms (OPEN held 6 s can reset a shade).\n",
                     hd::ir::codeToBits(code).c_str(), (unsigned long)hd::ir::maxSendMs(code));
-    else ir::sendCode(code, ms);
+    else sendIr(code, ms);
+  }
+  else if (c == "wake") {
+    tok[1].toLowerCase();
+    if (tok[1] == "on" || tok[1] == "off") {
+      autoWake = tok[1] == "on";
+      Serial.printf("Automatic RF wake before send / arrow keys: %s\n", autoWake ? "on" : "off");
+    } else {
+      long ms = tok[1].length() ? tok[1].toInt() : kWakeMs;
+      if (ms <= 0 || (uint32_t)ms > kMaxWakeMs) ok = false;
+      else rf::sendWake(ms);
+    }
+  }
+  else if (c == "id") {
+    tok[1].toLowerCase();
+    if (tok[1] == "clear") rf::clearRemoteId();
+    else if (tok[1].length()) ok = rf::setRemoteId(tok[1] + tok[2]);  // "12 34" or "1234"
+    if (ok) rf::printRemoteId();
   }
   else if (c == "play") {
     int reps = tok[2].length() ? tok[2].toInt() : 1;

@@ -9,8 +9,8 @@ Reverse engineered on 2026-11-07 from the original Platinum remote. The source o
 | UP / DOWN codes, channel B | ✅ ESP32 capture only (2026-11-08) |
 | Other buttons | ✅ **none send IR in normal use**; only the up/down arrows transmit (logic analyzer, 2026-11-07). Setup-mode presses not captured yet. |
 | Carrier frequency / duty cycle | 🔲 not measured (manual says 40 kHz) |
-| Shade responds to synthesized frames | ✅ **yes, when the original remote's RF is present** (2026-11-09); ❌ never on their own (0 of 20). See [Shade tests](#shade-tests) |
-| RF needed alongside IR? | ✅ **shown by two independent tests** (2026-11-09): foil tube (remote's IR fails when its RF is blocked) and clone IR + remote RF. The RF itself hasn't been captured yet (acceptance A5) |
+| Shade responds to synthesized frames | ✅ **yes, with the clone's own RF wake, no original remote** (2026-11-11), reliably with the LED about 1 ft from the sensor eye. Earlier: with the original remote's RF (2026-11-09); never with IR alone (0 of 20). See [Shade tests](#shade-tests) |
+| RF needed alongside IR? | ✅ **shown by two independent tests** (2026-11-09): foil tube (remote's IR fails when its RF is blocked) and clone IR + remote RF. The RF was sniffed on 2026-11-11: a red-mode arrow sends `ID 01 00 80`, a wake frame with no direction. See [RF_PROTOCOL.md](RF_PROTOCOL.md) |
 
 ## When the remote sends IR
 
@@ -22,7 +22,7 @@ The remote has 7 keys: **UP, DOWN, 1, 2, 3, 4, ALL**, plus an **A/B slide switch
 
 Not yet known:
 - whether arrow presses extend the window
-- what RF red-mode arrows send. The foil-tube test shows the shade needs RF alongside IR (see [Shade tests](#shade-tests)), but the RF itself hasn't been captured
+- whether the original sends its IR during or after its RF. Red-mode arrows send an RF wake frame while held (`ID 01 00 80`, see [RF_PROTOCOL.md](RF_PROTOCOL.md)); the relative timing hasn't been measured
 - what IR is sent during the manual's setup procedures, which all end with an aimed arrow press: group assignment (p. 5), intermediate stop (p. 8), channel change (p. 22)
 
 ## Frame structure
@@ -142,9 +142,28 @@ All tests used one shade, with the remote's switch on A. The shade is a battery 
 1. **Foil tube:** the original remote moves the shade when bare, but not when sealed in a foil tube that blocks its RF while its IR still gets out.
 2. **Clone IR + remote RF:** our synthesized IR never moves the shade on its own (0 of 20), but does whenever the original remote is pressed at the same moment with its IR aimed away. When the two disagree (clone UP, remote DOWN), the shade follows the clone.
 
-So IR selects the shade and gives the direction, and our IR encoding is correct. The RF from a red-mode press doesn't override the IR's direction; it acts as an enable or wake-up. Its content (a bare wake-up, or something tied to the remote's pairing ID) is still unknown, and decides what a replacement must transmit.
+So IR selects the shade and gives the direction, and our IR encoding is correct. The RF from a red-mode press doesn't override the IR's direction; it acts as an enable or wake-up. The sniff on 2026-11-11 fits this: the red-mode RF is `ID 01 00 80`, the remote's ID with no direction ([RF_PROTOCOL.md](RF_PROTOCOL.md)). A replacement should send that frame, with an ID the shade accepts, before each IR command.
 
 This is the first hands-on evidence we know of for the RF wake-up claim, which until now existed only as secondhand forum reports.
+
+**Clone only, 2026-11-11:** the clone's own RF wake followed by its IR moves the shade with no original remote involved.
+
+### 2026-11-11: clone only (RF wake + IR)
+
+The clone sends the wake frame `ID 01 00 80`, using the working remote's ID (set with `id`), for 450 ms. It rotates through ch 33/52/71, about 1,500 packets at roughly 300 µs each. The IR command (30 frames, 516 ms) follows with no gap, driven from the PC arrow keys. Both original remotes were out of reach. RF: one hiBCTR nRF24 module (marked `NRF24L01+`), no 10 µF cap, PA set to RF24's "high" level (−6 dBm on a genuine part). IR: one TSAL6200 at ~97 mA peak.
+
+| Setup | Shade |
+|---|---|
+| Breadboard LED, aimed by hand | **moves, intermittently.** Better when held steady |
+| LED on an extension lead (~6 ft of wire), about 1 ft from the sensor eye and 1 ft below it | **reliable:** sequences of up, stop, down, down, stop, up "with hardly a miss" |
+
+**Reading.**
+- The clone controls the shade on its own. The wake frame and the IR encoding are both right, and a wake with the working remote's ID is accepted.
+- **Stops and same-direction repeats work** when each command gets its own wake, as the 2026-11-09 tests predicted.
+- The misses track the aim, not the RF: steadier and closer aiming fixed them. So IR power and beam width are the limiting factors now. The TSAL6200's beam is narrow (±17°), and the shade's receiver appears less sensitive than ours.
+- **Off-axis impression (user, unconfirmed):** the LED seemed to work best pointed slightly off what looked like "straight at the sensor eye". Possible causes: the receiver may sit behind the window at an angle or offset, or the LED's peak may be off its mechanical axis. Not yet tested.
+
+**Not yet done:** controls with `wake off` (IR only) and an ID the shade doesn't know; exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap).
 
 ### 2026-11-09: clone IR + remote RF
 
@@ -209,7 +228,7 @@ The bare, wrapped, bare sequence was repeated with the same results. Exact trial
 **Caveats.**
 - The tube narrows the IR beam compared with the bare remote. The clean decode at the same distance makes this unlikely to matter.
 - The shade's receiver may be less sensitive than ours (TSOP38238 / VS1838B type). It ignored IR at a distance where ours decoded every frame, and the bare remote works from more than 10 ft.
-- The RF itself hasn't been observed, so its timing, channel and content are unknown.
+- The RF wasn't observed during this test. It was sniffed later (2026-11-11, [RF_PROTOCOL.md](RF_PROTOCOL.md)).
 
 **To repeat it.** Record the tube's opening width and how far back the remote sits, and mark the insertion depth on the remote. Re-run the green-mode control after any rewrap. Check that IR gets out with a receiver at the same distance as the shade.
 
@@ -237,10 +256,11 @@ The small-hole result agrees with the foil tube, but on its own it was weak: the
 
 ### Next
 
-1. **Receptive window.** Press the remote in red mode (aimed away), wait 1, 2, 5 s, then send the clone's IR. How long does the RF enable last?
-2. **nRF24 sniff** at the published Platinum RF settings (channels 33/52/71, 2 Mbps, address `E7E7E7`; see the [README](../README.md#what-the-original-remote-does)). Screen the modules, then prove the receiver with a second module transmitting known packets at those settings (`beacon`). Sniff a group command as a positive control, then red-mode presses for the RF's payload, count and timing. Prediction to test: red-mode presses send `ID 01 00 80` (no group selected).
-3. **Measure the foil directly** with a module at the tube's mouth, remote bare vs. wrapped.
-4. **Probe the remote's own LED drive** for the true carrier frequency, duty cycle and timings.
+1. **Clone alone:** ✅ works (2026-11-11, above). Still to run: controls with `wake off` (IR only) and an ID the shade doesn't know; then improve IR range (a second LED, a wider-angle LED, or a test of the off-axis aim).
+2. **Receptive window.** `wake`, then wait 1, 2, 5 s before `wake off` + `send`. How long does the RF enable last?
+3. ~~**nRF24 sniff**~~ Done 2026-11-11: red-mode presses send `ID 01 00 80`, as predicted. See [RF_PROTOCOL.md](RF_PROTOCOL.md).
+4. **Measure the foil directly** with a module at the tube's mouth, remote bare vs. wrapped.
+5. **Probe the remote's own LED drive** for the true carrier frequency, duty cycle and timings.
 
 ## Evidence
 
@@ -259,7 +279,7 @@ The receiver OUT was on GPIO 32 for the Nov 7 ESP32 captures, GPIO 14 from Nov 8
 ## Firmware support
 
 - `ir` / `ir quiet`: capture and print a decoded summary per burst, e.g. `HD: code=0101 (A UP) frames=147 other=0 duration=2.53 s`.
-- `send up|down|bbbb [ms]`: synthesize and transmit frames at 40 kHz for about `ms` (default 1000). `up` and `down` are channel A; use `1001` / `1010` for B. OPEN codes are limited to 5000 ms and others to 10000 ms. `play` replays raw captures and has no such limit.
-- PC Up/Down arrow keys in the serial monitor send `up` / `down` for 500 ms per press.
+- `send up|down|bbbb [ms]`: send the RF wake (if a remote ID is set with `id`; `wake off` disables it), then synthesize and transmit frames at 40 kHz for about `ms` (default 1000). `up` and `down` are channel A; use `1001` / `1010` for B. OPEN codes are limited to 5000 ms and others to 10000 ms. `play` replays raw captures and has no such limit.
+- PC Up/Down arrow keys in the serial monitor send the wake, then `up` / `down` for 500 ms per press.
 - Lines starting with `#` are comments: echoed to the log, and they don't stop a running capture. Use them to annotate tests.
 - Codec: `hd::ir::encodeFrame`, `encodeBurst`, `decodeFrames`, `summarize` in [`hd_ir.h`](../lib/hdcore/src/hd_ir.h), tested in [`test/test_native_ir`](../test/test_native_ir/test_main.cpp) against real captured frames.

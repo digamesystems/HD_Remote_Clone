@@ -19,6 +19,17 @@ void startSniff();
 // Returns false for a bad count.
 bool startBeacon(int count);
 void stop();
+
+// Remote ID (2 bytes) used in wake frames. Saved in flash (NVS), never in the
+// source, since it pairs a remote with the shades.
+bool hasRemoteId();
+bool setRemoteId(const String& hex);  // 4 hex digits, e.g. "12 34" or "1234"
+void clearRemoteId();
+void printRemoteId();
+// Blocking: sends the red-mode wake frame (ID 01 00 80) on ch 33/52/71 in
+// rotation for `ms`, as the original remote does while an arrow is held. The
+// shade ignores IR without it. Returns false if no ID is set or no radio.
+bool sendWake(uint32_t ms);
 bool busy();  // a scan, sniff or loopback is running
 void poll();  // call from loop()
 

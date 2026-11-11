@@ -1,0 +1,80 @@
+# nRF24 sniffs of both Platinum remotes, 2026-11-11
+# Receiver: hiBCTR nRF24L01+ module (radio A, passed `test`), no 10 uF cap yet,
+# on ESP32-DevKitC. Settings: ch 33 only, 2 Mbps, address E7E7E7, CRC-16,
+# 5-byte payload, auto-ack off. One channel of three, so it sees about a third
+# of the packets; the 556 us minimum gap is one packet per channel rotation.
+#
+# Remote IDs are redacted: "xx xx" = weak remote, "yy yy" = working remote.
+# They are different IDs, and both remotes move the shade.
+#
+# "no-group state" and "?" are the firmware's labels at the time. They are
+# now "wake held" (action 80) and "wake release" (action 00).
+#
+# Columns: time since boot, channel, packet count, payload, decode, span of the
+# run, min-max gap between received packets.
+
+# ---- Sniff 1: weak remote. Group 1 + UP, then red-mode arrow presses (not
+# ---- logged individually). The 207.48 run has no tail; probably a press whose
+# ---- tail was missed.
+ch 33 (2433 MHz)  rate 2m  aw 3  addr(on-air) E7 E7 E7  crc 2  pl 5  filter off (runs)
+199.276790 s  ch33  x2098  xx xx 20 01 A1  ID xxxx  mode 20  group 1  UP held  span 1438.0 ms  gap 556-15584 us
+200.715394 s  ch33  x432   xx xx 20 01 21  ID xxxx  mode 20  group 1  UP release  span 301.9 ms  gap 90-8214 us
+207.482767 s  ch33  x89    xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 88.4 ms  gap 557-3691 us
+208.961149 s  ch33  x31    xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 31.5 ms  gap 561-4936 us
+208.995103 s  ch33  x254   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 316.9 ms  gap 556-9316 us
+212.149122 s  ch33  x188   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 171.9 ms  gap 556-5497 us
+212.321549 s  ch33  x176   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 176.9 ms  gap 556-5589 us
+224.626887 s  ch33  x118   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 116.9 ms  gap 556-3695 us
+224.746892 s  ch33  x222   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 227.4 ms  gap 556-3743 us
+Sniff stopped. 3608 packets.
+
+# ---- Sniff 2: weak remote, red-mode arrow presses of varying length (not
+# ---- logged individually). From 295.2 s the runs fragment, with long gaps:
+# ---- probably the weak remote near the edge of its range.
+ch 33 (2433 MHz)  rate 2m  aw 3  addr(on-air) E7 E7 E7  crc 2  pl 5  filter off (runs)
+282.642404 s  ch33  x281   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 284.7 ms  gap 557-3653 us
+282.929010 s  ch33  x57    xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 59.0 ms  gap 412-3704 us
+285.622451 s  ch33  x254   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 259.0 ms  gap 556-3753 us
+285.882031 s  ch33  x87    xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 87.8 ms  gap 557-3745 us
+287.781673 s  ch33  x377   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 412.5 ms  gap 556-10489 us
+288.194755 s  ch33  x289   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 319.9 ms  gap 556-7363 us
+290.832007 s  ch33  x984   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 1593.7 ms  gap 556-14605 us
+292.428216 s  ch33  x308   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 318.8 ms  gap 556-6112 us
+293.564122 s  ch33  x192   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 191.7 ms  gap 558-5599 us
+293.756378 s  ch33  x170   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 157.9 ms  gap 558-6178 us
+294.520263 s  ch33  x178   xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 166.6 ms  gap 556-5032 us
+294.687419 s  ch33  x137   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 169.0 ms  gap 558-8651 us
+295.219887 s  ch33  x59    xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 128.7 ms  gap 557-13505 us
+295.382455 s  ch33  x2     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 11.8 ms  gap 11761-11761 us
+295.431786 s  ch33  x9     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 115.2 ms  gap 1224-28972 us
+295.581981 s  ch33  x1     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state
+295.640786 s  ch33  x2     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 27.0 ms  gap 27029-27029 us
+295.706934 s  ch33  x26    xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 109.7 ms  gap 557-17168 us
+295.940357 s  ch33  x1     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state
+295.971031 s  ch33  x89    xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 127.4 ms  gap 556-11590 us
+296.099066 s  ch33  x634   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 777.0 ms  gap 556-17839 us
+297.269887 s  ch33  x4     xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 38.9 ms  gap 2458-22188 us
+297.502721 s  ch33  x1     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state
+297.659195 s  ch33  x2     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 10.5 ms  gap 10478-10478 us
+297.779075 s  ch33  x17    xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state  span 128.6 ms  gap 609-25270 us
+297.969599 s  ch33  x1     xx xx 01 00 80  ID xxxx  mode 01  group none  no-group state
+298.280740 s  ch33  x40    xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 127.0 ms  gap 563-11084 us
+298.448504 s  ch33  x1     xx xx 01 00 00  ID xxxx  mode 01  group none  ?
+298.510122 s  ch33  x5     xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 12.4 ms  gap 1937-4277 us
+298.575579 s  ch33  x342   xx xx 01 00 00  ID xxxx  mode 01  group none  ?  span 317.5 ms  gap 557-5511 us
+
+# ---- Sniff 3: working remote, ~1 m. The comments were typed before the sniff
+# ---- started; the presses followed in this order: red UP tap, red DOWN held
+# ---- ~2 s, then group 1 and UP (the user confirmed afterwards that group 1
+# ---- alone sends no RF). No packet appeared when the green window expired
+# ---- (the sniff ran ~14 s after the group press).
+# working remote, ~1 m
+# red UP tap
+# red DOWN hold 2s
+# group 1 only, wait 10s
+ch 33 (2433 MHz)  rate 2m  aw 3  addr(on-air) E7 E7 E7  crc 2  pl 5  filter off (runs)
+644.833027 s  ch33  x436   yy yy 01 00 80  ID yyyy  mode 01  group none  no-group state  span 439.3 ms  gap 556-3708 us
+651.772263 s  ch33  x1552  yy yy 01 00 80  ID yyyy  mode 01  group none  no-group state  span 1582.6 ms  gap 556-3740 us
+673.871815 s  ch33  x436   yy yy 20 01 A1  ID yyyy  mode 20  group 1  UP held  span 253.6 ms  gap 556-660 us
+674.126058 s  ch33  x564   yy yy 20 01 21  ID yyyy  mode 20  group 1  UP release  span 331.4 ms  gap 556-660 us
+Sniff stopped. 2988 packets.

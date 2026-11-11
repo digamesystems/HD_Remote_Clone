@@ -1,5 +1,6 @@
 #include "rf_tools.h"
 
+#include <Preferences.h>
 #include <RF24.h>
 #include <SPI.h>
 
@@ -56,6 +57,21 @@ constexpr uint32_t kBeaconSettleMs = 50;
 int beaconTarget = 0, beaconSent = 0, beaconTxFail = 0, beaconRx = 0, beaconRpd = 0;
 uint32_t beaconLastUs = 0, beaconDoneMs = 0;
 
+// --- remote ID for wake frames ---
+// Kept in flash (NVS), not in the source: the ID pairs a remote with the shades,
+// so it stays out of the repo. Set it once with `id <hex>` from a sniff.
+constexpr const char* kPrefsNs = "hd";
+constexpr const char* kPrefsIdKey = "rid";
+uint8_t remoteId[2] = {0, 0};
+bool haveRemoteId = false;
+
+void loadRemoteId() {
+  Preferences prefs;
+  prefs.begin(kPrefsNs, false);
+  haveRemoteId = prefs.getBytes(kPrefsIdKey, remoteId, 2) == 2;
+  prefs.end();
+}
+
 const char* rateName(rf24_datarate_e r) { return hd::rateName(static_cast<hd::Rate>(r)); }
 
 bool ensureRadio() {
@@ -78,6 +94,9 @@ bool ensureRadioB() {
 void applyCommon(RF24& r) {
   r.stopListening();
   r.setAutoAck(false);
+  // Auto-ack off and no retries: ShockBurst-compatible frames with no packet
+  // control field, which is how the remote's frames arrive (88 bits on air).
+  r.setRetries(0, 0);
   r.disableDynamicPayloads();
   r.setDataRate(cfg.rate);
   r.setChannel(cfg.channel);
@@ -205,7 +224,74 @@ void pollBeacon() {
 
 }  // namespace
 
-void begin() { ensureRadio(); }
+void begin() {
+  loadRemoteId();
+  ensureRadio();
+}
+
+bool hasRemoteId() { return haveRemoteId; }
+
+bool setRemoteId(const String& hex) {
+  uint8_t tmp[5];
+  if (hd::parseHex(hex.c_str(), tmp, sizeof(tmp)) != 2) return false;
+  Preferences prefs;
+  prefs.begin(kPrefsNs, false);
+  bool ok = prefs.putBytes(kPrefsIdKey, tmp, 2) == 2;
+  prefs.end();
+  if (ok) {
+    memcpy(remoteId, tmp, 2);
+    haveRemoteId = true;
+  }
+  return ok;
+}
+
+void clearRemoteId() {
+  Preferences prefs;
+  prefs.begin(kPrefsNs, false);
+  prefs.remove(kPrefsIdKey);
+  prefs.end();
+  haveRemoteId = false;
+}
+
+void printRemoteId() {
+  if (haveRemoteId) Serial.printf("Remote ID: %02X %02X (saved in flash)\n", remoteId[0], remoteId[1]);
+  else Serial.println("Remote ID: not set. Use: id <4 hex digits>, from a sniff of your remote.");
+}
+
+bool sendWake(uint32_t ms) {
+  if (!haveRemoteId) {
+    Serial.println("No RF wake: remote ID not set (id <hex>).");
+    return false;
+  }
+  if (!ensureRadio()) return false;
+  // Always the Platinum settings, whatever the sniffer is set to.
+  radio.stopListening();
+  radio.setAutoAck(false);
+  radio.setRetries(0, 0);
+  radio.disableDynamicPayloads();
+  radio.setDataRate(RF24_2MBPS);
+  radio.setAddressWidth(hd::rf::kAddrWidth);
+  radio.setCRCLength(RF24_CRC_16);
+  radio.setPayloadSize(hd::rf::kPayloadSize);
+  radio.setPALevel(RF24_PA_HIGH);  // -6 dBm on a genuine part, about what the original sends
+  uint8_t reg[5] = {0};
+  hd::onAirToRegister(hd::rf::kAddress, hd::rf::kAddrWidth, reg);
+  radio.openWritingPipe(reg);
+
+  uint8_t p[hd::rf::kPayloadSize];
+  hd::rf::wakePayload(remoteId[0], remoteId[1], p);
+  // One packet per channel in rotation, like the remote. Each write() waits for
+  // the PLL to settle and the packet to go out, ~0.2 ms, close to its pacing.
+  uint32_t sent = 0, t0 = millis();
+  while (millis() - t0 < ms) {
+    radio.setChannel(hd::rf::kChannels[sent % 3]);
+    radio.write(p, sizeof(p));
+    sent++;
+  }
+  Serial.printf("RF wake: %lu packets in %lu ms (ch 33/52/71).\n", (unsigned long)sent,
+                (unsigned long)(millis() - t0));
+  return true;
+}
 
 void selfTest(int label) {
   Serial.printf("--- nRF24 self-test, module #%d ---\n", label);

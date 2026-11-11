@@ -23,6 +23,7 @@ void tearDown() {}
 void applyHd(RF24& r, uint8_t channel) {
   r.stopListening();
   r.setAutoAck(false);
+  r.setRetries(0, 0);  // with auto-ack off: ShockBurst-compatible, no packet-control field
   r.disableDynamicPayloads();
   r.setDataRate(RF24_2MBPS);
   r.setChannel(channel);

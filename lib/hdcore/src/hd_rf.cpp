@@ -25,9 +25,18 @@ const char* actionName(uint8_t action) {
     case kActionDownHeld: return "DOWN held";
     case kActionUpRelease: return "UP release";
     case kActionDownRelease: return "DOWN release";
-    case kActionNoGroup: return "no-group state";
+    case kActionWakeHeld: return "wake held";
+    case kActionWakeRelease: return "wake release";
   }
   return "?";
+}
+
+void wakePayload(uint8_t id0, uint8_t id1, uint8_t out[kPayloadSize]) {
+  out[0] = id0;
+  out[1] = id1;
+  out[2] = kModeNoGroup;
+  out[3] = kGroupNone;
+  out[4] = kActionWakeHeld;
 }
 
 std::string describePayload(const uint8_t* p, size_t len) {
