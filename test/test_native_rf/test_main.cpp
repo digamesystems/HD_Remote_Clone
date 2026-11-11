@@ -142,6 +142,38 @@ void test_action_names() {
   TEST_ASSERT_EQUAL_STRING("?", rf::actionName(0x42));
 }
 
+void test_group_payload_matches_sniff() {
+  // Group 1 + UP as sniffed (ID made up): A1 while held, then the 21 tail.
+  uint8_t p[5];
+  rf::groupPayload(0x12, 0x34, 0x01, true, true, p);
+  const uint8_t held[5] = {0x12, 0x34, 0x20, 0x01, 0xA1};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(held, p, 5);
+  rf::groupPayload(0x12, 0x34, 0x01, true, false, p);
+  const uint8_t tail[5] = {0x12, 0x34, 0x20, 0x01, 0x21};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(tail, p, 5);
+}
+
+void test_group_payload_down_and_all() {
+  uint8_t p[5];
+  rf::groupPayload(0x12, 0x34, rf::kGroupAll, false, true, p);
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 20  group All  DOWN held", rf::describePayload(p, 5).c_str());
+  rf::groupPayload(0x12, 0x34, 0x08, false, false, p);
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 20  group 4  DOWN release", rf::describePayload(p, 5).c_str());
+}
+
+void test_parse_group() {
+  TEST_ASSERT_EQUAL(0x01, rf::parseGroup("1"));
+  TEST_ASSERT_EQUAL(0x02, rf::parseGroup("2"));
+  TEST_ASSERT_EQUAL(0x04, rf::parseGroup("3"));
+  TEST_ASSERT_EQUAL(0x08, rf::parseGroup("4"));
+  TEST_ASSERT_EQUAL(0xFF, rf::parseGroup("all"));
+  TEST_ASSERT_EQUAL(0xFF, rf::parseGroup("ALL"));
+  TEST_ASSERT_EQUAL(-1, rf::parseGroup("0"));
+  TEST_ASSERT_EQUAL(-1, rf::parseGroup("5"));
+  TEST_ASSERT_EQUAL(-1, rf::parseGroup(""));
+  TEST_ASSERT_EQUAL(-1, rf::parseGroup("al"));
+}
+
 void test_describe_needs_five_bytes() {
   const uint8_t p[6] = {0};
   TEST_ASSERT_EQUAL_STRING("", rf::describePayload(p, 4).c_str());
@@ -215,6 +247,9 @@ int main() {
   RUN_TEST(test_describe_forum_example);
   RUN_TEST(test_describe_wake_frames);
   RUN_TEST(test_wake_payload_layout);
+  RUN_TEST(test_group_payload_matches_sniff);
+  RUN_TEST(test_group_payload_down_and_all);
+  RUN_TEST(test_parse_group);
   RUN_TEST(test_group_names);
   RUN_TEST(test_action_names);
   RUN_TEST(test_describe_needs_five_bytes);

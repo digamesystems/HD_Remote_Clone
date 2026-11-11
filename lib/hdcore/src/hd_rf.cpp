@@ -39,6 +39,23 @@ void wakePayload(uint8_t id0, uint8_t id1, uint8_t out[kPayloadSize]) {
   out[4] = kActionWakeHeld;
 }
 
+void groupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool up, bool held,
+                  uint8_t out[kPayloadSize]) {
+  out[0] = id0;
+  out[1] = id1;
+  out[2] = kModeGroup;
+  out[3] = group;
+  if (up) out[4] = held ? kActionUpHeld : kActionUpRelease;
+  else out[4] = held ? kActionDownHeld : kActionDownRelease;
+}
+
+int parseGroup(const std::string& s) {
+  if (s.size() == 1 && s[0] >= '1' && s[0] <= '4') return 1 << (s[0] - '1');
+  if (s.size() == 3 && (s[0] | 0x20) == 'a' && (s[1] | 0x20) == 'l' && (s[2] | 0x20) == 'l')
+    return kGroupAll;
+  return -1;
+}
+
 std::string describePayload(const uint8_t* p, size_t len) {
   if (len != kPayloadSize) return "";
   char buf[64];

@@ -22,6 +22,12 @@ constexpr uint32_t kArrowQuietMs = 100;  // input silence that ends a held key's
 // RF wake before each IR command. The working remote sends ~440 ms for a quick tap.
 constexpr uint32_t kWakeMs = 450;
 constexpr uint32_t kMaxWakeMs = 5000;
+// RF group command: the working remote held A1 for ~250 ms on a tap, and its
+// release tail lasted ~330 ms. Hold capped at 5 s, like `send` (manual p. 21:
+// OPEN held 6 s at a fully open shade resets its limits).
+constexpr uint32_t kGroupHoldMs = 300;
+constexpr uint32_t kGroupTailMs = 330;
+constexpr uint32_t kGroupMaxHoldMs = 5000;
 bool autoWake = true;
 
 // Arrow-key sequence (experiment): RF on ch 33, IR, RF on ch 52, IR, RF on ch 71,
@@ -75,7 +81,9 @@ void help() {
       "                          (on, default) or wake + one 500 ms IR burst (off)\n"
       "  wake [ms|on|off]        send the RF wake alone (default 450 ms), or turn the\n"
       "                          automatic wake before send / arrow keys on or off\n"
-      "  id [hex|clear]          show or set the remote ID used by wake (saved in flash)\n"
+      "  id [hex|clear]          show or set the remote ID used by wake / grp (saved in flash)\n"
+      "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
+      "                          (default 300, max 5000), then the release tail. No IR\n"
       "  play [slot|last] [n] [gap_ms]  replay at 40 kHz (default last, 1x, 40 ms)\n"
       "  save <slot>             copy last capture to slot 0-7 (RAM only)\n"
       "  list                    show slot sizes\n"
@@ -193,6 +201,14 @@ void handle(String cmdline) {
       if (ms <= 0 || (uint32_t)ms > kMaxWakeMs) ok = false;
       else rf::sendWake(ms);
     }
+  }
+  else if (c == "grp") {
+    int group = hd::rf::parseGroup(tok[1].c_str());
+    tok[2].toLowerCase();
+    bool up = tok[2] == "up";
+    long ms = tok[3].length() ? tok[3].toInt() : kGroupHoldMs;
+    if (group < 0 || !(up || tok[2] == "down") || ms <= 0 || (uint32_t)ms > kGroupMaxHoldMs) ok = false;
+    else rf::sendGroup(group, up, ms, kGroupTailMs);
   }
   else if (c == "seq") {
     tok[1].toLowerCase();

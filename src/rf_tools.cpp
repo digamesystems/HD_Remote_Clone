@@ -284,21 +284,44 @@ bool prepareWake(uint8_t* p) {
   return true;
 }
 
+// Sends `p` for `ms`, one packet per channel in rotation like the remote. Each
+// write() waits for the PLL to settle and the packet to go out (~0.3 ms with
+// SPI). Returns the packet count.
+uint32_t rotateBurst(const uint8_t* p, uint32_t ms) {
+  uint32_t sent = 0, t0 = millis();
+  while (millis() - t0 < ms) {
+    radio.setChannel(hd::rf::kChannels[sent % 3]);
+    radio.write(p, hd::rf::kPayloadSize);
+    sent++;
+  }
+  return sent;
+}
+
 }  // namespace
 
 bool sendWake(uint32_t ms) {
   uint8_t p[hd::rf::kPayloadSize];
   if (!prepareWake(p)) return false;
-  // One packet per channel in rotation, like the remote. Each write() waits for
-  // the PLL to settle and the packet to go out (~0.3 ms measured with SPI).
-  uint32_t sent = 0, t0 = millis();
-  while (millis() - t0 < ms) {
-    radio.setChannel(hd::rf::kChannels[sent % 3]);
-    radio.write(p, sizeof(p));
-    sent++;
-  }
+  uint32_t t0 = millis();
+  uint32_t sent = rotateBurst(p, ms);
   Serial.printf("RF wake: %lu packets in %lu ms (ch 33/52/71).\n", (unsigned long)sent,
                 (unsigned long)(millis() - t0));
+  return true;
+}
+
+bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs) {
+  uint8_t p[hd::rf::kPayloadSize];
+  if (!prepareWake(p)) return false;  // radio setup; the payload is replaced below
+  hd::rf::groupPayload(remoteId[0], remoteId[1], group, up, true, p);
+  uint32_t held = rotateBurst(p, holdMs);
+  hd::rf::groupPayload(remoteId[0], remoteId[1], group, up, false, p);
+  uint32_t tail = rotateBurst(p, tailMs);
+  Serial.printf("RF group %s %s: %lu x %02X %02X %02X %02X %02X (%lu ms), then %lu x tail %02X (%lu ms)\n",
+                hd::rf::groupName(group).c_str(), up ? "UP" : "DOWN", (unsigned long)held,
+                remoteId[0], remoteId[1], hd::rf::kModeGroup, group,
+                up ? hd::rf::kActionUpHeld : hd::rf::kActionDownHeld, (unsigned long)holdMs,
+                (unsigned long)tail, up ? hd::rf::kActionUpRelease : hd::rf::kActionDownRelease,
+                (unsigned long)tailMs);
   return true;
 }
 

@@ -33,6 +33,10 @@ bool sendWake(uint32_t ms);
 // Blocking: wake frames on one channel only, for `ms` (at least one packet).
 // Prints nothing on success. Returns the packet count, or -1 on error.
 long sendWakeOn(uint8_t channel, uint32_t ms);
+// Blocking: a group command as the remote sends it in green mode: ID 20 GROUP
+// A1/A2 for `holdMs` (the arrow held), then the 21/22 release tail for
+// `tailMs`, rotating ch 33/52/71. group: 0x01/02/04/08 or 0xFF (All). RF only.
+bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs);
 bool busy();  // a scan, sniff or loopback is running
 void poll();  // call from loop()
 

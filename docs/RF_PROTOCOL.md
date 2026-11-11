@@ -16,6 +16,7 @@ The air settings come from prior work by [spitcool/hd-platinum-rf](https://githu
 | Release tail `ID 01 00 00` after the wake | weak remote only; the working remote sends none |
 | Nothing is sent when the green window expires | ✅ one observation (working remote) |
 | A clone sending the wake + IR moves the shade | ✅ 2026-11-11, no original remote involved: reliable with the LED about 1 ft from the sensor eye; misses traced to IR aim. See [Shade tests](IR_PROTOCOL.md#2026-11-11-clone-only-rf-wake--ir) |
+| Clone group commands move the shades (`grp`) | ✅ 2026-11-11: groups 1–4 independently and All, UP and DOWN, with the working remote's ID. RF only, no aiming. DOWN (`A2` / `22`) and groups 2–4 / All are confirmed by the shades' response; we haven't sniffed them from a remote |
 | Shade checks the ID | not tested yet (try an unknown ID) |
 | Channels 52 and 71 | not sniffed yet (taken from spitcool's notes) |
 
@@ -41,8 +42,8 @@ Our receiver was a clone module marked `NRF24L01+` (see [WIRING.md](WIRING.md)),
 |---|---|
 | `ID0 ID1` | The remote's ID. **Our two remotes have different IDs, and both move the shade**, so a shade accepts more than one remote. Treat an ID as private. It's redacted as `xx xx` / `yy yy` here |
 | `MODE` | `20` group command; `01` red-mode (IR) press |
-| `GROUP` | `01` group 1 (spitcool: one-hot `01/02/04/08`, `FF` All); `00` none |
-| `ACTION` | `A1` UP held, `21` UP release tail (spitcool also lists `A2` / `22` for DOWN); `80` wake held; `00` wake release tail |
+| `GROUP` | one-hot `01/02/04/08` for groups 1–4, `FF` All (from spitcool); `00` none. We sniffed `01`; the others work when the clone sends them |
+| `ACTION` | `A1` UP held, `21` UP release tail (sniffed); `A2` DOWN held, `22` DOWN release tail (from spitcool, and they work when the clone sends them); `80` wake held; `00` wake release tail |
 
 No counter or rolling code: every packet of a press is identical, and presses repeat the same payload.
 
@@ -84,12 +85,26 @@ So a replacement should send `ID 01 00 80`, using an ID the shade accepts, for a
 
 **Shown on 2026-11-11.** Our clone sent `ID 01 00 80` with the working remote's ID for 450 ms. It rotated ch 33/52/71, one packet about every 300 µs, so about 1,500 packets. No `00` tail. The IR followed immediately, and the shade obeyed: up, down and stop, with a new wake for each command. So the tail isn't needed, and sending RF before IR, rather than at the same time, works. Still untested: whether the shade checks the ID, the shortest wake that works, and how the original times its RF against its IR.
 
+The same day, interleaving RF and IR (RF on one channel, IR, the next channel, IR, and so on: `seq`) made aiming feel much less critical. That's a hand-held impression, with a controlled test planned. See [IR_PROTOCOL.md](IR_PROTOCOL.md#2026-11-11-clone-only-rf-wake--ir).
+
+## Group commands from the clone
+
+**2026-11-11.** The clone sent `ID 20 <group> A1` (UP) or `A2` (DOWN) for 300 ms, then the `21` / `22` release tail for 330 ms, rotating ch 33/52/71 (`grp`). It used the working remote's ID. These timings copy a quick tap on the working remote. No IR was sent, and the clone wasn't aimed.
+
+| Command | Result |
+|---|---|
+| Groups 1, 2, 3, 4, UP and DOWN | each group's shades moved, independently of the others |
+| All, UP and DOWN | all groups moved |
+
+So RF group control works from our own radio. This also confirms, by the shades' response, the parts of the layout we hadn't sniffed: groups `02` / `04` / `08`, All = `FF`, and DOWN = `A2` / `22`. Trial counts weren't recorded. The household has four groups.
+
 ## Firmware support
 
 - `sniff`: receive at these settings. One line per run of identical packets.
-- `id <hex>`: store the remote ID for the wake. It's saved in the ESP32's flash, not in the source.
+- `id <hex>`: store the remote ID for wake and group frames. It's saved in the ESP32's flash, not in the source.
 - `wake [ms]`: send the wake alone (default 450 ms, rotating ch 33/52/71).
-- `send` and the PC arrow keys: wake first, then IR. `wake off` turns that off.
+- `send` and the PC arrow keys: wake first, then IR (the arrow keys interleave them; see `seq`). `wake off` turns that off.
+- `grp <1-4|all> <up|down> [ms]`: a group command, held frames for `ms` (default 300, max 5000), then the release tail.
 
 ## Open questions
 
@@ -97,7 +112,7 @@ So a replacement should send `ID 01 00 80`, using an ID the shade accepts, for a
 - How long does the shade stay receptive after the wake, and does the original send IR during or after the RF? (Measure with the analyzer: IR receiver OUT plus our module's IRQ during `sniff`.)
 - The shortest wake that works (needs a setting for the automatic wake length).
 - Sniff channels 52 and 71 to confirm the rotation.
-- Group commands from the clone (`ID 20 <group> A1/A2`, then the tail), for RF-only control.
+- ~~Group commands from the clone~~ Done 2026-11-11 (see [Group commands from the clone](#group-commands-from-the-clone)). Still open: does a shorter hold or tail work, and how does a long hold behave (does the shade keep moving only while frames arrive)?
 
 ## Evidence
 

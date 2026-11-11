@@ -50,6 +50,15 @@ constexpr uint8_t kBeaconPayload[kPayloadSize] = {0x00, 0x00, 0x00, 0x00, 0x55};
 // The frame a red-mode arrow press sends: ID0 ID1 01 00 80.
 void wakePayload(uint8_t id0, uint8_t id1, uint8_t out[kPayloadSize]);
 
+// A group command frame: ID0 ID1 20 GROUP ACTION. held: A1 (up) / A2 (down),
+// sent while the arrow is held; otherwise the release tail 21 / 22. Up/A1/21
+// were seen on our remotes; down/A2/22 come from spitcool's notes.
+void groupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool up, bool held,
+                  uint8_t out[kPayloadSize]);
+
+// "1".."4" -> 0x01, 0x02, 0x04, 0x08; "all" -> 0xFF (any case). -1 if invalid.
+int parseGroup(const std::string& s);
+
 // "1".."4", "All", "none", or "mask 0x03" for anything else.
 std::string groupName(uint8_t group);
 // "UP held", "DOWN held", "UP release", "DOWN release", "wake held",
