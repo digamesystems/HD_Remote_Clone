@@ -30,6 +30,9 @@ void printRemoteId();
 // rotation for `ms`, as the original remote does while an arrow is held. The
 // shade ignores IR without it. Returns false if no ID is set or no radio.
 bool sendWake(uint32_t ms);
+// Blocking: wake frames on one channel only, for `ms` (at least one packet).
+// Prints nothing on success. Returns the packet count, or -1 on error.
+long sendWakeOn(uint8_t channel, uint32_t ms);
 bool busy();  // a scan, sniff or loopback is running
 void poll();  // call from loop()
 

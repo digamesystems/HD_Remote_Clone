@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "hd_ir.h"
+#include "hd_rf.h"
 #include "ir_tools.h"
 #include "key_parser.h"
 #include "parse.h"
@@ -23,6 +24,45 @@ constexpr uint32_t kWakeMs = 450;
 constexpr uint32_t kMaxWakeMs = 5000;
 bool autoWake = true;
 
+// Arrow-key sequence (experiment): RF on ch 33, IR, RF on ch 52, IR, RF on ch 71,
+// IR. `seq off` goes back to one wake (all channels) followed by one IR burst.
+struct SeqConfig {
+  bool on = true;
+  uint32_t rfMs = 50;   // wake frames per channel step
+  uint32_t gapMs = 0;   // pause between each RF step and the IR after it
+  uint32_t irMs = 170;  // IR per step (10 frames)
+} seq;
+constexpr uint32_t kSeqMaxMs = 2000;
+
+void printSeq() {
+  Serial.printf("Arrow keys: %s. seq rf %lu ms/channel, gap %lu ms, ir %lu ms/step\n",
+                seq.on ? "RF ch33, IR, RF ch52, IR, RF ch71, IR (seq on)"
+                       : "one wake on all channels, then one IR burst (seq off)",
+                (unsigned long)seq.rfMs, (unsigned long)seq.gapMs, (unsigned long)seq.irMs);
+}
+
+// Runs the interleaved sequence, then prints when each step started (ms from
+// the first RF packet). Printing waits until the end so it can't skew timing.
+void runSeq(uint8_t code) {
+  uint32_t t0 = millis(), rfAt[3], irAt[3];
+  long packets[3];
+  for (int i = 0; i < 3; i++) {
+    rfAt[i] = millis() - t0;
+    packets[i] = rf::sendWakeOn(hd::rf::kChannels[i], seq.rfMs);
+    if (packets[i] < 0) return;  // no ID or no radio; reason already printed
+    if (seq.gapMs) delay(seq.gapMs);
+    irAt[i] = millis() - t0;
+    ir::sendCode(code, seq.irMs);
+  }
+  Serial.printf("Seq %s:", hd::ir::codeToBits(code).c_str());
+  for (int i = 0; i < 3; i++) {
+    Serial.printf("  RF ch%u x%ld @%lu ms, IR @%lu ms", hd::rf::kChannels[i], packets[i],
+                  (unsigned long)rfAt[i], (unsigned long)irAt[i]);
+    if (i < 2) Serial.print(";");
+  }
+  Serial.printf("  (total %lu ms)\n", (unsigned long)(millis() - t0));
+}
+
 void help() {
   Serial.println(F(
       "\nCommands (any line except a # comment stops a running mode):\n"
@@ -30,7 +70,9 @@ void help() {
       "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
       "  send <up|down|bbbb> [ms]  RF wake, then HD frames at 40 kHz (default 1000 ms;\n"
       "                            up/down = channel A; max 5000 ms for OPEN, 10000 otherwise)\n"
-      "  Up/Down arrow keys      send up/down for 500 ms (works at the prompt or during capture)\n"
+      "  Up/Down arrow keys      send up/down (works at the prompt or during capture); see seq\n"
+      "  seq [on|off|rf|gap|ir <ms>]  arrow keys: RF ch33, IR, RF ch52, IR, RF ch71, IR\n"
+      "                          (on, default) or wake + one 500 ms IR burst (off)\n"
       "  wake [ms|on|off]        send the RF wake alone (default 450 ms), or turn the\n"
       "                          automatic wake before send / arrow keys on or off\n"
       "  id [hex|clear]          show or set the remote ID used by wake (saved in flash)\n"
@@ -92,7 +134,8 @@ void sendIr(uint8_t code, uint32_t ms) {
 // partial escape sequence, which would otherwise land in the command line.
 void sendArrow(uint8_t code) {
   Serial.println();
-  sendIr(code, kArrowBurstMs);
+  if (seq.on) runSeq(code);
+  else sendIr(code, kArrowBurstMs);
   uint32_t lastInput = millis();
   while (millis() - lastInput < kArrowQuietMs) {
     if (Serial.available()) {
@@ -150,6 +193,17 @@ void handle(String cmdline) {
       if (ms <= 0 || (uint32_t)ms > kMaxWakeMs) ok = false;
       else rf::sendWake(ms);
     }
+  }
+  else if (c == "seq") {
+    tok[1].toLowerCase();
+    long v = tok[2].toInt();
+    bool inRange = tok[2].length() && v >= 0 && v <= (long)kSeqMaxMs;
+    if (tok[1] == "on" || tok[1] == "off") seq.on = tok[1] == "on";
+    else if (tok[1] == "rf" && inRange) seq.rfMs = v;
+    else if (tok[1] == "gap" && inRange) seq.gapMs = v;
+    else if (tok[1] == "ir" && inRange && v > 0) seq.irMs = v;
+    else if (tok[1].length()) ok = false;
+    if (ok) printSeq();
   }
   else if (c == "id") {
     tok[1].toLowerCase();

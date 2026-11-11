@@ -116,7 +116,8 @@ Type `help` in the monitor. Sending any line stops a running capture, scan or sn
 |---|---|
 | `ir [quiet]` | Capture IR; print the decoded HD frame summary (code, frames, duration) plus the raw `uint16_t rawData[]` (`quiet`: summary only) |
 | `send <up\|down\|bbbb> [ms]` | Send the RF wake, then HD frames at 40 kHz for `ms` (default 1000). `up`/`down` are channel A; use `1001`/`1010` for B. Max 5000 ms for OPEN, 10000 otherwise |
-| Up / Down arrow keys | Send the wake, then `up` / `down` (channel A) for 500 ms per press, at the prompt or during capture |
+| Up / Down arrow keys | Send `up` / `down` (channel A) with the RF wake, at the prompt or during capture. Pattern set by `seq` |
+| `seq [on\|off\|rf\|gap\|ir <ms>]` | Arrow-key pattern. `on` (default, experimental): RF on ch 33, IR, RF on ch 52, IR, RF on ch 71, IR, with `rf` ms of wake per channel (default 50), a `gap` before each IR (0) and `ir` ms per IR step (170). `off`: one 450 ms wake on all channels, then one 500 ms IR burst |
 | `id [hex\|clear]` | Show or set the remote ID used in the wake frame (from a sniff). Saved in the ESP32's flash, not in the source |
 | `wake [ms\|on\|off]` | Send the RF wake (`ID 01 00 80` on ch 33/52/71) alone for `ms` (default 450), or turn the automatic wake before `send` / arrow keys on or off |
 | `# <note>` | Comment for the serial log. Doesn't stop a running capture, scan or sniff |

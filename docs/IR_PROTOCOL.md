@@ -163,6 +163,10 @@ The clone sends the wake frame `ID 01 00 80`, using the working remote's ID (set
 - The misses track the aim, not the RF: steadier and closer aiming fixed them. So IR power and beam width are the limiting factors now. The TSAL6200's beam is narrow (±17°), and the shade's receiver appears less sensitive than ours.
 - **Off-axis impression (user, unconfirmed):** the LED seemed to work best pointed slightly off what looked like "straight at the sensor eye". Possible causes: the receiver may sit behind the window at an angle or offset, or the LED's peak may be off its mechanical axis. Not yet tested.
 
+**Interleaved sequence (same day).** The PC arrow keys were changed to send RF on ch 33 (50 ms), IR (170 ms, 10 frames), RF on ch 52, IR, RF on ch 71, IR: about 660 ms in all (`seq`). With the LED hand-held and aimed by eye, this **worked every time at more than 6 ft, and aiming felt much less critical** than with one 450 ms wake followed by 500 ms of IR. That's an impression, since hand shake varies the aim. A controlled comparison with a fixed mount is planned: an A/B test of the two patterns, then a sweep of the RF-to-IR gap to find how long the shade listens after a wake.
+
+The leading explanation: the shade opens a fixed listening window when it first hears the wake. In the old pattern, much of the IR arrived late in that window. The interleaved pattern starts IR 50 ms after the RF and gives three fresh chances. It's probably also closer to the original, which appears to send RF and IR together while the key is held.
+
 **Not yet done:** controls with `wake off` (IR only) and an ID the shade doesn't know; exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap).
 
 ### 2026-11-09: clone IR + remote RF
@@ -257,7 +261,7 @@ The small-hole result agrees with the foil tube, but on its own it was weak: the
 ### Next
 
 1. **Clone alone:** ✅ works (2026-11-11, above). Still to run: controls with `wake off` (IR only) and an ID the shade doesn't know; then improve IR range (a second LED, a wider-angle LED, or a test of the off-axis aim).
-2. **Receptive window.** `wake`, then wait 1, 2, 5 s before `wake off` + `send`. How long does the RF enable last?
+2. **Receptive window, and `seq` on vs off.** With the LED on a fixed mount at a marginal aim (missing about half the time): compare `seq off` with `seq on` over at least 10 presses each, logged `# y` / `# n`. Then sweep `seq gap` 0, 100, 200, 400 and 800 ms. A sharp drop past some gap gives the shade's listening window after the RF.
 3. ~~**nRF24 sniff**~~ Done 2026-11-11: red-mode presses send `ID 01 00 80`, as predicted. See [RF_PROTOCOL.md](RF_PROTOCOL.md).
 4. **Measure the foil directly** with a module at the tube's mouth, remote bare vs. wrapped.
 5. **Probe the remote's own LED drive** for the true carrier frequency, duty cycle and timings.

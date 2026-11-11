@@ -258,7 +258,10 @@ void printRemoteId() {
   else Serial.println("Remote ID: not set. Use: id <4 hex digits>, from a sniff of your remote.");
 }
 
-bool sendWake(uint32_t ms) {
+namespace {
+
+// Sets up radio A to transmit wake frames at the Platinum settings. Fills `p`.
+bool prepareWake(uint8_t* p) {
   if (!haveRemoteId) {
     Serial.println("No RF wake: remote ID not set (id <hex>).");
     return false;
@@ -277,11 +280,17 @@ bool sendWake(uint32_t ms) {
   uint8_t reg[5] = {0};
   hd::onAirToRegister(hd::rf::kAddress, hd::rf::kAddrWidth, reg);
   radio.openWritingPipe(reg);
-
-  uint8_t p[hd::rf::kPayloadSize];
   hd::rf::wakePayload(remoteId[0], remoteId[1], p);
+  return true;
+}
+
+}  // namespace
+
+bool sendWake(uint32_t ms) {
+  uint8_t p[hd::rf::kPayloadSize];
+  if (!prepareWake(p)) return false;
   // One packet per channel in rotation, like the remote. Each write() waits for
-  // the PLL to settle and the packet to go out, ~0.2 ms, close to its pacing.
+  // the PLL to settle and the packet to go out (~0.3 ms measured with SPI).
   uint32_t sent = 0, t0 = millis();
   while (millis() - t0 < ms) {
     radio.setChannel(hd::rf::kChannels[sent % 3]);
@@ -291,6 +300,19 @@ bool sendWake(uint32_t ms) {
   Serial.printf("RF wake: %lu packets in %lu ms (ch 33/52/71).\n", (unsigned long)sent,
                 (unsigned long)(millis() - t0));
   return true;
+}
+
+long sendWakeOn(uint8_t channel, uint32_t ms) {
+  uint8_t p[hd::rf::kPayloadSize];
+  if (!prepareWake(p)) return -1;
+  radio.setChannel(channel);
+  long sent = 0;
+  uint32_t t0 = millis();
+  do {  // at least one packet, even for ms = 0
+    radio.write(p, sizeof(p));
+    sent++;
+  } while (millis() - t0 < ms);
+  return sent;
 }
 
 void selfTest(int label) {
