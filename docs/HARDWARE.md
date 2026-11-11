@@ -134,6 +134,15 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 - Buttons laid out like the original: arrows large and central, group keys in a row, ALL separate, SETUP on the back.
 - Size and shape follow the enclosure, which isn't chosen yet. *open*
 
+## Later revision idea: XIAO ESP32-S3
+
+This design uses 22 of the WROOM-32E's 26 usable GPIOs (free: 13, plus strapping pins 2, 12 and 15), so it won't fit a XIAO, which has 11. A smaller second revision could fit, by:
+
+- putting all 8 buttons on **one ADC pin through a resistor ladder**. Any press also pulls the pin high, which can wake the chip from deep sleep; the cost is no simultaneous presses, which the original never needs;
+- dropping the IR receiver footprint, and maybe folding the A/B switch into the ladder.
+
+That's 11 pins: nRF24 5, IR 1, bicolor LED 2, ladder 1, battery sense 1, A/B 1. The XIAO's own USB-C and LiPo charger would replace the CP2102N, the MCP73831 and probably the LDO. The costs are no spare pins, single-press-only buttons and an ESP32-S3 firmware port. Agreed 2026-11-11: WROOM first, XIAO as a possible later revision.
+
 ## Open questions
 
 1. **Enclosure:** OKW Style-Case M or L (IR-transparent PMMA), or Smart-Case L. Needs OKW's STEP/DXF drawing for the internal height, pillar positions and board outline. Fit concerns: the nRF24 module in its socket is ~12 mm tall (a right-angle header lays it flat if needed); keys through drilled holes (tactile switches with long plungers or keycaps) or a membrane keypad; a filed slot for the USB-C.
