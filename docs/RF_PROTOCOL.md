@@ -17,7 +17,7 @@ The air settings come from prior work by [spitcool/hd-platinum-rf](https://githu
 | Nothing is sent when the green window expires | ✅ one observation (working remote) |
 | A clone sending the wake + IR moves the shade | ✅ 2026-11-11, no original remote involved: reliable with the LED about 1 ft from the sensor eye; misses traced to IR aim. See [Shade tests](IR_PROTOCOL.md#2026-11-11-clone-only-rf-wake--ir) |
 | Clone group commands move the shades (`grp`) | ✅ 2026-11-11: groups 1–4 independently and All, UP and DOWN, with the working remote's ID. RF only, no aiming. DOWN (`A2` / `22`) and groups 2–4 / All are confirmed by the shades' response; we haven't sniffed them from a remote |
-| Shade checks the ID | not tested yet (try an unknown ID) |
+| Shade checks the ID | ✅ **yes** (2026-11-11): with a made-up ID (`12 34`), the shades ignored both the wake + IR and group commands. With either paired remote's ID (working `yy yy` or weak `xx xx`), both work |
 | Channels 52 and 71 | not sniffed yet (taken from spitcool's notes) |
 
 ## Air settings
@@ -83,6 +83,8 @@ From the shade tests in [IR_PROTOCOL.md](IR_PROTOCOL.md#shade-tests): the shade 
 
 So a replacement should send `ID 01 00 80`, using an ID the shade accepts, for a few hundred ms, then the IR command, every time.
 
+**The ID matters.** The shade acts on the IR only if the wake carries the ID of a remote it's paired with, and it applies the same check to group commands. A made-up ID got no response from either path (2026-11-11). So the wake is an authenticated enable, not a bare wake-up, and a replacement must use a paired remote's ID. The alternatives would be pairing it as a backup remote (manual p. 7) or reproducing the pairing exchange, which we haven't sniffed.
+
 **Shown on 2026-11-11.** Our clone sent `ID 01 00 80` with the working remote's ID for 450 ms. It rotated ch 33/52/71, one packet about every 300 µs, so about 1,500 packets. No `00` tail. The IR followed immediately, and the shade obeyed: up, down and stop, with a new wake for each command. So the tail isn't needed, and sending RF before IR, rather than at the same time, works. Still untested: whether the shade checks the ID, the shortest wake that works, and how the original times its RF against its IR.
 
 The same day, interleaving RF and IR (RF on one channel, IR, the next channel, IR, and so on: `seq`) made aiming feel much less critical. That's a hand-held impression, with a controlled test planned. See [IR_PROTOCOL.md](IR_PROTOCOL.md#2026-11-11-clone-only-rf-wake--ir).
@@ -98,6 +100,17 @@ The same day, interleaving RF and IR (RF on one channel, IR, the next channel, I
 
 So RF group control works from our own radio. This also confirms, by the shades' response, the parts of the layout we hadn't sniffed: groups `02` / `04` / `08`, All = `FF`, and DOWN = `A2` / `22`. Trial counts weren't recorded. The household has four groups.
 
+## Pairing (from the manual)
+
+The Platinum remote guide (© 2012) describes two procedures. Neither has been sniffed yet.
+
+- **Group assignment (p. 5)** is how a shade learns a remote. In setup mode (SETUP on the back, LED flashing green), you press a group key, aim at the shade from a few inches away and press OPEN to add the shade to that group, or CLOSE to remove it. The shade jogs to confirm. A shade can belong to several groups, so it must store entries pairing a remote ID with a group. That fits our finding that the shades accept both of our remotes (different IDs) and reject an unknown one.
+- **Duplicate remote (p. 7):** after a Master Reset, the new remote copies the original's identity from a few inches away. It doesn't create a new pairing, so two duplicated remotes share one ID.
+
+The manual doesn't say how many remotes a shade can store.
+
+**Next experiment:** sniff a setup-mode group assignment. If its RF carries the ID, the group and add/remove, a clone could pair under its own ID instead of reusing a remote's. Removing a test pairing (CLOSE in setup mode) would make probing the capacity safe, as long as the real remotes' entries are left alone.
+
 ## Firmware support
 
 - `sniff`: receive at these settings. One line per run of identical packets.
@@ -108,7 +121,9 @@ So RF group control works from our own radio. This also confirms, by the shades'
 
 ## Open questions
 
-- Does the shade check the ID? (A clone-sent wake + IR with a paired ID works.)
+- ~~Does the shade check the ID?~~ Yes, for both the wake and group commands (2026-11-11).
+- How does pairing work on air? Sniff a setup-mode group assignment (see [Pairing](#pairing-from-the-manual)). The backup-remote copy (p. 7) is a second target. Don't Master Reset either of our remotes to try it.
+- How many remotes can a shade store? The manual doesn't say.
 - How long does the shade stay receptive after the wake, and does the original send IR during or after the RF? (Measure with the analyzer: IR receiver OUT plus our module's IRQ during `sniff`.)
 - The shortest wake that works (needs a setting for the automatic wake length).
 - Sniff channels 52 and 71 to confirm the rotation.

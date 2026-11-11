@@ -20,6 +20,8 @@ The remote has 7 keys: **UP, DOWN, 1, 2, 3, 4, ALL**, plus an **A/B slide switch
 - **The arrow keys are IR by default (red LED).** During an RF window they act as RF group commands instead (green). Once the window expires, they go back to IR.
 - So IR is sent **only by UP or DOWN pressed with no recent group key**. Arrows pressed during an RF window send **no IR** (verified 2026-11-07 with the receiver and `ir quiet`).
 
+The indicator light, per the manual (pp. 5, 7, 8, 17–20): red when an arrow sends IR; steady green on an arrow press during the group window; flashing green for about 30 s in setup mode, and after holding ALL for 6 s to set an intermediate stop; flashing red on a backup remote waiting to copy an original after a Master Reset; no light means flat batteries. In green mode, holding an arrow for 2 s is "express mode" (fully open or close, ignoring the intermediate stop; PowerRise only).
+
 Not yet known:
 - whether arrow presses extend the window
 - whether the original sends its IR during or after its RF. Red-mode arrows send an RF wake frame while held (`ID 01 00 80`, see [RF_PROTOCOL.md](RF_PROTOCOL.md)); the relative timing hasn't been measured
@@ -167,7 +169,9 @@ The clone sends the wake frame `ID 01 00 80`, using the working remote's ID (set
 
 The leading explanation: the shade opens a fixed listening window when it first hears the wake. In the old pattern, much of the IR arrived late in that window. The interleaved pattern starts IR 50 ms after the RF and gives three fresh chances. It's probably also closer to the original, which appears to send RF and IR together while the key is held.
 
-**Not yet done:** controls with `wake off` (IR only) and an ID the shade doesn't know; exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap).
+**ID control (same day):** with the wake carrying a made-up ID (`id 1234`), the shade ignored the clone. With the working remote's ID it obeyed. So the shade checks the ID in the wake ([RF_PROTOCOL.md](RF_PROTOCOL.md#what-the-shade-needs)).
+
+**Not yet done:** the `wake off` control (IR only); exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap).
 
 ### 2026-11-09: clone IR + remote RF
 

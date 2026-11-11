@@ -63,7 +63,7 @@ New to the project? Start here:
 ### Open questions
 
 - **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Yes, by two tests* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. And our clone's IR moves the shade only when the original remote is pressed at the same time (aimed away); alone, 0 of 20. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). The RF it sends is `ID 01 00 80` (sniffed 2026-11-11; spitcool's notes had recorded this frame without knowing its trigger).
-- **Can the clone send the wake itself?** *Yes* (2026-11-11): the clone's own `ID 01 00 80` followed by its IR moves the shade with no original remote, including stops. Next: does the shade check the ID, and how to get more IR range (aim, LED power, beam width)?
+- **Can the clone send the wake itself?** *Yes* (2026-11-11): the clone's own `ID 01 00 80` followed by its IR moves the shade with no original remote, including stops. **The shade checks the ID:** with a made-up ID, it ignores both the wake + IR and group commands, so a replacement must use a paired remote's ID. Next: more IR range (aim, LED power, beam width).
 - **IR behavior on hold:** repeat frames, toggle bits or counters.
 
 ### Reverse-engineering plan
