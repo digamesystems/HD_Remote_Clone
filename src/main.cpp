@@ -47,26 +47,45 @@ void printSeq() {
                 (unsigned long)seq.rfMs, (unsigned long)seq.gapMs, (unsigned long)seq.irMs);
 }
 
-// Runs the interleaved sequence, then prints when each step started (ms from
-// the first RF packet). Printing waits until the end so it can't skew timing.
-void runSeq(uint8_t code) {
+// Runs an interleaved sequence: rfStep(channel) on ch 33, IR, ch 52, IR, ch 71,
+// IR, with seq's timings. rfStep returns its packet count, or -1 on error.
+// Prints when each step started (ms from the first RF packet) at the end, so
+// printing can't skew the timing.
+template <typename RfStep>
+void runInterleaved(const String& label, uint8_t code, RfStep rfStep) {
   uint32_t t0 = millis(), rfAt[3], irAt[3];
   long packets[3];
   for (int i = 0; i < 3; i++) {
     rfAt[i] = millis() - t0;
-    packets[i] = rf::sendWakeOn(hd::rf::kChannels[i], seq.rfMs);
+    packets[i] = rfStep(hd::rf::kChannels[i]);
     if (packets[i] < 0) return;  // no ID or no radio; reason already printed
     if (seq.gapMs) delay(seq.gapMs);
     irAt[i] = millis() - t0;
     ir::sendCode(code, seq.irMs);
   }
-  Serial.printf("Seq %s:", hd::ir::codeToBits(code).c_str());
+  Serial.printf("%s %s:", label.c_str(), hd::ir::codeToBits(code).c_str());
   for (int i = 0; i < 3; i++) {
     Serial.printf("  RF ch%u x%ld @%lu ms, IR @%lu ms", hd::rf::kChannels[i], packets[i],
                   (unsigned long)rfAt[i], (unsigned long)irAt[i]);
     if (i < 2) Serial.print(";");
   }
   Serial.printf("  (total %lu ms)\n", (unsigned long)(millis() - t0));
+}
+
+// Arrow keys with seq on: wake frames interleaved with the IR.
+void runSeq(uint8_t code) {
+  runInterleaved("Seq", code, [](uint8_t ch) { return rf::sendWakeOn(ch, seq.rfMs); });
+}
+
+// Group assignment, as the remote does it in setup mode (SETUP, group key, then
+// OPEN to add or CLOSE to remove, aimed at the shade): setup frames ID 30|31
+// GROUP 80 interleaved with the OPEN / CLOSE IR code (channel A). The IR picks
+// the shade; aim at its sensor eye from a few inches, as the manual says.
+void runPair(uint8_t group, bool add) {
+  String label = String("Pair ") + (add ? "add" : "remove") + " group " +
+                 hd::rf::groupName(group).c_str() + ", IR";
+  runInterleaved(label, add ? hd::ir::kCodeUp : hd::ir::kCodeDown,
+                 [=](uint8_t ch) { return rf::sendSetupOn(group, add, ch, seq.rfMs); });
 }
 
 void help() {
@@ -84,6 +103,9 @@ void help() {
       "  id [hex|clear]          show or set the remote ID used by wake / grp (saved in flash)\n"
       "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
       "                          (default 300, max 5000), then the release tail. No IR\n"
+      "  pair <1-4|all> <add|remove>  group assignment with the stored id: setup frames\n"
+      "                          (ID 30|31 GROUP 80) interleaved with OPEN|CLOSE IR, seq\n"
+      "                          timings. Aim at one shade's eye from a few inches\n"
       "  play [slot|last] [n] [gap_ms]  replay at 40 kHz (default last, 1x, 40 ms)\n"
       "  save <slot>             copy last capture to slot 0-7 (RAM only)\n"
       "  list                    show slot sizes\n"
@@ -209,6 +231,13 @@ void handle(String cmdline) {
     long ms = tok[3].length() ? tok[3].toInt() : kGroupHoldMs;
     if (group < 0 || !(up || tok[2] == "down") || ms <= 0 || (uint32_t)ms > kGroupMaxHoldMs) ok = false;
     else rf::sendGroup(group, up, ms, kGroupTailMs);
+  }
+  else if (c == "pair") {
+    int group = hd::rf::parseGroup(tok[1].c_str());
+    tok[2].toLowerCase();
+    bool add = tok[2] == "add";
+    if (group < 0 || !(add || tok[2] == "remove")) ok = false;
+    else runPair(group, add);
   }
   else if (c == "seq") {
     tok[1].toLowerCase();

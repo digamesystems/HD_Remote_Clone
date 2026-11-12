@@ -7,7 +7,7 @@ Reverse engineered on 2026-11-07 from the original Platinum remote. The source o
 | Frame format | ✅ decoded; matches the ESP32 capture and the logic analyzer |
 | UP / DOWN codes, channel A | ✅ confirmed by both |
 | UP / DOWN codes, channel B | ✅ ESP32 capture only (2026-11-08) |
-| Other buttons | ✅ **none send IR in normal use**; only the up/down arrows transmit (logic analyzer, 2026-11-07). Setup-mode presses not captured yet. |
+| Other buttons | ✅ **none send IR in normal use**; only the up/down arrows transmit (logic analyzer, 2026-11-07). In setup mode (group assignment), OPEN and CLOSE send the **normal** `0101` / `0110`; SETUP and the group keys send no IR or RF (2026-11-12, [capture](../captures/rf_ir_setup_mode_20261112.log)). The RF frame marks the press as add or remove ([RF_PROTOCOL.md](RF_PROTOCOL.md#pairing-group-assignment)) |
 | Carrier frequency / duty cycle | 🔲 not measured (manual says 40 kHz) |
 | Shade responds to synthesized frames | ✅ **yes, with the clone's own RF wake, no original remote** (2026-11-11), reliably with the LED about 1 ft from the sensor eye. Earlier: with the original remote's RF (2026-11-09); never with IR alone (0 of 20). See [Shade tests](#shade-tests) |
 | RF needed alongside IR? | ✅ **shown by two independent tests** (2026-11-09): foil tube (remote's IR fails when its RF is blocked) and clone IR + remote RF. The RF was sniffed on 2026-11-11: a red-mode arrow sends `ID 01 00 80`, a wake frame with no direction. See [RF_PROTOCOL.md](RF_PROTOCOL.md) |
@@ -25,7 +25,7 @@ The indicator light, per the manual (pp. 5, 7, 8, 17–20): red when an arrow se
 Not yet known:
 - whether arrow presses extend the window
 - whether the original sends its IR during or after its RF. Red-mode arrows send an RF wake frame while held (`ID 01 00 80`, see [RF_PROTOCOL.md](RF_PROTOCOL.md)); the relative timing hasn't been measured
-- what IR is sent during the manual's setup procedures, which all end with an aimed arrow press: group assignment (p. 5), intermediate stop (p. 8), channel change (p. 22)
+- what IR is sent during the other setup procedures: intermediate stop (p. 8) and channel change (p. 22). Group assignment (p. 5) uses the normal OPEN / CLOSE codes (2026-11-12); two setup OPEN presses both gave exactly 32 frames, so setup mode may send a fixed-length burst (unconfirmed; a 1.2 s CLOSE press gave 68)
 
 ## Frame structure
 

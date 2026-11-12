@@ -54,7 +54,7 @@ New to the project? Start here:
   | Original TX power | about −6 dBm |
 
   - `ID0 ID1` identify the remote; the shades reportedly ignore unknown IDs. Our two remotes have different IDs, and both work.
-  - `MODE` is `20` with a group active. `GROUP` is `01/02/04/08` for groups 1–4, `FF` for All. `ACTION` is `A1` up held, `A2` down held, then `21` / `22` as a release tail.
+  - `MODE` is `20` with a group active, `01` for a red-mode press, and `30` / `31` for a setup-mode (pairing) add / remove. `GROUP` is `01/02/04/08` for groups 1–4, `FF` for All. `ACTION` is `A1` up held, `A2` down held, then `21` / `22` as a release tail.
   - **A red-mode (IR) arrow press also sends RF:** `ID 01 00 80` while held, with no direction. The shade needs it before it will act on the IR. Our finding, 2026-11-11.
   - Example from the forum (another remote's ID): `03 C1 20 01 A1`, group 1 up.
   - Channel 7 / 1 Mbps, quoted in one forum thread, conflicts with this. spitcool's notes associate those settings with the later PowerView Pebble remote.
@@ -63,7 +63,8 @@ New to the project? Start here:
 ### Open questions
 
 - **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Yes, by two tests* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. And our clone's IR moves the shade only when the original remote is pressed at the same time (aimed away); alone, 0 of 20. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). The RF it sends is `ID 01 00 80` (sniffed 2026-11-11; spitcool's notes had recorded this frame without knowing its trigger).
-- **Can the clone send the wake itself?** *Yes* (2026-11-11): the clone's own `ID 01 00 80` followed by its IR moves the shade with no original remote, including stops. **The ID matters only for group commands** (2026-11-12): a made-up ID gets no group response (0 of 12), but its wake + IR still moves the shade. So point-and-press needs no paired ID; group control needs a paired remote's ID. Next: more IR range (aim, LED power, beam width).
+- **Can the clone send the wake itself?** *Yes* (2026-11-11): the clone's own `ID 01 00 80` followed by its IR moves the shade with no original remote, including stops. **The ID matters only for group commands** (2026-11-12): a made-up ID gets no group response (0 of 12), but its wake + IR still moves the shade. So point-and-press needs no paired ID; group control needs a paired ID. Next: more IR range (aim, LED power, beam width).
+- **Can the clone pair itself, with its own ID?** *Yes* (2026-11-12). Setup-mode group assignment sends `ID 30 <group> 80` (add) or `ID 31 <group> 80` (remove) with the normal OPEN / CLOSE IR aimed at the shade. The clone's `pair 4 add` with a made-up ID made the shade jog, and group commands with that ID then worked 10 of 10. So no original remote is needed at all. See [Pairing](docs/RF_PROTOCOL.md#pairing-group-assignment).
 - **IR behavior on hold:** repeat frames, toggle bits or counters.
 
 ### Reverse-engineering plan

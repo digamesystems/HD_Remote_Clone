@@ -28,6 +28,12 @@ constexpr uint8_t kCrcBytes = 2;  // CRC-16, auto-ack off, static payload
 enum : uint8_t {
   kModeGroup = 0x20,    // group command (arrow pressed in the green window)
   kModeNoGroup = 0x01,  // red-mode (IR) arrow press: the wake frames below
+  // Setup mode (group assignment, manual p. 5): SETUP, group key, then OPEN
+  // (add) or CLOSE (remove) aimed at the shade. Sniffed 2026-11-12 with
+  // ACTION 80 while held, then sometimes a 00 tail. The IR is the normal
+  // OPEN / CLOSE code; it picks the shade, and this frame gives the ID + group.
+  kModeSetupAdd = 0x30,
+  kModeSetupRemove = 0x31,
 
   kGroupNone = 0x00,
   kGroupAll = 0xFF,  // groups 1-4 are one-hot 0x01, 0x02, 0x04, 0x08
@@ -56,6 +62,11 @@ void wakePayload(uint8_t id0, uint8_t id1, uint8_t out[kPayloadSize]);
 void groupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool up, bool held,
                   uint8_t out[kPayloadSize]);
 
+// A setup-mode (group assignment) frame: ID0 ID1 30|31 GROUP 80|00.
+// add: 30 (OPEN), else 31 (CLOSE). held: 80, else the 00 release tail.
+void setupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool add, bool held,
+                  uint8_t out[kPayloadSize]);
+
 // "1".."4" -> 0x01, 0x02, 0x04, 0x08; "all" -> 0xFF (any case). -1 if invalid.
 int parseGroup(const std::string& s);
 
@@ -64,7 +75,8 @@ std::string groupName(uint8_t group);
 // "UP held", "DOWN held", "UP release", "DOWN release", "wake held",
 // "wake release", or "?".
 const char* actionName(uint8_t action);
-// e.g. "ID 03C1  mode 20  group 1  UP held". Empty unless len == kPayloadSize.
+// e.g. "ID 03C1  mode 20  group 1  UP held". Setup frames read "pair add held",
+// "pair remove release", etc. Empty unless len == kPayloadSize.
 std::string describePayload(const uint8_t* p, size_t len);
 
 }  // namespace rf

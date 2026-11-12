@@ -1,0 +1,64 @@
+# Setup-mode (group assignment) captures, 2026-11-12
+#
+# Working remote. Its ID is redacted as yy yy / yyyy. Shade: one already in
+# group 4 for this remote, so OPEN only re-added an existing entry.
+# Receiver: one nRF24 clone module at the `hd` preset (ch 33, 2 Mbps, E7E7E7,
+# CRC-16, 5-byte payload), filter off (one line per run of identical packets).
+# IR: VS1838B/TSOP on GPIO 14, `ir` capture, remote a few inches from it.
+# Lines are copied from the serial monitor; timestamps are the PC's.
+
+## 1. RF: setup + group 4 + OPEN (add), aimed at the shade, which jogged
+#
+# The first attempt timed out (too slow to reach the shade). The remote left
+# setup mode, so that OPEN was a normal red-mode press: the four mode-01 runs
+# below, and the shade moved up, then stopped on the next press. Second
+# attempt: SETUP, 4, OPEN (the mode-30 run; the shade jogged), then SETUP to
+# save. SETUP and the group key sent nothing on ch 33, nor did the save press.
+
+08:05:32.344 > Sniffing. One line per run of identical packets. Send any line to stop.
+08:05:32.358 > > #setup
+08:05:54.248 > 2257.056165 s  ch33  x698   yy yy 01 00 80  ID yyyy  mode 01  group none  wake held  span 852.8 ms  gap 535-15376 us
+08:05:54.733 > 2258.148038 s  ch33  x207   yy yy 01 00 80  ID yyyy  mode 01  group none  wake held  span 272.6 ms  gap 537-7351 us
+08:05:54.834 > 2258.424353 s  ch33  x70    yy yy 01 00 00  ID yyyy  mode 01  group none  wake release  span 71.1 ms  gap 482-3748 us
+08:05:55.309 > 2258.577565 s  ch33  x351   yy yy 01 00 80  ID yyyy  mode 01  group none  wake held  span 393.4 ms  gap 551-5669 us
+08:06:13.272 > 2276.322955 s  ch33  x597   yy yy 30 08 80  ID yyyy  mode 30  group 4  wake held  span 611.1 ms  gap 533-4434 us
+08:06:26.837 > Sniff stopped. 1923 packets.
+
+## 2. RF: setup + group 4 + CLOSE (remove), twice, remote aimed AWAY from all shades
+#
+# IR picks the shade, so with no shade seeing the IR nothing was removed:
+# afterwards `grp 4 up` with this remote's ID still moved the shade.
+# (The firmware then printed "wake held/release" for action 80/00; it now
+# prints "pair remove held/release" for mode 31.)
+
+08:27:16.644 > Sniffing. One line per run of identical packets. Send any line to stop.
+08:27:16.651 > > 546.205654 s  ch33  x479   yy yy 31 08 80  ID yyyy  mode 31  group 4  wake held  span 487.9 ms  gap 536-3749 us
+08:27:26.417 > 546.694957 s  ch33  x122   yy yy 31 08 00  ID yyyy  mode 31  group 4  wake release  span 129.0 ms  gap 559-3748 us
+08:27:28.889 > 548.616817 s  ch33  x713   yy yy 31 08 80  ID yyyy  mode 31  group 4  wake held  span 702.0 ms  gap 538-3749 us
+08:27:29.452 > 549.319391 s  ch33  x506   yy yy 31 08 00  ID yyyy  mode 31  group 4  wake release  span 534.5 ms  gap 536-3764 us
+
+## 3. IR: normal OPEN vs setup-mode OPEN and CLOSE (decoder summaries)
+#
+# Raw timings are the same as normal frames (header ~2.7 ms mark + ~2.8 ms
+# space, ~1.0 ms bit marks, ~1.1 / ~2.8 ms spaces). Only the summaries are
+# kept here.
+
+# capture #3, normal OPEN (red mode)
+08:22:25.376 > HD: code=0101 (A UP) frames=20 other=0 duration=0.35 s
+# capture #4, setup + 4 + OPEN
+08:22:34.630 > HD: code=0101 (A UP) frames=32 other=0 duration=0.57 s
+# capture #5, setup + 4 + OPEN
+08:22:37.166 > HD: code=0101 (A UP) frames=32 other=0 duration=0.56 s
+# capture #6, setup + 4 + CLOSE (a longer press)
+08:31:26.032 > HD: code=0110 (A DOWN) frames=68 other=0 duration=1.18 s
+
+## 4. Clone pairs under its own ID (no remote involved)
+#
+# Firmware `pair <group> <add|remove>`: setup frames ID 30|31 GROUP 80 on
+# ch 33, IR (OPEN for add, CLOSE for remove), ch 52, IR, ch 71, IR, about
+# 0.66 s in all (seq timings: RF 50 ms per channel, IR 170 ms per step).
+# Made-up ID C1 0E, group-4 shade:
+#   grp 4 up before pairing ............ no response
+#   pair 4 add, a few inches from eye .. shade jogged
+#   grp 4 up / down after pairing ...... 5/5 up, 5/5 down
+#   pair 4 remove ...................... not tested yet (C1 0E is still paired)

@@ -161,6 +161,31 @@ void test_group_payload_down_and_all() {
   TEST_ASSERT_EQUAL_STRING("ID 1234  mode 20  group 4  DOWN release", rf::describePayload(p, 5).c_str());
 }
 
+void test_setup_payload_matches_sniff() {
+  // Setup + group 4 + OPEN / CLOSE as sniffed 2026-11-12 (ID made up).
+  uint8_t p[5];
+  rf::setupPayload(0x12, 0x34, 0x08, true, true, p);
+  const uint8_t add[5] = {0x12, 0x34, 0x30, 0x08, 0x80};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(add, p, 5);
+  rf::setupPayload(0x12, 0x34, 0x08, false, true, p);
+  const uint8_t remove[5] = {0x12, 0x34, 0x31, 0x08, 0x80};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(remove, p, 5);
+  rf::setupPayload(0x12, 0x34, 0x08, false, false, p);
+  const uint8_t tail[5] = {0x12, 0x34, 0x31, 0x08, 0x00};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(tail, p, 5);
+}
+
+void test_describe_setup_frames() {
+  const uint8_t add[5] = {0x12, 0x34, 0x30, 0x08, 0x80};
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 30  group 4  pair add held",
+                           rf::describePayload(add, 5).c_str());
+  const uint8_t tail[5] = {0x12, 0x34, 0x31, 0xFF, 0x00};
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 31  group All  pair remove release",
+                           rf::describePayload(tail, 5).c_str());
+  const uint8_t odd[5] = {0x12, 0x34, 0x30, 0x08, 0xA1};  // unseen combination
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 30  group 4  UP held", rf::describePayload(odd, 5).c_str());
+}
+
 void test_parse_group() {
   TEST_ASSERT_EQUAL(0x01, rf::parseGroup("1"));
   TEST_ASSERT_EQUAL(0x02, rf::parseGroup("2"));
@@ -185,6 +210,8 @@ void test_beacon_is_not_a_known_command() {
   TEST_ASSERT_EQUAL_STRING("none", rf::groupName(rf::kBeaconPayload[3]).c_str());
   TEST_ASSERT_NOT_EQUAL(rf::kModeGroup, rf::kBeaconPayload[2]);
   TEST_ASSERT_NOT_EQUAL(rf::kModeNoGroup, rf::kBeaconPayload[2]);
+  TEST_ASSERT_NOT_EQUAL(rf::kModeSetupAdd, rf::kBeaconPayload[2]);
+  TEST_ASSERT_NOT_EQUAL(rf::kModeSetupRemove, rf::kBeaconPayload[2]);
 }
 
 // --- packet runs ---
@@ -249,6 +276,8 @@ int main() {
   RUN_TEST(test_wake_payload_layout);
   RUN_TEST(test_group_payload_matches_sniff);
   RUN_TEST(test_group_payload_down_and_all);
+  RUN_TEST(test_setup_payload_matches_sniff);
+  RUN_TEST(test_describe_setup_frames);
   RUN_TEST(test_parse_group);
   RUN_TEST(test_group_names);
   RUN_TEST(test_action_names);

@@ -325,17 +325,33 @@ bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs) {
   return true;
 }
 
-long sendWakeOn(uint8_t channel, uint32_t ms) {
-  uint8_t p[hd::rf::kPayloadSize];
-  if (!prepareWake(p)) return -1;
+namespace {
+
+// Sends `p` on one channel for `ms`, at least one packet. Returns the count.
+long burstOn(const uint8_t* p, uint8_t channel, uint32_t ms) {
   radio.setChannel(channel);
   long sent = 0;
   uint32_t t0 = millis();
   do {  // at least one packet, even for ms = 0
-    radio.write(p, sizeof(p));
+    radio.write(p, hd::rf::kPayloadSize);
     sent++;
   } while (millis() - t0 < ms);
   return sent;
+}
+
+}  // namespace
+
+long sendWakeOn(uint8_t channel, uint32_t ms) {
+  uint8_t p[hd::rf::kPayloadSize];
+  if (!prepareWake(p)) return -1;
+  return burstOn(p, channel, ms);
+}
+
+long sendSetupOn(uint8_t group, bool add, uint8_t channel, uint32_t ms) {
+  uint8_t p[hd::rf::kPayloadSize];
+  if (!prepareWake(p)) return -1;  // radio setup; the payload is replaced below
+  hd::rf::setupPayload(remoteId[0], remoteId[1], group, add, true, p);
+  return burstOn(p, channel, ms);
 }
 
 void selfTest(int label) {

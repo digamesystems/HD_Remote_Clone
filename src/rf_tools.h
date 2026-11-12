@@ -37,6 +37,10 @@ long sendWakeOn(uint8_t channel, uint32_t ms);
 // A1/A2 for `holdMs` (the arrow held), then the 21/22 release tail for
 // `tailMs`, rotating ch 33/52/71. group: 0x01/02/04/08 or 0xFF (All). RF only.
 bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs);
+// Blocking: setup-mode (group assignment) frames, ID 30|31 GROUP 80 (add: 30,
+// remove: 31), on one channel for `ms`, at least one packet. Prints nothing
+// on success. Returns the packet count, or -1 on error (no ID or no radio).
+long sendSetupOn(uint8_t group, bool add, uint8_t channel, uint32_t ms);
 bool busy();  // a scan, sniff or loopback is running
 void poll();  // call from loop()
 
