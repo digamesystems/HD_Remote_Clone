@@ -13,18 +13,22 @@ KiCad project for the handheld replacement remote: [`hd_remote/hd_remote.kicad_p
 | Power and USB (`power_usb.kicad_sch`) | draft, 2026-11-12. Values and *verify* items: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-power-and-usb-sheet-draft-2026-11-12) |
 | MCU (`mcu.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-mcu-sheet-draft-2026-11-12) |
 | IR (`ir.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-ir-sheet-draft-2026-11-12) |
-| nRF24, buttons/LEDs | not started |
+| nRF24 (`nrf24.kicad_sch`), Buttons and LEDs (`ui.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-nrf24-and-buttonsleds-sheets-draft-2026-11-12) |
+| Test and debug (`test.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#test-points-2026-11-12). Test points on nets local to other sheets live on those sheets |
 | Layout | not started; the board outline waits on the enclosure choice |
 
-ERC (2026-11-12): 3 errors, all expected until the buttons sheet exists (the input-only GPIOs 34, 35, 36 have no pull-down yet), and warnings for labels whose other end is on a sheet not drawn yet. References are numbered by sheet (1xx, 2xx, 3xx, ...).
+ERC (2026-11-12): **0 errors, 0 warnings** on the whole design. References are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR, 4xx nRF24, 5xx Buttons and LEDs, 6xx Test and debug.
 
 ## Generator scripts
 
-`tools/` holds the Python scripts that drew the first drafts (`gen_power_usb.py`, `gen_mcu.py`, `gen_ir.py`, using `schgen.py` and `sexpr.py`). They pull symbols from the installed KiCad 10 libraries and connect every pin to a net label, so connectivity is by name. **Once a sheet has been edited in KiCad, the KiCad file is the master**: don't rerun its generator over it.
+`tools/` holds the Python scripts that drew the first drafts (`gen_power_usb.py`, `gen_mcu.py`, `gen_ir.py`, `gen_nrf24.py`, `gen_ui.py`, `gen_test.py`, using `schgen.py` and `sexpr.py`). They pull symbols from the installed KiCad 10 libraries and connect every pin to a net label, so connectivity is by name. **Once a sheet has been edited in KiCad, the KiCad file is the master**: don't rerun its generator over it.
 
     python -I hardware/tools/gen_power_usb.py
     python -I hardware/tools/gen_mcu.py
     python -I hardware/tools/gen_ir.py
+    python -I hardware/tools/gen_nrf24.py
+    python -I hardware/tools/gen_ui.py
+    python -I hardware/tools/gen_test.py
 
 The KiCad library path is set at the top of `tools/sexpr.py`, or with the `KICAD_SYMBOL_DIR` environment variable.
 

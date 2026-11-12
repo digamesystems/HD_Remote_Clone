@@ -91,6 +91,9 @@ def build():
     cap(s, "4.7u", 8, 78, "VBUS", "GND")
     cap(s, "4.7u", 34, 78, "VBAT", "GND")
     res(s, "4.02k", 12, 90, "PROG", "GND", "I_charge = 1000 V / R_PROG = ~250 mA")
+    s.text("TP: V(PROG) = 1 V at full\ncharge current (~250 mA)", 18, 96)
+    s.part("Connector:TestPoint", "TP", "PROG", 20, 92, {"1": "PROG"},
+           {"Footprint": "TestPoint:TestPoint_Pad_D1.5mm"}, GLOBAL)
     s.part("Device:LED_Small", "D", "CHG", 42, 78, {"1": "STAT", "2": "LED_CHG"},
            {"Footprint": "LED_SMD:LED_0603_1608Metric", "Description": "Charge LED (red or orange)"},
            GLOBAL)
@@ -98,8 +101,13 @@ def build():
 
     # --- Battery connector ---
     s.text("LiPo, 1 cell, protected. CHECK the cell's polarity against J2 before plugging in.", 54, 70)
-    s.part("Connector_Generic:Conn_01x02", "J", "Battery", 62, 78, {"1": "VBAT", "2": "GND"},
+    s.part("Connector_Generic:Conn_01x02", "J", "Battery", 62, 78, {"1": "VBAT_BATT", "2": "GND"},
            {"Footprint": "Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal"}, GLOBAL)
+    s.text("Battery current link: cut the bridge and put a uA meter\n"
+           "across the pads to measure total battery current\n"
+           "(sleep target ~11-16 uA). Re-bridge with solder after.", 50, 96)
+    s.part("Jumper:SolderJumper_2_Bridged", "JP", "I_BAT", 58, 92, {"1": "VBAT_BATT", "2": "VBAT"},
+           {"Footprint": "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm"}, GLOBAL)
 
     # --- 3.3 V LDO ---
     s.text("LDO: RT9080-33GJ5 (2 uA Iq). Symbol is the AP2112K's: same SOT-23-5 pinout\n"

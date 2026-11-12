@@ -114,6 +114,16 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 - 10 µF + 100 nF at the socket's VCC pin.
 - The firmware puts the radio in power-down between presses (~1 µA). No power switch for now.
 
+### nRF24 supply filtering
+
+Evaluated 2026-11-12. The radio draws ~11–13 mA (genuine part, TX at 0 dBm or RX); clones at their "+7 dBm" setting may draw 25–35 mA (unverified). With 10 µF at the socket, even a 30 mA step lasting 5 µs before the LDO responds dips the rail by only ~15 mV. The breadboard worked on long jumpers with no capacitor at all. So the capacitors are adequate; the risks lie elsewhere:
+
+- **IR pulses on VBAT.** ~300 mA at 40 kHz through the cell's ~0.2–0.3 Ω (cell + protection) sags VBAT ~60–90 mV per pulse, which can push the LDO into dropout near the 3.3 V cutoff. Mitigated because the firmware never transmits RF and IR at the same time, and by the 100 µF at the LEDs. Keep it that way, and keep the low-battery cutoff above the LDO's dropout.
+- **Shared ground return.** Keep the IR current loop (VBAT cap → LEDs → transistors → R_E → GND) short and routed to the battery connector away from the radio.
+- **ESP32 digital noise** on 3V3: modest with Wi-Fi off. FB401 lets a ferrite bead be fitted later if range or packet loss suggests supply noise (check for bead/ceramic resonance if one is fitted).
+
+Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid ground pour under the module except under the antenna overhang.
+
 ## Indicator LED
 
 - 3-lead, 5 mm or 3 mm diffused red/green, common cathode. Pick a ~2.1 V "standard" green (not a 3 V InGaN), or lower its resistor.
@@ -181,6 +191,39 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | Clamp | 2× 1N4148W (SOD-123), base resistor 470 Ω, 100 kΩ pull-down | |
 | Bulk on VBAT | 100 µF 1206 ceramic + 100 nF | a 100 µF ceramic keeps well under half its capacity at 4 V; check the derating, or use a tantalum or polymer cap |
 | Receiver (DNP) | TSOP382xx footprint (Vishay MINICAST), 100 Ω + 100 nF supply filter | not fitted in normal builds; a VS1838B has the same pin order but a different body |
+
+## Schematic: nRF24 and Buttons/LEDs sheets (draft, 2026-11-12)
+
+[`nrf24.kicad_sch`](../hardware/hd_remote/nrf24.kicad_sch) (4xx) and [`ui.kicad_sch`](../hardware/hd_remote/ui.kicad_sch) (5xx) complete the schematic. **ERC on the whole design: 0 errors, 0 warnings**, and every GPIO net in the netlist matches the pin map above.
+
+| Item | Value | Note |
+|---|---|---|
+| nRF24 socket | 2×4 female, 2.54 mm, vertical; pins numbered as on the module (odd row GND, CE, SCK, MISO; even row VCC, CSN, MOSI, IRQ) | orientation and antenna overhang are layout tasks |
+| nRF24 supply | 3V3 → FB401 (0603: 0 Ω fitted; ferrite-bead option) → `NRF_VCC` with 10 µF (0805) + 100 nF at the socket, and a DNP 100 µF (1206) for a PA/LNA module | see [nRF24 supply filtering](#nrf24-supply-filtering) |
+| nRF24 IRQ | to GPIO 13 through a 0 Ω, DNP | firmware doesn't use IRQ |
+| Keys | 6 mm THT tactile, tall plunger (13 mm); SETUP short (5 mm), recessed | placeholders until the enclosure is chosen |
+| Key pull-downs | 100 kΩ each; 100 nF debounce caps DNP | firmware debounces |
+| A/B switch | SPDT slide (PCM12 footprint): common to GPIO 21, throws to GND (A) and 3V3 (B) | which throw is "A" depends on the part and its orientation |
+| Indicator | 3-lead red/green common cathode, 5 mm; red 330 Ω, green 270 Ω | *check which outer leg is red* on the part bought |
+
+## Test points (2026-11-12)
+
+Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm) on the back unless noted.
+
+| Ref | Net | Sheet | Use |
+|---|---|---|---|
+| JP101 | VBAT_BATT – VBAT | Power and USB | **Battery current link**, a bridged solder jumper between the battery connector and everything else. Cut it and put a µA meter across the pads to measure total battery current: the sleep budget (~11–16 µA) and the CP2102N back-powering check with USB unplugged. Re-bridge with solder afterwards |
+| TP101 | PROG | Power and USB | charge current: V(PROG) = 1 V at the full ~250 mA |
+| TP301, TP302 | IR_E1, IR_E2 | IR | top of each emitter resistor: scope to GND, I_LED = V / 4.3 Ω, at VBAT 3.3 and 4.2 V |
+| TP303 | IR_BASE | IR | the clamp voltage (~1.3 V) and the drive waveform |
+| TP601–TP603 | VBAT, +3V3, VBUS | Test and debug | rail checks; LDO dropout under IR load |
+| TP604–TP606 | GND | Test and debug | THT loops (Keystone 5000) for scope ground clips: one near the IR stage, one near the radio |
+| TP607 | IR_TX | Test and debug | carrier and duty cycle on the analyzer |
+| TP608 | VBAT_SENSE | Test and debug | calibrate the battery ADC against a meter |
+| TP609 | GPIO 13 (`NRF_IRQ_OPT`) | Test and debug | **debug strobe**: the firmware toggles it at RF / IR step boundaries, so the analyzer can time the wake against the IR. Shared with the optional nRF24 IRQ link (R401, DNP): fit one or the other |
+| J601 (DNP) | GND, 3V3, U0TXD, U0RXD, EN, IO0 | Test and debug | 1×6 2.54 mm header for an external 3.3 V USB-serial adapter, if the onboard CP2102N misbehaves. Unplug USB-C first; power the board from the adapter's 3V3 or from the battery, not both |
+
+The nRF24's SPI lines need no test points: the socket's through-hole pins on the back take analyzer clips.
 
 ## Later revision idea: XIAO ESP32-S3
 

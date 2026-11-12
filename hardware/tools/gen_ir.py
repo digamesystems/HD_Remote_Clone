@@ -56,6 +56,13 @@ def build():
         s.part("Device:R_Small", "R", "4.3", gx + 6, 50, {"1": "IR_E%d" % i, "2": "GND"},
                {"Footprint": R0805, "Description": "Sets I_LED ~150 mA; ~0.1 W peak, so 0805"}, GLOBAL)
 
+    s.text("Test points: scope across each R_E (TP to GND)\n"
+           "for I_LED = V / 4.3 ohm; IR_BASE shows the clamp.", 50, 58)
+    tp = {"Footprint": "TestPoint:TestPoint_Pad_D1.5mm"}
+    s.part("Connector:TestPoint", "TP", "IR_E1", 58, 46, {"1": "IR_E1"}, tp, GLOBAL)
+    s.part("Connector:TestPoint", "TP", "IR_E2", 82, 46, {"1": "IR_E2"}, tp, GLOBAL)
+    s.part("Connector:TestPoint", "TP", "IR_BASE", 20, 30, {"1": "IR_BASE"}, tp, GLOBAL)
+
     s.text("Bulk at the LEDs: the pulse current comes from here, not through the LDO.\n"
            "100 uF ceramic loses capacity with DC bias; check the derating curve.", 88, 20)
     s.part("Device:C_Small", "C", "100u", 92, 32, {"1": "VBAT", "2": "GND"}, {"Footprint": C1206}, GLOBAL)
