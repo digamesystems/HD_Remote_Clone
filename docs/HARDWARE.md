@@ -58,7 +58,7 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 | nRF24 IRQ | not connected | Pad or 0 Ω option to GPIO 13 if ever needed |
 | IR receiver OUT (optional) | 14 | Same as the breadboard. Footprint only; 100 Ω + 100 nF supply filter |
 | UART TX0 / RX0 | 1 / 3 | To the CP2102N |
-| EN / IO0 | EN / 0 | Auto-reset from DTR/RTS (DevKitC circuit); also a small EN reset button |
+| EN / IO0 | EN / 0 | Auto-reset from DTR/RTS (DevKitC circuit); also small EN (reset) and IO0 (BOOT) buttons. BOOT added 2026-11-12 as a fallback if auto-reset fails on an early board |
 
 Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefully).
 
@@ -153,6 +153,21 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 | LDO | RT9080-33GJ5, 1 µF in and out | drawn with the AP2112K symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT); *verify* against the RT9080 datasheet. The ESP32's 10 µF bulk goes on the MCU sheet |
 
 LCSC part numbers aren't filled in yet.
+
+## Schematic: MCU sheet (draft, 2026-11-12)
+
+[`hardware/hd_remote/mcu.kicad_sch`](../hardware/hd_remote/mcu.kicad_sch): the ESP32-WROOM-32E with every GPIO in the pin map on a named global label (`BTN_UP`, `IR_TX`, `NRF_CSN`, ...), which the IR, nRF24 and buttons sheets will use. Also:
+
+| Item | Value | Note |
+|---|---|---|
+| 3V3 decoupling | 10 µF (0805) + 100 nF at the module | per Espressif's guidance |
+| EN | 10 kΩ pull-up, 1 µF to GND, RESET button | DevKitC values |
+| BOOT | button from IO0 to GND | IO0 has an internal pull-up |
+| Buttons | C&K KMR2 footprint (small SMD tactile) | for RESET and BOOT; the user keys are on the buttons sheet |
+| GPIO 2, 12, 15 | not connected | strapping pins; 12 must be low at boot |
+| GPIO 13 | label `NRF_IRQ_OPT` | for the optional nRF24 IRQ link |
+
+Part references are numbered by sheet: 1xx Power and USB, 2xx MCU.
 
 ## Later revision idea: XIAO ESP32-S3
 

@@ -38,7 +38,10 @@ def _effects(justify=None, hide=False):
 
 
 class Sheet:
-    def __init__(self, project, file_name, title, root_uuid, sheet_uuid, paper="A3"):
+    def __init__(self, project, file_name, title, root_uuid, sheet_uuid, paper="A3", ref_base=0):
+        """ref_base numbers this sheet's parts from ref_base + 1 (e.g. 100 -> R101),
+        so references stay unique across sheets. Power symbols aren't affected."""
+        self.ref_base = ref_base
         self.project = project
         self.file_name = file_name
         self.title = title
@@ -90,7 +93,8 @@ class Sheet:
 
     def _next(self, prefix):
         self.refcount[prefix] = self.refcount.get(prefix, 0) + 1
-        return "%s%d" % (prefix, self.refcount[prefix])
+        base = 0 if prefix.startswith("#") else self.ref_base
+        return "%s%d" % (prefix, base + self.refcount[prefix])
 
     def wire(self, x1, y1, x2, y2):
         self.items.append([Sym("wire"), [Sym("pts"), [Sym("xy"), x1, y1], [Sym("xy"), x2, y2]],

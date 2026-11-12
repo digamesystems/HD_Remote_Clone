@@ -35,7 +35,8 @@ def cap(s, value, gx, gy, top, bottom):
 
 
 def build():
-    s = schgen.Sheet(PROJECT, "power_usb.kicad_sch", "Power and USB", schgen.root_uuid(ROOT), SHEET_UUID)
+    s = schgen.Sheet(PROJECT, "power_usb.kicad_sch", "Power and USB", schgen.root_uuid(ROOT), SHEET_UUID,
+                     ref_base=100)
 
     # --- USB-C receptacle (sink), CC pull-downs, ESD ---
     s.text("USB-C (USB 2.0, sink): 5.1k on CC1/CC2, USBLC6 on D+/D-", 8, 12)
