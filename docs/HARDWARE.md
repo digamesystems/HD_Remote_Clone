@@ -66,6 +66,8 @@ Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefu
 
 **Cell:** single Li-ion/LiPo **with a protection circuit** (most pouch cells with leads have one), ~500–1000 mAh to suit the enclosure, on a JST-PH 2-pin connector. Check the polarity of the purchased cell: there is no common standard.
 
+**Reverse-polarity protection (added 2026-11-12):** a reversed cell would destroy the charger and the LDO, so the battery lead runs through a P-MOSFET (Q103, AO3401A, SOT-23) with its gate to GND: drain to the battery side, source to VBAT. With the cell the right way round, the body diode lifts the source, Vgs ≈ −VBAT turns the FET fully on (~50–80 mΩ, ~20 mV at a 300 mA IR peak), and the charger still charges through it, since the channel conducts both ways. With the cell reversed, Vgs = 0 and the body diode is reverse-biased, so nothing flows. Mark + and − on the silkscreen at J102 as well. Any SOT-23 P-FET with |Vgs(th)| under ~1.5 V and Vgs max ≥ 8 V will do. *verify* the drop and the charger's termination on the first board.
+
 **Charging:** MCP73831 (SOT-23-5), programmed to ~250 mA (R_PROG ≈ 4 kΩ). Its STAT pin drives a separate small charge LED (lit while charging), powered from VBUS so it costs the battery nothing. The load runs straight from VBAT (no power path). That's simple, and fine at this charge current, though the charger may not terminate cleanly if the board draws current while charging. *verify*
 
 **3.3 V regulator:** RT9080-33 (SOT-23-5): 600 mA, ~2 µA quiescent, about 310 mV dropout at 600 mA. The ESP32 never uses Wi-Fi or Bluetooth here, so its active current is ~40–70 mA, plus the nRF24 at ~12 mA. The LDO stays in regulation down to about VBAT 3.4 V; the firmware warns at ~3.5 V and refuses to transmit below ~3.3 V.
@@ -95,8 +97,8 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 - GPIO 4 → 470 Ω → a common base node, clamped by two 1N4148 diodes in series to GND (~1.3 V).
 - 100 kΩ from the base node to GND, so the LEDs stay off while GPIO 4 floats (during boot, and in deep sleep unless the pin is held). Added 2026-11-12.
 - For each LED: BC817-40 NPN, base on that node, emitter → R_E to GND, collector → LED cathode, LED anode → VBAT.
-- I_LED ≈ (1.3 V − 0.65 V) / R_E, so R_E ≈ 4.3 Ω gives ~150 mA per LED (the breadboard ran one LED at ~97 mA).
-- Headroom at VBAT 3.3 V: 3.3 − 1.6 (LED at 150 mA) − 0.65 (R_E) ≈ 1.0 V across the transistor. OK.
+- I_LED ≈ (V_clamp − Vbe) / R_E. Corrected 2026-11-12 (review): the first draft used Vbe = 0.65 V, but a BC817-40 needs ~0.75–0.8 V at 150 mA, and the clamp sits near 1.3 V with ~4 mA through the diodes. That leaves only ~0.5 V across R_E, so 4.3 Ω would give ~110–120 mA, not 150. The schematic now shows **3.3 Ω (~150–165 mA)**; set the final value from the breadboard. With only ~0.5 V across R_E, the current depends noticeably on Vbe and the diode drops, so measure rather than trust the formula. (The breadboard ran one LED at 88 mA, measured; see below.)
+- Headroom at VBAT 3.3 V: 3.3 − 1.6 (LED at 150 mA) − 0.5 (R_E) ≈ 1.2 V across the transistor. OK.
 - Bulk capacitance on VBAT at the LEDs: 100 µF + 100 nF.
 
 *verify:* build the sink on the breadboard first and check the current with the scope across R_E at 3.3 V and 4.2 V.
@@ -115,6 +117,7 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 - 2×4 female header, 2.54 mm. The module plugs in with its antenna **overhanging the board edge**, with no copper (all layers) under the overhang.
 - 10 µF + 100 nF at the socket's VCC pin.
 - The firmware puts the radio in power-down between presses (~1 µA). No power switch for now.
+- **Pulls (added 2026-11-12, review):** 100 kΩ pull-up on CSN (R402) and 100 kΩ pull-down on CE (R403). While the ESP32 boots or sleeps, its pins float; a floating CSN plus noise on SCK could clock garbage into the radio's registers, and a floating-high CE could start TX/RX. CSN is GPIO 5, a strapping pin whose default is high, so the pull-up agrees with it. Each costs nothing while its line sits at its idle level.
 
 ### nRF24 supply filtering
 
@@ -162,7 +165,8 @@ Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid 
 | Charge current | R_PROG 4.02 kΩ, ~250 mA | 1000 V / R_PROG |
 | Charger caps | 4.7 µF on VBUS and VBAT | MCP73831 datasheet minimum |
 | Charge LED | 0603, 1 kΩ from VBUS to STAT | lit while charging |
-| Battery connector | JST-PH 2-pin, side entry (S2B-PH-K) | *check the cell's polarity* |
+| Battery connector | JST-PH 2-pin, side entry (S2B-PH-K) | + and − on the silkscreen; *check the cell's polarity* |
+| Reverse-polarity FET | Q103, AO3401A (SOT-23), gate to GND | see [Power](#power); placed last so the earlier references kept their numbers |
 | LDO | RT9080-33GJ5, 1 µF in and out | drawn with the AP2112K symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT); *verify* against the RT9080 datasheet. The ESP32's 10 µF bulk goes on the MCU sheet |
 
 LCSC part numbers aren't filled in yet.
@@ -189,7 +193,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | Item | Value | Note |
 |---|---|---|
 | IR LEDs | 2× TSAL6200, 5 mm, footprint bent 90° (`LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm`) | lying flat, pointing out of the board edge; either position can take a wider-angle LED |
-| Current sinks | BC817-40 (SOT-23), R_E 4.3 Ω 0805 | ~0.1 W peak in R_E, hence 0805 |
+| Current sinks | BC817-40 (SOT-23), R_E 3.3 Ω 0805 | ~0.1 W peak in R_E, hence 0805; value set from the breadboard (was 4.3 Ω, see [IR transmitter](#ir-transmitter)) |
 | Clamp | 2× 1N4148W (SOD-123), base resistor 470 Ω, 100 kΩ pull-down | |
 | Bulk on VBAT | 100 µF 1206 ceramic + 100 nF | a 100 µF ceramic keeps well under half its capacity at 4 V; check the derating, or use a tantalum or polymer cap |
 | Receiver (DNP) | TSOP382xx footprint (Vishay MINICAST), 100 Ω + 100 nF supply filter | not fitted in normal builds; a VS1838B has the same pin order but a different body |
@@ -203,6 +207,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | nRF24 socket | 2×4 female, 2.54 mm, vertical; pins numbered as on the module (odd row GND, CE, SCK, MISO; even row VCC, CSN, MOSI, IRQ) | orientation and antenna overhang are layout tasks |
 | nRF24 supply | 3V3 → FB401 (0603: 0 Ω fitted; ferrite-bead option) → `NRF_VCC` with 10 µF (0805) + 100 nF at the socket, and a DNP 100 µF (1206) for a PA/LNA module | see [nRF24 supply filtering](#nrf24-supply-filtering) |
 | nRF24 IRQ | to GPIO 13 through a 0 Ω, DNP | firmware doesn't use IRQ |
+| nRF24 pulls | R402 100 kΩ CSN to `NRF_VCC`, R403 100 kΩ CE to GND | added 2026-11-12, see [nRF24 socket](#nrf24-socket) |
 | Keys | 6 mm THT tactile, tall plunger (13 mm); SETUP short (5 mm), recessed | placeholders until the enclosure is chosen |
 | Key pull-downs | 100 kΩ each; 100 nF debounce caps DNP | firmware debounces |
 | A/B switch | SPDT slide (PCM12 footprint): common to GPIO 21, throws to GND (A) and 3V3 (B) | which throw is "A" depends on the part and its orientation |
@@ -214,9 +219,9 @@ Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm
 
 | Ref | Net | Sheet | Use |
 |---|---|---|---|
-| JP101 | VBAT_BATT – VBAT | Power and USB | **Battery current link**, a bridged solder jumper between the battery connector and everything else. Cut it and put a µA meter across the pads to measure total battery current: the sleep budget (~11–16 µA) and the CP2102N back-powering check with USB unplugged. Re-bridge with solder afterwards |
+| JP101 | VBAT_BATT – VBAT_JP | Power and USB | **Battery current link**, a bridged solder jumper between the battery connector and everything else (it sits before the reverse-polarity FET Q103). Cut it and put a µA meter across the pads to measure total battery current: the sleep budget (~11–16 µA) and the CP2102N back-powering check with USB unplugged. Re-bridge with solder afterwards |
 | TP101 | PROG | Power and USB | charge current: V(PROG) = 1 V at the full ~250 mA |
-| TP301, TP302 | IR_E1, IR_E2 | IR | top of each emitter resistor: scope to GND, I_LED = V / 4.3 Ω, at VBAT 3.3 and 4.2 V |
+| TP301, TP302 | IR_E1, IR_E2 | IR | top of each emitter resistor: scope to GND, I_LED = V / R_E, at VBAT 3.3 and 4.2 V |
 | TP303 | IR_BASE | IR | the clamp voltage (~1.3 V) and the drive waveform |
 | TP601–TP603 | VBAT, +3V3, VBUS | Test and debug | rail checks; LDO dropout under IR load |
 | TP604–TP606 | GND | Test and debug | THT loops (Keystone 5000) for scope ground clips: one near the IR stage, one near the radio |
@@ -231,7 +236,7 @@ The nRF24's SPI lines need no test points: the socket's through-hole pins on the
 
 This design uses 22 of the WROOM-32E's 26 usable GPIOs (free: 13, plus strapping pins 2, 12 and 15), so it won't fit a XIAO, which has 11. A smaller second revision could fit, by:
 
-- putting all 8 buttons on **one ADC pin through a resistor ladder**. Any press also pulls the pin high, which can wake the chip from deep sleep; the cost is no simultaneous presses, which the original never needs;
+- putting all 8 buttons on **one ADC pin through a resistor ladder**; the cost is no simultaneous presses, which the original never needs. **Wake needs care:** deep-sleep wake on a GPIO is digital, so a ladder tap that sits below the logic-high threshold won't wake the chip. Either design the ladder so every key clears the threshold (which squeezes the ADC spacing), or OR every key onto a separate wake pin through diodes (one more pin), or wake with the ULP reading the ADC (more current and firmware). Corrected 2026-11-12: the first draft said any press would wake it;
 - dropping the IR receiver footprint, and maybe folding the A/B switch into the ladder.
 
 That's 11 pins: nRF24 5, IR 1, bicolor LED 2, ladder 1, battery sense 1, A/B 1. The XIAO's own USB-C and LiPo charger would replace the CP2102N, the MCP73831 and probably the LDO. The costs are no spare pins, single-press-only buttons and an ESP32-S3 firmware port. Agreed 2026-11-11: WROOM first, XIAO as a possible later revision.

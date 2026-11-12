@@ -2082,7 +2082,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "IR transmitter: two 940 nm LEDs from VBAT, each with a constant-current sink.\nBase node clamped at ~1.3 V by two 1N4148 in series, so I_LED = (1.3 - 0.65) / R_E,\n~150 mA with 4.3 ohm, roughly constant from VBAT 3.3 to 4.2 V.\nVERIFY on the breadboard first (scope across R_E at 3.3 and 4.2 V), and check the\nTSAL6200 peak rating for our duty cycle (39.7 kHz, ~50 % measured, in bursts)."
+	(text "IR transmitter: two 940 nm LEDs from VBAT, each with a constant-current sink.\nBase node clamped at ~1.3 V by two 1N4148 in series, so I_LED = (1.3 - Vbe) / R_E.\nVbe of a BC817-40 is ~0.75-0.8 V at 150 mA, leaving ~0.5 V across R_E: 3.3 ohm\ngives ~150-165 mA (4.3 ohm would give only ~110-120 mA), roughly constant from VBAT 3.3 to 4.2 V.\nSET R_E FROM THE BREADBOARD (scope across R_E at 3.3 and 4.2 V), and check the\nTSAL6200 peak rating for our duty cycle (39.7 kHz, ~50 % measured, in bursts)."
 		(exclude_from_sim no)
 		(at 20.32 15.24 0)
 		(effects
@@ -3004,7 +3004,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "4.3"
+		(property "Value" "3.3"
 			(at 138.43 128.27 0)
 			(effects
 				(font
@@ -3031,7 +3031,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Sets I_LED ~150 mA; ~0.1 W peak, so 0805"
+		(property "Description" "Sets I_LED ~150 mA (value from the breadboard); ~0.1 W peak, so 0805"
 			(at 137.16 127 0)
 			(effects
 				(font
@@ -3480,7 +3480,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "4.3"
+		(property "Value" "3.3"
 			(at 199.39 128.27 0)
 			(effects
 				(font
@@ -3507,7 +3507,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Sets I_LED ~150 mA; ~0.1 W peak, so 0805"
+		(property "Description" "Sets I_LED ~150 mA (value from the breadboard); ~0.1 W peak, so 0805"
 			(at 198.12 127 0)
 			(effects
 				(font
@@ -3631,7 +3631,7 @@
 			)
 		)
 	)
-	(text "Test points: scope across each R_E (TP to GND)\nfor I_LED = V / 4.3 ohm; IR_BASE shows the clamp."
+	(text "Test points: scope across each R_E (TP to GND)\nfor I_LED = V / R_E; IR_BASE shows the clamp."
 		(exclude_from_sim no)
 		(at 127 147.32 0)
 		(effects

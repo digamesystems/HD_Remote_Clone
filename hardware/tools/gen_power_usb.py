@@ -101,13 +101,14 @@ def build():
     res(s, "1k", 48, 78, "VBUS", "LED_CHG")
 
     # --- Battery connector ---
-    s.text("LiPo, 1 cell, protected. CHECK the cell's polarity against J2 before plugging in.", 54, 70)
+    s.text("LiPo, 1 cell, protected. Polarity: mark + and - on the silkscreen at J102;\n"
+           "Q103 blocks a reversed cell. Still check the cell's lead colours.", 54, 68)
     s.part("Connector_Generic:Conn_01x02", "J", "Battery", 62, 78, {"1": "VBAT_BATT", "2": "GND"},
            {"Footprint": "Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal"}, GLOBAL)
     s.text("Battery current link: cut the bridge and put a uA meter\n"
            "across the pads to measure total battery current\n"
            "(sleep target ~11-16 uA). Re-bridge with solder after.", 50, 96)
-    s.part("Jumper:SolderJumper_2_Bridged", "JP", "I_BAT", 58, 92, {"1": "VBAT_BATT", "2": "VBAT"},
+    s.part("Jumper:SolderJumper_2_Bridged", "JP", "I_BAT", 58, 92, {"1": "VBAT_BATT", "2": "VBAT_JP"},
            {"Footprint": "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm"}, GLOBAL)
 
     # --- 3.3 V LDO ---
@@ -123,6 +124,16 @@ def build():
     res(s, "1M", 100, 78, "VBAT", "VBAT_SENSE")
     res(s, "1M", 104, 78, "VBAT_SENSE", "GND")
     cap(s, "100n", 108, 78, "VBAT_SENSE", "GND")
+
+    # --- Reverse-polarity protection (placed last so earlier references keep their numbers) ---
+    s.text("Reverse-polarity protection: P-MOSFET in the battery lead, gate to GND.\n"
+           "Cell the right way round: the body diode lifts S, Vgs ~ -VBAT, the FET turns on\n"
+           "(~50-80 mohm, ~20 mV at 300 mA) and the charger can still charge through it.\n"
+           "Cell reversed: Vgs = 0 and the body diode is reverse-biased, so nothing flows.", 80, 100)
+    s.part("Transistor_FET:AO3401A", "Q", "AO3401A", 40, 104,
+           {"1": "GND", "2": "VBAT", "3": "VBAT_JP"},
+           {"Description": "Reverse-polarity protection; any SOT-23 P-FET with |Vgs(th)| < ~1.5 V, Vgs max >= 8 V"},
+           GLOBAL)
 
     # --- Power flags: the connectors' power pins are passive, and the symbol
     # marks the CP2102N's VDD (its regulator output) as an input. VBAT needs

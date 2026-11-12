@@ -54,6 +54,14 @@ def build():
     s.part("Device:R_Small", "R", "0", 78, 36, {"1": "NRF_IRQ", "2": "NRF_IRQ_OPT"},
            {"Footprint": "Resistor_SMD:R_0603_1608Metric"}, GLOBAL, dnp=True)
 
+    s.text("Pulls keep the radio deselected and out of TX/RX while the ESP32 boots or\n"
+           "sleeps with its pins floating. CSN is GPIO 5, a strapping pin whose default\n"
+           "is high, so the pull-up agrees with it.", 8, 62)
+    s.part("Device:R_Small", "R", "100k", 30, 50, {"1": "NRF_VCC", "2": "NRF_CSN"},
+           {"Footprint": "Resistor_SMD:R_0603_1608Metric", "Description": "CSN pull-up"}, GLOBAL)
+    s.part("Device:R_Small", "R", "100k", 36, 50, {"1": "NRF_CE", "2": "GND"},
+           {"Footprint": "Resistor_SMD:R_0603_1608Metric", "Description": "CE pull-down"}, GLOBAL)
+
     text = s.render({
         "title": "HD Platinum remote replacement: nRF24",
         "date": "2026-11-12",
