@@ -169,9 +169,11 @@ The clone sends the wake frame `ID 01 00 80`, using the working remote's ID (set
 
 The leading explanation: the shade opens a fixed listening window when it first hears the wake. In the old pattern, much of the IR arrived late in that window. The interleaved pattern starts IR 50 ms after the RF and gives three fresh chances. It's probably also closer to the original, which appears to send RF and IR together while the key is held.
 
-**ID control (same day):** with the wake carrying a made-up ID (`id 1234`), the shade ignored the clone. With the working remote's ID it obeyed. So the shade checks the ID in the wake ([RF_PROTOCOL.md](RF_PROTOCOL.md#what-the-shade-needs)).
+**ID control (same day, revised 2026-11-12):** with the wake carrying a made-up ID (`id 1234`), the shade seemed to ignore the clone on 2026-11-11. On 2026-11-12 the same shade moved with a `12 34` or `C1 0E` wake + IR (`seq` on), as it did with both real remotes' IDs. We now think the 2026-11-11 misses were hand-aimed IR. Group commands do check the ID (0 of 12 with `12 34`, 12 of 12 with the working ID). See [RF_PROTOCOL.md](RF_PROTOCOL.md#what-the-shade-needs).
 
-**Not yet done:** the `wake off` control (IR only); exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap).
+**`wake off` control (2026-11-12):** with `seq off` and `wake off`, the clone sends IR only, and the shade didn't respond. With both back on, it moved. So the wake is still required. (`seq` ignores `wake off`, so IR-only tests need `seq off`.)
+
+**Not yet done:** exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap).
 
 ### 2026-11-09: clone IR + remote RF
 

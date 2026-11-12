@@ -17,7 +17,7 @@ The air settings come from prior work by [spitcool/hd-platinum-rf](https://githu
 | Nothing is sent when the green window expires | ✅ one observation (working remote) |
 | A clone sending the wake + IR moves the shade | ✅ 2026-11-11, no original remote involved: reliable with the LED about 1 ft from the sensor eye; misses traced to IR aim. See [Shade tests](IR_PROTOCOL.md#2026-11-11-clone-only-rf-wake--ir) |
 | Clone group commands move the shades (`grp`) | ✅ 2026-11-11: groups 1–4 independently and All, UP and DOWN, with the working remote's ID. RF only, no aiming. DOWN (`A2` / `22`) and groups 2–4 / All are confirmed by the shades' response; we haven't sniffed them from a remote |
-| Shade checks the ID | ✅ **yes** (2026-11-11): with a made-up ID (`12 34`), the shades ignored both the wake + IR and group commands. With either paired remote's ID (working `yy yy` or weak `xx xx`), both work |
+| Shade checks the ID | **Group commands: yes.** With a made-up ID (`12 34`), `grp 4` got 0 responses in 12 trials; with the working remote's ID, 12 of 12 (2026-11-12). **Red-mode wake: no.** A wake with `12 34` or `C1 0E`, then IR, moved a group-4 shade, as did both real IDs (2026-11-12). The 2026-11-11 result, where `12 34` also failed for wake + IR, is put down to hand-aimed IR (trials not counted) |
 | Channels 52 and 71 | not sniffed yet (taken from spitcool's notes) |
 
 ## Air settings
@@ -79,13 +79,26 @@ A rule that fits: `80` while the key is held, then `00`. A release before ~345 m
 
 ## What the shade needs
 
-From the shade tests in [IR_PROTOCOL.md](IR_PROTOCOL.md#shade-tests): the shade ignores IR on its own. It acts on IR only when a red-mode RF press from a paired remote arrives within about a second before it, and one RF press arms one IR command. The wake frame carries no direction, which fits the clone test, where the shade followed the clone's IR, not the remote's arrow.
+From the shade tests in [IR_PROTOCOL.md](IR_PROTOCOL.md#shade-tests): the shade ignores IR on its own. It acts on IR only when a red-mode RF wake arrives within about a second before it, and one RF press arms one IR command. The wake frame carries no direction, which fits the clone test, where the shade followed the clone's IR, not the remote's arrow.
 
-So a replacement should send `ID 01 00 80`, using an ID the shade accepts, for a few hundred ms, then the IR command, every time.
+So a replacement should send `ID 01 00 80` for a few hundred ms, then the IR command, every time.
 
-**The ID matters.** The shade acts on the IR only if the wake carries the ID of a remote it's paired with, and it applies the same check to group commands. A made-up ID got no response from either path (2026-11-11). So the wake is an authenticated enable, not a bare wake-up, and a replacement must use a paired remote's ID. The alternatives would be pairing it as a backup remote (manual p. 7) or reproducing the pairing exchange, which we haven't sniffed.
+**The ID matters for group commands, apparently not for the wake** (2026-11-12):
 
-**Shown on 2026-11-11.** Our clone sent `ID 01 00 80` with the working remote's ID for 450 ms. It rotated ch 33/52/71, one packet about every 300 µs, so about 1,500 packets. No `00` tail. The IR followed immediately, and the shade obeyed: up, down and stop, with a new wake for each command. So the tail isn't needed, and sending RF before IR, rather than at the same time, works. Still untested: whether the shade checks the ID, the shortest wake that works, and how the original times its RF against its IR.
+| Test (group-4 shade) | Result |
+|---|---|
+| `grp 4 up` with a made-up ID (`12 34`) | 0 of 12 |
+| `grp 4 up` / `down` with the working remote's ID | 12 of 12 |
+| Wake + IR with `12 34`, `C1 0E`, the working ID or the weak remote's ID | moves the shade with each |
+| IR alone (`wake off`, `seq off`), ID `12 34` | no response |
+
+So the red-mode wake is required but seems to accept any ID, while group commands need an ID paired with that group. That fits the manual's description of point-and-press IR as the default mode, which needs no setup (p. 3): pairing (group assignment, p. 5) only matters for group control. The weak remote's ID also fails `grp 4` (not paired to group 4) yet wakes the same shade for IR.
+
+On 2026-11-11, `12 34` also seemed to fail for wake + IR. We now put that down to hand-aimed IR, which was still hit-and-miss then and wasn't counted. A second made-up ID, `C1 0E`, also worked for wake + IR (2026-11-12).
+
+For a replacement remote, point-and-press needs no paired ID at all. Group control needs a paired ID: copy a paired remote's ID, pair as a backup remote (manual p. 7), or reproduce the group-assignment exchange, which we haven't sniffed yet.
+
+**Shown on 2026-11-11.** Our clone sent `ID 01 00 80` with the working remote's ID for 450 ms. It rotated ch 33/52/71, one packet about every 300 µs, so about 1,500 packets. No `00` tail. The IR followed immediately, and the shade obeyed: up, down and stop, with a new wake for each command. So the tail isn't needed, and sending RF before IR, rather than at the same time, works. Still untested: the shortest wake that works, and how the original times its RF against its IR.
 
 The same day, interleaving RF and IR (RF on one channel, IR, the next channel, IR, and so on: `seq`) made aiming feel much less critical. That's a hand-held impression, with a controlled test planned. See [IR_PROTOCOL.md](IR_PROTOCOL.md#2026-11-11-clone-only-rf-wake--ir).
 
@@ -121,7 +134,7 @@ The manual doesn't say how many remotes a shade can store.
 
 ## Open questions
 
-- ~~Does the shade check the ID?~~ Yes, for both the wake and group commands (2026-11-11).
+- ~~Does the shade check the ID?~~ For group commands, yes. For the red-mode wake, no: two made-up IDs both worked (2026-11-12).
 - How does pairing work on air? Sniff a setup-mode group assignment (see [Pairing](#pairing-from-the-manual)). The backup-remote copy (p. 7) is a second target. Don't Master Reset either of our remotes to try it.
 - How many remotes can a shade store? The manual doesn't say.
 - How long does the shade stay receptive after the wake, and does the original send IR during or after the RF? (Measure with the analyzer: IR receiver OUT plus our module's IRQ during `sniff`.)
