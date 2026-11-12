@@ -11,4 +11,16 @@ Thumbs.db
 desktop.ini
 *.swp
 
+# Python caches (hardware/tools)
+__pycache__/
+
+# KiCad: local UI state, backups, autosaves, locks, caches
+*.kicad_prl
+*-backups/
+_autosave-*
+~*.lck
+*.lck
+fp-info-cache
+\#auto_saved_files#
+
 # captures/ holds reference data (serial logs, PulseView .sr files) and IS committed.

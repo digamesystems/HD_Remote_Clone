@@ -134,6 +134,26 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 - Buttons laid out like the original: arrows large and central, group keys in a row, ALL separate, SETUP on the back.
 - Size and shape follow the enclosure, which isn't chosen yet. *open*
 
+## Schematic: Power and USB sheet (draft, 2026-11-12)
+
+[`hardware/hd_remote/power_usb.kicad_sch`](../hardware/hd_remote/power_usb.kicad_sch) implements the Power and USB sections above. ERC: no errors; the only warnings are the labels to the ESP32 (`EN`, `IO0`, `U0TXD`, `U0RXD`), which connect when the MCU sheet exists. Values chosen there that the sections above don't state:
+
+| Item | Value | Note |
+|---|---|---|
+| Passives | 0603 | hand-reworkable; JLC-assemblable |
+| USB-C receptacle | HRO TYPE-C-31-M-12 footprint | common, cheap 16-pin USB 2.0 part; shield to GND |
+| CP2102N supply | bus-powered: VREGIN = VBUS (4.7 µF + 100 nF), VDD = VIO (1 µF + 100 nF) | *verify* against the CP2102N datasheet |
+| CP2102N VBUS sense | 22.1 kΩ / 47.5 kΩ divider from VBUS | as on Silicon Labs' CP2102N-EK; *verify* |
+| CP2102N RST | 1 kΩ pull-up to VIO | *verify* the value |
+| Auto-reset | 2× MMBT3904, 10 kΩ base resistors | the DevKitC circuit |
+| Charge current | R_PROG 4.02 kΩ, ~250 mA | 1000 V / R_PROG |
+| Charger caps | 4.7 µF on VBUS and VBAT | MCP73831 datasheet minimum |
+| Charge LED | 0603, 1 kΩ from VBUS to STAT | lit while charging |
+| Battery connector | JST-PH 2-pin, side entry (S2B-PH-K) | *check the cell's polarity* |
+| LDO | RT9080-33GJ5, 1 µF in and out | drawn with the AP2112K symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT); *verify* against the RT9080 datasheet. The ESP32's 10 µF bulk goes on the MCU sheet |
+
+LCSC part numbers aren't filled in yet.
+
 ## Later revision idea: XIAO ESP32-S3
 
 This design uses 22 of the WROOM-32E's 26 usable GPIOs (free: 13, plus strapping pins 2, 12 and 15), so it won't fit a XIAO, which has 11. A smaller second revision could fit, by:

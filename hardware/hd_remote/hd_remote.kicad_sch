@@ -1,0 +1,65 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "12ff3655-5116-468c-be29-1c7c9dc83474")
+	(paper "A4")
+	(title_block
+		(title "HD Platinum remote replacement: handheld")
+		(date "2026-11-12")
+		(rev "0.1")
+		(comment 1 "Draft. Spec: docs/HARDWARE.md")
+	)
+	(lib_symbols)
+	(sheet
+		(at 25.4 25.4)
+		(size 50 20)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10")
+		(property "Sheetname" "Power and USB"
+			(at 25.4 24.6884 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "power_usb.kicad_sch"
+			(at 25.4 45.9884 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "hd_remote"
+				(path "/12ff3655-5116-468c-be29-1c7c9dc83474"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
