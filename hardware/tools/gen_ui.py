@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Generates hardware/hd_remote/ui.kicad_sch (first draft) from docs/HARDWARE.md:
 the 8 keys with pull-downs, the A/B channel switch, and the red/green indicator.
 Run once; after editing the sheet in KiCad, don't rerun.

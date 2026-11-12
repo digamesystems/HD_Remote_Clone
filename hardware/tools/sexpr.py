@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Minimal S-expression reader/writer for KiCad files, plus symbol-library helpers.
 
 Used by the schematic generators in this folder. Parsed lists are Python lists;

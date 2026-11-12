@@ -157,6 +157,18 @@ pio test -e esp32dev_test --upload-port COM11    # on-device tests
 
 See [TESTING.md](TESTING.md) for the three test tiers and the gate a release must pass.
 
+## License
+
+Copyright © 2026 John Price.
+
+| Part | License |
+|---|---|
+| Firmware and tools (`src/`, `lib/`, `include/`, `test/`, `hardware/tools/`) | GNU General Public License, version 2 or (at your option) any later version (`GPL-2.0-or-later`). See [LICENSE](LICENSE). |
+| Hardware design (`hardware/hd_remote/`) | CERN Open Hardware Licence v2, strongly reciprocal (`CERN-OHL-S-2.0`). See [hardware/LICENSE](hardware/LICENSE). |
+| Documentation, captures and images (`docs/`, `captures/`, the READMEs) | Creative Commons Attribution-ShareAlike 4.0 (`CC-BY-SA-4.0`). See [docs/LICENSE](docs/LICENSE). |
+
+Source files carry an `SPDX-License-Identifier` line. Third-party libraries keep their own licenses: [RF24](https://github.com/nRF24/RF24) (GPL-2.0) and [IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266) (LGPL-2.1). RF protocol facts credited to [spitcool/hd-platinum-rf](https://github.com/spitcool/hd-platinum-rf) are cited, not copied.
+
 ## References
 
 - [NRF24L01+ hack on Hunter Douglas shades](https://forum.arduino.cc/t/nrf24l01-hack-on-hunter-douglas-shades/676940) (Arduino forum)

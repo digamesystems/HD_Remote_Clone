@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Generates hardware/hd_remote/test.kicad_sch (first draft): rail and signal test
 points, GND loops, a debug strobe, and a DNP UART header. Test points on nets
 local to another sheet (IR_E1/2, IR_BASE, PROG) and the battery current link

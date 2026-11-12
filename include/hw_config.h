@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // What is currently wired on the breadboard. Tier 2 (on-device) tests use this:
 // a test whose hardware is declared absent is IGNORED (reported as not

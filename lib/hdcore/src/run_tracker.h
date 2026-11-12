@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // Collapses a packet stream into runs of identical payloads, so the sniffer
 // can count every packet without printing each one. The original remote sends

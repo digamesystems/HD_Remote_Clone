@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Tier 2 (device, board only): confirms we're on the expected ESP32.
 #include <Arduino.h>
 #include <unity.h>

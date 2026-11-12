@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // Picks arrow keys out of a serial input stream. Terminals send them as escape
 // sequences: ESC [ A (up), ESC [ B (down), or ESC O A / ESC O B in application

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Generates hardware/hd_remote/power_usb.kicad_sch (first draft) from
 docs/HARDWARE.md: USB-C, ESD, CP2102N with auto-reset, LiPo charger, 3.3 V LDO,
 battery sense. Run once; after editing the sheet in KiCad, don't rerun.

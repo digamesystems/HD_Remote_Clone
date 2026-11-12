@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // Hunter Douglas Platinum IR frame format (point-and-press / red mode).
 // Reverse engineered Nov 7, 2026 from the original remote; see CLAUDE.md.

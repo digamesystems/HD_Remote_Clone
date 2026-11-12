@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Tier 1 (host): command-line and value parsing.
 #include <unity.h>
 

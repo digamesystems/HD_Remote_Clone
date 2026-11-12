@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Builds a KiCad schematic sheet from a parts list (label-per-pin style).
 
 Every pin gets a short wire stub ending in a net label, a global label or a

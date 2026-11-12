@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Generates hardware/hd_remote/mcu.kicad_sch (first draft) from docs/HARDWARE.md:
 ESP32-WROOM-32E, decoupling, EN reset, BOOT button, and a global label for every
 GPIO in the spec's pin map. Run once; after editing the sheet in KiCad, don't rerun.

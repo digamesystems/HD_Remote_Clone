@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Tier 2 (device): nRF24 module checks. Ignored unless HW_NRF24 is true; the
 // loopback test also needs HW_NRF24_B (a second module on the HSPI pins).
 #include <Arduino.h>

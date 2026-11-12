@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Generates hardware/hd_remote/ir.kicad_sch (first draft) from docs/HARDWARE.md:
 two IR LEDs on VBAT with BC817-40 current sinks, bulk capacitance, and the
 optional IR receiver footprint. Run once; after editing the sheet in KiCad,

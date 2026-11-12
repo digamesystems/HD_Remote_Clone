@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // Pin map for ESP32-DevKitC (ESP32-WROOM-32). See CLAUDE.md.
 // On a WROVER module, move NRF_CE / NRF_IRQ off GPIO 16/17 (PSRAM).

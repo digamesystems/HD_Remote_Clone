@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Tier 1 (host): RF helper logic — address byte order, sniffer dup filter,
 // Platinum payload decoding, packet runs.
 #include <unity.h>

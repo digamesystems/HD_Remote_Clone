@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Tier 2 (device): IR TX -> RX loopback. Ignored unless HW_IR_LOOPBACK is true.
 // Wiring: IR LED driver on GPIO 4 aimed at the IR receiver (GPIO 14), a few cm apart.
 #include <Arduino.h>

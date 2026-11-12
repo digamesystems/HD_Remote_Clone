@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Tier 1 (host): HD Platinum IR frame encode/decode.
 // Real-capture fixtures are copied from captures/*.log (Nov 7, 2026).
 #include <unity.h>

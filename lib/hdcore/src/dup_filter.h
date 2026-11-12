@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // Suppresses one-off noise packets when sniffing promiscuously. The original
 // remote repeats each packet ~30x, so a payload is reported on its 2nd

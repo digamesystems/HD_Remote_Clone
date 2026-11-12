@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Generates hardware/hd_remote/nrf24.kicad_sch (first draft) from docs/HARDWARE.md:
 the 2x4 socket for the nRF24 module, its decoupling, and an optional IRQ link.
 Run once; after editing the sheet in KiCad, don't rerun.

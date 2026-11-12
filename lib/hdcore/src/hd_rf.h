@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // Hunter Douglas Platinum handheld RF parameters and payload decoding.
 //

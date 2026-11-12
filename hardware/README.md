@@ -36,3 +36,4 @@ The KiCad library path is set at the top of `tools/sexpr.py`, or with the `KICAD
 
 - Local KiCad state (`*.kicad_prl`), backups and caches are git-ignored. Commit the `.kicad_pro`, `.kicad_sch` and `.kicad_pcb` files, plus any project-specific symbol and footprint libraries.
 - Parts should come with an LCSC number where possible, so JLC assembly stays an option.
+- **License:** the KiCad design is CERN-OHL-S-2.0 ([LICENSE](LICENSE)); the generator scripts in `tools/` are GPL-2.0-or-later, like the firmware.

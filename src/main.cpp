@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Hunter Douglas Platinum remote — bring-up / reverse-engineering firmware.
 // Serial-menu driven (115200 baud, newline line endings). Type `help`.
 

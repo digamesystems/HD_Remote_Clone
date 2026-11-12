@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 // Pure C++ parsing helpers (no Arduino) — shared by firmware and host tests.
 
