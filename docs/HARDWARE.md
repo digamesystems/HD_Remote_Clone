@@ -99,7 +99,9 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 - Headroom at VBAT 3.3 V: 3.3 − 1.6 (LED at 150 mA) − 0.65 (R_E) ≈ 1.0 V across the transistor. OK.
 - Bulk capacitance on VBAT at the LEDs: 100 µF + 100 nF.
 
-*verify:* build the sink on the breadboard first and check the current with the scope across R_E at 3.3 V and 4.2 V. The TSAL6200's peak rating depends on duty cycle; 150 mA at our ~33 % carrier duty in bursts is believed safe, but check against the datasheet.
+*verify:* build the sink on the breadboard first and check the current with the scope across R_E at 3.3 V and 4.2 V.
+
+**Measured carrier (2026-11-12, breadboard, scope across the 33.8 Ω series resistor):** 39.7 kHz at **~50 % duty** (IRremoteESP8266's default), 2.96 V peak = **88 mA** per pulse, flat tops, no visible sag. The TSAL6200 is rated 100 mA continuous and 200 mA peak at 50 % duty (t_p ≤ 100 µs), so ~150 mA at 50 % stays inside the peak rating. Average current during a burst is half the peak (not a third, as first assumed), so each press costs about 50 % more than first estimated. A 33 % duty, set in firmware, would cut that if range allows.
 
 ## USB and programming
 

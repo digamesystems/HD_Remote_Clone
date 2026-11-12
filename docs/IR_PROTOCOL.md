@@ -8,7 +8,7 @@ Reverse engineered on 2026-11-07 from the original Platinum remote. The source o
 | UP / DOWN codes, channel A | ✅ confirmed by both |
 | UP / DOWN codes, channel B | ✅ ESP32 capture only (2026-11-08) |
 | Other buttons | ✅ **none send IR in normal use**; only the up/down arrows transmit (logic analyzer, 2026-11-07). In setup mode (group assignment), OPEN and CLOSE send the **normal** `0101` / `0110`; SETUP and the group keys send no IR or RF (2026-11-12, [capture](../captures/rf_ir_setup_mode_20261112.log)). The RF frame marks the press as add or remove ([RF_PROTOCOL.md](RF_PROTOCOL.md#pairing-group-assignment)) |
-| Carrier frequency / duty cycle | 🔲 not measured (manual says 40 kHz) |
+| Carrier frequency / duty cycle | 🔲 the original remote's: not measured (manual says 40 kHz). Our clone's: 39.7 kHz, ~50 % duty (scope across the LED's series resistor, 2026-11-12), and the shade accepts it |
 | Shade responds to synthesized frames | ✅ **yes, with the clone's own RF wake, no original remote** (2026-11-11), reliably with the LED about 1 ft from the sensor eye. Earlier: with the original remote's RF (2026-11-09); never with IR alone (0 of 20). See [Shade tests](#shade-tests) |
 | RF needed alongside IR? | ✅ **shown by two independent tests** (2026-11-09): foil tube (remote's IR fails when its RF is blocked) and clone IR + remote RF. The RF was sniffed on 2026-11-11: a red-mode arrow sends `ID 01 00 80`, a wake frame with no direction. See [RF_PROTOCOL.md](RF_PROTOCOL.md) |
 
@@ -131,6 +131,32 @@ The decoder treats any duration above **1900 µs** as long (header or 1-bit spac
 
 **To refine:** probe the remote's IR LED drive (transistor base or LED cathode) with the logic analyzer at ≥1 MHz to get the true mark and space lengths, the carrier frequency and the duty cycle.
 
+## The clone's transmitter at the LED (scope, 2026-11-12)
+
+These traces show **our clone's** drive, measured directly at the LED rather than through a demodulating receiver. Setup: the breadboard driver (5 V → 33.8 Ω → TSAL6200 → NPN → GND, base from GPIO 4), with the scope across the 33.8 Ω series resistor. The trace is the voltage across the resistor, so it's proportional to LED current (1 V ≈ 30 mA). The original remote's carrier is still unmeasured.
+
+**Carrier.** 25.2 µs per cycle, **39.7 kHz**, at **~50 % duty** (IRremoteESP8266's default). The pulses peak at about 2.96 V, which is **88 mA** through the LED. The tops are flat with clean edges, so the supply holds up during the pulse. The shade accepts this carrier.
+
+<img src="images/scope_clone_ir_carrier_20261112.png" width="480" alt="Scope at 10 us/div, 2 V/div: square pulses about 3 V high, cursors 25.2 us apart (39.68 kHz)">
+
+**Single frames.** `send up 1` and `send down 1` ask for a 1 ms burst, and the firmware rounds that up to exactly one complete frame, so each trace is one frame with nothing around it. Timebase 2.5 ms/div, 12 divisions. The `send` command's RF wake goes out first, but it's on the radio and doesn't show here.
+
+| | UP, `0101` | DOWN, `0110` |
+|---|---|---|
+| Header mark + space | ~2.8 + ~2.7 ms | ~2.75 + ~2.65 ms |
+| Bit 3 (mark + space) | short space: **0** | short space: **0** |
+| Bit 2 | long space: **1** | long space: **1** |
+| Bit 1 | short space: **0** | long space: **1** |
+| Bit 0 | mark early, long space to the next frame: **1** | mark late, short space to the next frame: **0** |
+
+Widths are read from the screenshots to about ±0.1 ms. The proportions are the clearer evidence: header mark, header space and long spaces all match, and bit marks match short spaces.
+
+<img src="images/scope_clone_ir_up_frame_20261112.png" width="420" alt="Scope at 2.5 ms/div: header burst, then four bit bursts with short, long, short spacing: code 0101 (UP)"> <img src="images/scope_clone_ir_down_frame_20261112.png" width="420" alt="Scope at 2.5 ms/div: header burst, then four bit bursts with short, long, long spacing: code 0110 (DOWN)">
+
+**How the last bit is carried.** A frame is always 17.19 ms, and bit 0 has no mark after it, so its value shows as *where* the last mark sits. In UP (`0101`) the last mark comes early, leaving a long space before the next frame. In DOWN (`0110`) it comes late, leaving only a short space.
+
+**Marks read slightly long here** (~1.1 ms against 1.03 ms nominal), while the demodulating receivers read them slightly short (see the table above). That's consistent with the receivers trimming marks, but screenshot resolution limits how far to trust it. A logic-analyzer capture at ≥1 MHz on the LED drive would pin it down.
+
 ## Shade tests
 
 All tests used one shade, with the remote's switch on A. The shade is a battery model converted to DC power, so it has the same electronics and firmware as a battery shade. The original remote operates it in red mode from more than 10 ft.
@@ -248,7 +274,7 @@ The bare, wrapped, bare sequence was repeated with the same results. Exact trial
 
 <img src="images/clone_led_drive_scope.png" width="420" alt="Scope trace across the 33 ohm LED resistor: header burst, then four bit bursts">
 
-The scope across the 33 Ω LED resistor showed about 3.2 V p-p (about 97 mA peak) and the expected frame: header, then marks with short and long spaces. The burst tops are flat, so the supply holds up. The on-screen timebase reads 50 µs/div, which doesn't match the trace (individual 40 kHz cycles would be visible at that setting), so treat its horizontal scale as unknown.
+The scope across the 33 Ω LED resistor showed about 3.2 V p-p (about 97 mA peak) and the expected frame: header, then marks with short and long spaces. The burst tops are flat, so the supply holds up. The on-screen timebase reads 50 µs/div, which doesn't match the trace (individual 40 kHz cycles would be visible at that setting), so treat its horizontal scale as unknown. Calibrated traces of the same drive, with the carrier and single UP / DOWN frames, are in [The clone's transmitter at the LED](#the-clones-transmitter-at-the-led-scope-2026-11-12).
 
 <img src="images/clone_led_off.jpg" width="200" alt="Clone IR LED on the breadboard, off"> <img src="images/clone_led_on.jpg" width="200" alt="Clone IR LED glowing purple through a phone camera while sending"> <img src="images/remote_ir_led_on.jpg" width="300" alt="Original remote's IR window glowing purple through a phone camera; the red mode indicator is lit on top"> <img src="images/remote_ir_led_off.jpg" width="300" alt="Original remote's IR window, idle">
 
@@ -282,7 +308,7 @@ The small-hole result agrees with the foil tube, but on its own it was weak: the
 | [`captures/la_ir_red_down_arrow_20261107.sr`](../captures/la_ir_red_down_arrow_20261107.sr) | PulseView, down arrow: 74 × `0110` |
 | [`captures/ir_ab_channel_20261108.log`](../captures/ir_ab_channel_20261108.log) | ESP32 capture: captures 1–4 switch on A, 5–8 on B |
 | [`captures/ir_shield_tests_20261109.log`](../captures/ir_shield_tests_20261109.log) | ESP32 captures for the foil-tube tests: hand over the remote (Part 1), tube aimed and off axis (Part 2), tube at 30 cm (Part 3) |
-| [`docs/images/`](images/) | Photos of the foil tube, the remote's IR window, the clone LED, and the scope trace of the clone's LED drive |
+| [`docs/images/`](images/) | Photos of the foil tube, the remote's IR window and the clone LED; scope traces of the clone's LED drive (2026-11-08, and the calibrated 2026-11-12 set: `scope_clone_ir_carrier`, `_up_frame`, `_down_frame`) |
 
 The receiver OUT was on GPIO 32 for the Nov 7 ESP32 captures, GPIO 14 from Nov 8, and on analyzer D0 for the PulseView captures. The analyzer files open in PulseView, and the serial logs are plain text.
 

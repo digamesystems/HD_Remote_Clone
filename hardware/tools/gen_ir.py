@@ -34,7 +34,7 @@ def build():
            "Base node clamped at ~1.3 V by two 1N4148 in series, so I_LED = (1.3 - 0.65) / R_E,\n"
            "~150 mA with 4.3 ohm, roughly constant from VBAT 3.3 to 4.2 V.\n"
            "VERIFY on the breadboard first (scope across R_E at 3.3 and 4.2 V), and check the\n"
-           "TSAL6200 peak rating for our duty cycle (40 kHz, ~33 %, in bursts).", 8, 6)
+           "TSAL6200 peak rating for our duty cycle (39.7 kHz, ~50 % measured, in bursts).", 8, 6)
 
     # Base drive and clamp
     s.part("Device:R_Small", "R", "470", 12, 34, {"1": "IR_TX", "2": "IR_BASE"},
