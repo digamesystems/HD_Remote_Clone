@@ -93,6 +93,7 @@ Two 940 nm LEDs, so we can mix a narrow one (TSAL6200, ±17°) with a wider one,
 The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses. VBAT varies from 4.2 V down to 3.3 V, so each LED gets a **current sink** that holds the current roughly constant:
 
 - GPIO 4 → 470 Ω → a common base node, clamped by two 1N4148 diodes in series to GND (~1.3 V).
+- 100 kΩ from the base node to GND, so the LEDs stay off while GPIO 4 floats (during boot, and in deep sleep unless the pin is held). Added 2026-11-12.
 - For each LED: BC817-40 NPN, base on that node, emitter → R_E to GND, collector → LED cathode, LED anode → VBAT.
 - I_LED ≈ (1.3 V − 0.65 V) / R_E, so R_E ≈ 4.3 Ω gives ~150 mA per LED (the breadboard ran one LED at ~97 mA).
 - Headroom at VBAT 3.3 V: 3.3 − 1.6 (LED at 150 mA) − 0.65 (R_E) ≈ 1.0 V across the transistor. OK.
@@ -167,7 +168,19 @@ LCSC part numbers aren't filled in yet.
 | GPIO 2, 12, 15 | not connected | strapping pins; 12 must be low at boot |
 | GPIO 13 | label `NRF_IRQ_OPT` | for the optional nRF24 IRQ link |
 
-Part references are numbered by sheet: 1xx Power and USB, 2xx MCU.
+Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
+
+## Schematic: IR sheet (draft, 2026-11-12)
+
+[`hardware/hd_remote/ir.kicad_sch`](../hardware/hd_remote/ir.kicad_sch) implements [IR transmitter](#ir-transmitter) above, plus the optional receiver.
+
+| Item | Value | Note |
+|---|---|---|
+| IR LEDs | 2× TSAL6200, 5 mm, footprint bent 90° (`LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm`) | lying flat, pointing out of the board edge; either position can take a wider-angle LED |
+| Current sinks | BC817-40 (SOT-23), R_E 4.3 Ω 0805 | ~0.1 W peak in R_E, hence 0805 |
+| Clamp | 2× 1N4148W (SOD-123), base resistor 470 Ω, 100 kΩ pull-down | |
+| Bulk on VBAT | 100 µF 1206 ceramic + 100 nF | a 100 µF ceramic keeps well under half its capacity at 4 V; check the derating, or use a tantalum or polymer cap |
+| Receiver (DNP) | TSOP382xx footprint (Vishay MINICAST), 100 Ω + 100 nF supply filter | not fitted in normal builds; a VS1838B has the same pin order but a different body |
 
 ## Later revision idea: XIAO ESP32-S3
 

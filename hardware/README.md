@@ -12,17 +12,19 @@ KiCad project for the handheld replacement remote: [`hd_remote/hd_remote.kicad_p
 |---|---|
 | Power and USB (`power_usb.kicad_sch`) | draft, 2026-11-12. Values and *verify* items: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-power-and-usb-sheet-draft-2026-11-12) |
 | MCU (`mcu.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-mcu-sheet-draft-2026-11-12) |
-| IR, nRF24, buttons/LEDs | not started |
-
-ERC (2026-11-12): 3 errors, all expected until the buttons sheet exists (the input-only GPIOs 34, 35, 36 have no pull-down yet), and warnings for labels whose other end is on a sheet not drawn yet. References are numbered by sheet (1xx, 2xx, ...).
+| IR (`ir.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-ir-sheet-draft-2026-11-12) |
+| nRF24, buttons/LEDs | not started |
 | Layout | not started; the board outline waits on the enclosure choice |
+
+ERC (2026-11-12): 3 errors, all expected until the buttons sheet exists (the input-only GPIOs 34, 35, 36 have no pull-down yet), and warnings for labels whose other end is on a sheet not drawn yet. References are numbered by sheet (1xx, 2xx, 3xx, ...).
 
 ## Generator scripts
 
-`tools/` holds the Python scripts that drew the first drafts (`gen_power_usb.py`, `gen_mcu.py`, using `schgen.py` and `sexpr.py`). They pull symbols from the installed KiCad 10 libraries and connect every pin to a net label, so connectivity is by name. **Once a sheet has been edited in KiCad, the KiCad file is the master**: don't rerun its generator over it.
+`tools/` holds the Python scripts that drew the first drafts (`gen_power_usb.py`, `gen_mcu.py`, `gen_ir.py`, using `schgen.py` and `sexpr.py`). They pull symbols from the installed KiCad 10 libraries and connect every pin to a net label, so connectivity is by name. **Once a sheet has been edited in KiCad, the KiCad file is the master**: don't rerun its generator over it.
 
     python -I hardware/tools/gen_power_usb.py
     python -I hardware/tools/gen_mcu.py
+    python -I hardware/tools/gen_ir.py
 
 The KiCad library path is set at the top of `tools/sexpr.py`, or with the `KICAD_SYMBOL_DIR` environment variable.
 

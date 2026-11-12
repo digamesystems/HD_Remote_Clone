@@ -65,7 +65,7 @@ class Sheet:
         return self.lib[lib_id]
 
     def _symbol(self, lib_id, ref, value, x, y, rot=0, fields=None, ref_at=None, val_at=None,
-                hide_ref=False, power=False):
+                hide_ref=False, power=False, dnp=False):
         sym = self._lib(lib_id)
         props = {p[1]: p[2] for p in sexpr.find_all(sym, "property")}
         fields = dict(fields or {})
@@ -73,7 +73,7 @@ class Sheet:
         val_at = val_at or (x, y + 2 * G, "left")
         node = [Sym("symbol"), [Sym("lib_id"), lib_id], [Sym("at"), x, y, rot], [Sym("unit"), 1],
                 [Sym("exclude_from_sim"), Sym("no")], [Sym("in_bom"), Sym("no" if power else "yes")],
-                [Sym("on_board"), Sym("no" if power else "yes")], [Sym("dnp"), Sym("no")],
+                [Sym("on_board"), Sym("no" if power else "yes")], [Sym("dnp"), Sym("yes" if dnp else "no")],
                 [Sym("uuid"), self.uid("sym", ref)]]
         node.append([Sym("property"), "Reference", ref, [Sym("at"), ref_at[0], ref_at[1], 0],
                      _effects(ref_at[2], hide=hide_ref)])
@@ -142,7 +142,7 @@ class Sheet:
         self._symbol("power:PWR_FLAG", ref, "PWR_FLAG", fx, y, 0, hide_ref=True, power=True,
                      val_at=(fx, y - 2 * G, "left"))
 
-    def part(self, lib_id, prefix, value, gx, gy, nets, fields=None, global_nets=()):
+    def part(self, lib_id, prefix, value, gx, gy, nets, fields=None, global_nets=(), dnp=False):
         """Places a part at grid (gx, gy). nets maps pin number -> net name, or
         None for a no-connect. Every pin of the symbol must be listed."""
         x, y = gx * G, gy * G
@@ -162,7 +162,7 @@ class Sheet:
         else:
             ref_at = (min(xs) + G, min(ys) - 1.27, "left")
             val_at = (min(xs) + G, max(ys) + 2.54, "left")
-        self._symbol(lib_id, ref, value, x, y, 0, fields=fields, ref_at=ref_at, val_at=val_at)
+        self._symbol(lib_id, ref, value, x, y, 0, fields=fields, ref_at=ref_at, val_at=val_at, dnp=dnp)
         done = set()
         for (num, _name, px, py, a, _u) in pins:
             sx, sy = round(x + px, 4), round(y - py, 4)
