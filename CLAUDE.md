@@ -6,7 +6,7 @@ Context for Claude Code. Summarized from a planning conversation in Claude chat 
 - **Single-letter commands** (fast dev loop; letters combine, e.g. "cp", "cpd", "t1 d"; run in the order c → p → d):
   - **"d"**: deploy. One step, no tests: `pio run -t upload --upload-port COM11` (builds and uploads; a failed build uploads nothing), then reopen the serial monitor in a separate window (`Start-Process pio device monitor --port COM11 --baud 115200 --filter time`).
   - **"c"**: local git commit of all current changes with a descriptive message. Runs `pio run` first and halts if the build fails (the user's rule: never commit a broken build). No tests.
-  - **"p"**: push to GitHub (`origin/main`, private repo digamesystems/HD_Remote_Clone). If any pushed commit hasn't passed t1, say so.
+  - **"p"**: push to GitHub (`origin/main`, **public** repo digamesystems/HD_Remote_Clone, so redact the remote IDs before pushing). If any pushed commit hasn't passed t1, say so.
   - **"t1"**: Tier 1 native tests, `pio test -e native`.
   - **"t2"**: Tier 2 board tests, `pio test -e esp32dev_test --upload-port COM11` (all device suites). Leaves **test firmware** on the board; say so, and that "d" restores the app.
   - **"cpdt"**: the full gated release: `pio run`, t1, then t2 for test_device_board plus each changed area (`-f test_device_<area>`), then c, p, d. If any step fails, **halt**: no commit, push, or deploy; report the errors. Tier 2 tests IGNORED for absent hardware (per `include/hw_config.h`) don't block, but say plainly which areas were not verified.
@@ -20,7 +20,7 @@ Context for Claude Code. Summarized from a planning conversation in Claude chat 
   - License texts are verbatim from the official sources; never edit, reformat or summarize them (the GPL's `<year>`/"Gnomovision" lines are part of its text).
   - Hunter Douglas manual: paraphrase only; keep extracted manual text out of the repo.
   - A released firmware binary must come with its source (GPL): link the tagged commit.
-- **Community contribution is a goal, not just solving our own problem.** Little public work exists on Platinum IR/RF (scattered, mostly dormant forum threads; no published IR protocol found). Write docs and captures so outsiders can reuse them: state what's confirmed vs hypothesis, keep evidence files committed, and keep code reusable (`lib/hdcore/`). Later options: make the repo public, upstream the IR protocol to IRremoteESP8266, post write-ups on the Arduino/HA threads where people got stuck, maybe an ESPHome component.
+- **Community contribution is a goal, not just solving our own problem.** Little public work exists on Platinum IR/RF (scattered, mostly dormant forum threads; no published IR protocol found). Write docs and captures so outsiders can reuse them: state what's confirmed vs hypothesis, keep evidence files committed, and keep code reusable (`lib/hdcore/`). The repo is public (checked Nov 13). Later options: upstream the IR protocol to IRremoteESP8266, post write-ups on the Arduino/HA threads where people got stuck, maybe an ESPHome component.
 
 ## Goal
 Build a DIY replacement for a Hunter Douglas **Platinum Technology** remote (manual © 2013, pre-PowerView). One original remote works; a second is degraded (IR works only within ~30 cm, RF within ~1 m — both paths degraded, so suspect a power problem: batteries, contacts, or regulator; worth cleaning and re-testing).
