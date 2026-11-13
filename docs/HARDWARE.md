@@ -112,6 +112,27 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
   - *Back-powering:* with USB unplugged, the ESP32's TX0 drives the CP2102N's unpowered RXD pin and could leak current through its protection diodes. Put 1 kΩ in series on TX0 and RX0, and check the sleep current with USB unplugged. *verify*
 - **Auto-reset:** the DevKitC's two-NPN DTR/RTS circuit on EN and IO0, so `pio run -t upload` works without buttons. EN gets 10 kΩ pull-up + 1 µF; a small tactile EN reset button is included.
 
+### Reset and recovery with the case closed (decided 2026-11-13)
+
+The first prototype has **no reset reachable from outside the case**. The RESET (EN) and BOOT buttons are small SMD parts on top of the board, under the top shell. That's acceptable for a prototype, because a stuck board can still be recovered three ways:
+
+1. **USB, case closed.** Plug in USB and open the serial port (or flash): the CP2102N's auto-reset pulls EN low. It's a hardware reset, so it works from deep sleep or a hang. It only works with USB connected, since the CP2102N is powered from VBUS.
+2. **Watchdogs.** The ESP32's task and RTC watchdogs reset a hung CPU. The handheld firmware must keep them enabled.
+3. **Open the case** (four screws underneath): on-board RESET and BOOT, or unplug the battery's JST for a full power cycle.
+
+Deep sleep alone isn't a risk: any of the eight keys wakes the chip (ext1).
+
+- **Bring-up:** test the auto-reset circuit first on the first board (it's still *verify*). If it fails, every reset or flash means opening the case.
+- **Later revision**, if the remote goes to someone who won't open it: a **RESET pinhole next to SETUP** in the floor. Move the RESET switch to the board's underside as a 5 mm tactile switch like SETUP's, and add one floor hole.
+
+### Other schematic parts that matter to the enclosure (reviewed 2026-11-13)
+
+Apart from the parts the case model already covers (`hardware/enclosure/assembly.py`), the schematic is small SMD parts. Three exceptions:
+
+- **Battery connector** (JST PH S2B-PH-K, side entry): now placed on top of the board with a board-edge notch for the leads from the cell underneath. See the PCB constraints in `hardware/enclosure/README.md`.
+- **Keystone 5000 test loops** (TP604–606): through-hole wire loops roughly 7–9 mm tall (check the datasheet). Keep them out from under the nRF24 module (11 mm) and the key face, or use flat pads on production boards.
+- **DNP parts usable only with the case open:** J601 (1×6 serial header; a plugged cable needs ~20 mm of height) and the IR receiver footprint, which would also need a window in the front wall to see out.
+
 ## nRF24 socket
 
 - 2×4 female header, 2.54 mm. The module plugs in with its antenna **overhanging the board edge**, with no copper (all layers) under the overhang.

@@ -43,6 +43,15 @@ USB_SMD = [(-3.25, .6), (-2.45, .6), (-1.75, .3), (-1.25, .3), (-0.75, .3), (-0.
            (0.25, .3), (0.75, .3), (1.25, .3), (1.75, .3), (2.45, .6), (3.25, .6)]
 USB_SH = [(-4.32, -3.13, 2.1), (4.32, -3.13, 2.1), (-4.32, 1.05, 1.6), (4.32, 1.05, 1.6)]
 # IR LED footprint LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm: pads at fy 0, dome tip at fy 9.87
+# Battery connector: JST PH S2B-PH-K side entry (footprint 5.9 x 7.6 mm; height ~6, check the
+# datasheet) on top of the board, mouth facing the front. The mating plug's envelope is approximate.
+JST_MOUTH_D, JST_Y = 140.0, -9.15          # mouth position (mm from the front), centre y
+JST_W, JST_DEPTH, JST_H = 5.9, 7.6, 6.0
+PLUG_L, PLUG_H = 6.0, 4.5                  # plug housing in front of the mouth
+# Battery leads go from the plug, across to a notch in the -Y (right-hand) board edge, down through
+# it and under the board to the cell's back end. Keep-out bundle 2 mm wide x 2 mm tall.
+NOTCH_FROM, NOTCH_TO, NOTCH_DEPTH = 128.0, 133.0, 3.0   # board-edge notch, mm from the front
+LEAD_W, LEAD_H = 2.0, 2.0
 
 FINISH = {"shell": "#8a8a88", "key": "#2a2a2a", "legend": "#f4f4f0", "indicator": "#d8e8d0",
           "ir": "#9fb4d8", "metal": "#c0c0c0"}
@@ -83,6 +92,10 @@ def build_parts(m):
                 Circle(m["BOSS_D"] / 2 + POST_NOTCH_CLEAR, mode=Mode.SUBTRACT)
             with Locations(*so_pts):
                 Circle(PCB_HOLE_D / 2, mode=Mode.SUBTRACT)
+            # notch in the -Y edge for the battery leads
+            edge = -(W / 2 - WALL - PCB_GAP)
+            with Locations((fx((NOTCH_FROM + NOTCH_TO) / 2), edge + NOTCH_DEPTH / 2 - 0.5)):
+                Rectangle(NOTCH_TO - NOTCH_FROM, NOTCH_DEPTH + 1.0, mode=Mode.SUBTRACT)
         extrude(amount=m["PCB_T"])
     p["PCB"] = pcb.part
 
@@ -133,6 +146,31 @@ def build_parts(m):
         leds = led.part if leds is None else leds + led.part
     p["IR LEDs"] = leds
     led_pad_d = L / 2 - (tip_x - 9.87)            # pads, mm from the front
+
+    # battery connector, mating plug, and the lead path down through the board notch
+    p["battery JST"] = Pos(fx(JST_MOUTH_D + JST_DEPTH / 2), JST_Y, top) * Box(
+        JST_DEPTH, JST_W, JST_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    p["battery plug"] = Pos(fx(JST_MOUTH_D - PLUG_L / 2), JST_Y, top) * Box(
+        PLUG_L, JST_W, PLUG_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    edge = -(W / 2 - WALL - PCB_GAP)
+    n_mid = (NOTCH_FROM + NOTCH_TO) / 2
+    y_in = edge + NOTCH_DEPTH / 2              # lead centre line inside the notch
+    plug_front = JST_MOUTH_D - PLUG_L
+    batt_back = L / 2 - (m["BATT_X"] - m["BATT_L"] / 2)
+    leads = (
+        # forward out of the plug, on top of the board
+        Pos(fx((plug_front + n_mid) / 2), JST_Y, top) * Box(plug_front - n_mid + LEAD_W, LEAD_W, LEAD_H,
+                                                           align=(Align.CENTER, Align.CENTER, Align.MIN))
+        # across to the notch
+        + Pos(fx(n_mid), (JST_Y + y_in) / 2, top) * Box(LEAD_W, JST_Y - y_in + LEAD_W, LEAD_H,
+                                                       align=(Align.CENTER, Align.CENTER, Align.MIN))
+        # down through the notch to the floor
+        + Pos(fx(n_mid), y_in, m["FLOOR_TOP"]) * Box(LEAD_W, LEAD_W, top + LEAD_H - m["FLOOR_TOP"],
+                                                    align=(Align.CENTER, Align.CENTER, Align.MIN))
+        # under the board, forward to the cell's back end
+        + Pos(fx((n_mid + batt_back) / 2), y_in, m["FLOOR_TOP"]) * Box(n_mid - batt_back, LEAD_W, LEAD_H,
+                                                                       align=(Align.CENTER, Align.CENTER, Align.MIN)))
+    p["battery leads"] = leads
 
     # nRF24 on its socket, antenna end forward
     hdr_d = NRF_BACK - NRF_HDR_FROM_END
@@ -196,7 +234,8 @@ def build_parts(m):
 
 # parts that touch or pass through each other by design
 ALLOWED = [{"key switches", "PCB"}, {"A/B switch", "PCB"}, {"SETUP switch", "PCB"},
-           {"indicator", "PCB"}, {"keycaps", "key switches"}]
+           {"indicator", "PCB"}, {"keycaps", "key switches"},
+           {"battery leads", "battery plug"}, {"battery leads", "battery"}]
 
 
 def check(m, p, info):
@@ -258,6 +297,25 @@ def check(m, p, info):
     ok(gap >= MIN_USB_ROUTING, f"USB-C routing room to the nRF socket >= {MIN_USB_ROUTING} mm ({gap:.1f})")
     batt_back = m["L"] / 2 - (m["BATT_X"] - m["BATT_L"] / 2)
     ok(info["hdr_d"] - 2.55 > batt_back, "nRF socket pins clear of the battery")
+    ok(JST_MOUTH_D > batt_back + 2, "battery JST pins clear of the battery")
+    ribs, cell = m["batt_ribs"], p["battery"]
+    ok(ribs.is_valid and ov(ribs, cell) < 1e-6, "battery ribs clear the cell")
+    ok(abs(ov(ribs, bottom) - ribs.volume) < 1e-3, "battery ribs are part of the bottom shell")
+    play = min(cell.distance_to(r) for r in ribs.solids())
+    ok(0.3 <= play <= 1.0, f"battery located by the ribs (play {play:.2f} mm per side)")
+    near = min(ribs.distance_to(Pos(x, y, m["FLOOR_TOP"]) * Cylinder(m["PAD_D"] / 2, 1,
+               align=(Align.CENTER, Align.CENTER, Align.MIN))) for x, y in m["KEY_XY"])
+    ok(near >= 1.0, f"battery ribs clear of the key pads ({near:.1f} mm)")
+    so_near = min(ribs.distance_to(Pos(sx * m["SO_X"], sy * m["SO_Y"], m["FLOOR_TOP"]) * Cylinder(
+        m["SO_D"] / 2, 1, align=(Align.CENTER, Align.CENTER, Align.MIN))) for sx in (-1, 1) for sy in (-1, 1))
+    ok(so_near >= 1.0, f"battery ribs clear of the board standoffs ({so_near:.1f} mm)")
+    for n in ("battery leads", "SETUP switch", "key switches", "PCB"):
+        ok(ov(ribs, p[n]) < 1e-6, f"battery ribs clear the {n}")
+    rib_top = m["FLOOR_TOP"] + m["BATT_RIB_H"]
+    ok(rib_top < m["Z0"] + m["PCB_BOT_Z"] - m["PIN_PROTRUDE"] - 0.5,
+       "battery ribs below the pin-tip zone")
+    lead_in_notch = ov(p["battery leads"], p["PCB"]) < 1e-6
+    ok(lead_in_notch, "battery leads pass through the board notch without touching the board")
     head = m["FACE_UNDER"] - info["nrf_top"]
     ok(head >= 0.5, f"nRF24 module under the key face (clearance {head:.1f} mm; want >= 0.5)")
     return fails, out
@@ -286,7 +344,8 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish):
     palette = {"PCB": "darkgreen", "key switches": "black", "board screws": "silver", "battery": "royalblue",
                "USB-C": "silver", "IR LEDs": "lightskyblue", "nRF socket": "dimgray", "nRF module": "purple",
                "ESP32": "darkorange", "A/B switch": "orange", "A/B slider": "orange", "SETUP switch": "red",
-               "indicator": "limegreen", "keycaps": "dimgray"}
+               "indicator": "limegreen", "keycaps": "dimgray", "battery JST": "white",
+               "battery plug": "beige", "battery leads": "red"}
     colors, alphas = ["lightgray", "lightblue"], [bottom_alpha, top_alpha]
     for n, part in p.items():
         objs.append(part.moved(up) if n in lifted else part)

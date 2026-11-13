@@ -26,6 +26,11 @@ BATT_T, BATT_W, BATT_L = 5.0, 30.0, 35.0
 BATT_SWELL = 0.10      # allow ~10 % thickness growth over the cell's life
 BATT_FRONT_FROM_FRONT = 92.0  # cell's front edge, mm from the front end (behind the ALL pad)
 BATT_X = L / 2 - BATT_FRONT_FROM_FRONT - BATT_L / 2
+# Held by four L-shaped corner ribs on the floor (sides stay open for the leads, removal and
+# swelling) plus a thin (<= 0.2 mm) double-sided tape pad; an insulating sheet (Kapton or fish
+# paper) goes on the board's underside over the cell. Never clamp a pouch cell.
+BATT_CLEAR = 0.5       # cell to rib, each side
+BATT_RIB_H, BATT_RIB_T, BATT_RIB_LEG = 1.5, 1.0, 6.0   # rib height, thickness, leg length
 
 # --- PCB: its height is set by the battery underneath ---
 PIN_PROTRUDE = 1.5     # THT pins below the board (trim, or keep THT parts off the cell area)
@@ -101,9 +106,10 @@ USB_RECESS = 1.0
 # --- Split, lip and case screws ---
 SPLIT = Z0 + LED_Z     # parting plane at the IR LED axis, so each shell holds half of each hole
 LIP_H, LIP_W, LIP_GAP = 2.0, 1.5, 0.2   # lip on the top shell, inside the long walls
-# Gaps in the lip (mm from the front, side +1/-1): the ESP32's antenna end sits at the left board
-# edge in the current layout preview (89-107 mm from the front).
-LIP_GAPS = [(88, 108, +1)]
+# Gaps in the lip (mm from the front to, side +1/-1) where parts reach the board edge near the
+# split, in the current placeholder layout (assembly.py).
+LIP_GAPS = [(88, 108, +1),   # ESP32 antenna end at the +Y board edge
+            (127, 134, -1)]  # battery leads crossing to the -Y board-edge notch
 BOSS_D = 6.0           # corner posts, touching both walls
 BOSS_INSET = WALL + BOSS_D / 2
 SCREW_CLEAR_D = 2.2    # M2 through the bottom post
@@ -119,6 +125,26 @@ else:
     _post_off = BOSS_INSET
 POST_X, POST_Y = L / 2 - _post_off, W / 2 - _post_off
 POSTS = [(sx * POST_X, sy * POST_Y) for sx in (-1, 1) for sy in (-1, 1)]
+
+
+def _battery_ribs():
+    """Four L-shaped ribs just outside the cell's corners, standing on the floor."""
+    ribs = None
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            cx = BATT_X + sx * (BATT_L / 2 + BATT_CLEAR)       # inside corner of the L
+            cy = sy * (BATT_W / 2 + BATT_CLEAR)
+            xs = sorted((cx - sx * (BATT_RIB_LEG - BATT_RIB_T), cx + sx * BATT_RIB_T))
+            ys = sorted((cy - sy * (BATT_RIB_LEG - BATT_RIB_T), cy + sy * BATT_RIB_T))
+            for (x0, x1), (y0, y1) in ((xs, sorted((cy, cy + sy * BATT_RIB_T))),
+                                       (sorted((cx, cx + sx * BATT_RIB_T)), ys)):
+                leg = Pos((x0 + x1) / 2, (y0 + y1) / 2, FLOOR_TOP) * Box(
+                    x1 - x0, y1 - y0, BATT_RIB_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
+                ribs = leg if ribs is None else ribs + leg
+    return ribs
+
+
+batt_ribs = _battery_ribs()
 
 
 def _rounded_rect(length, width, radius):
@@ -148,6 +174,9 @@ with BuildPart() as body:
         Cylinder(SO_D / 2, SO_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
     with Locations(*[(x, y, FLOOR_TOP + SO_H) for x, y in so_pts]):
         Hole(SO_HOLE_D / 2, depth=SO_H)
+
+    # battery corner ribs
+    add(batt_ribs)
 
     # support pads under the key switches
     with Locations(*[(x, y, FLOOR_TOP) for x, y in KEY_XY]):
