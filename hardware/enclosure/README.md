@@ -71,7 +71,7 @@ After the board is assembled (see `docs/HARDWARE.md`, Board assembly):
 
 ## Test piece: `parts/test_piece.py`
 
-One small MJF print that replaces the model's placeholder values with measured ones. All sizes come from `remote_box.py`, so the samples test what the case uses. `python parts/test_piece.py --export` runs its checks (23) and writes STL and STEP files to `out/` (not committed; rerun to regenerate). Order in **MJF PA12, natural grey**, the case material.
+One small MJF print that replaces the model's placeholder values with measured ones. All sizes come from `remote_box.py`, so the samples test what the case uses. `python parts/test_piece.py --export` runs its checks (23) and writes STL and STEP files to `out/` (not committed; rerun to regenerate). Order in **MJF PA12, natural grey**, the case material. **First print ordered 2026-11-13 from JLC3DP** (STLs exported from commit `76482ef`; all seven meshes checked watertight).
 
 | Sample | How to test | Sets |
 |---|---|---|

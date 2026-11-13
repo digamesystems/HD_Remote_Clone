@@ -122,6 +122,7 @@ Next:
   - Plan: screen every module on arrival. Fallback for flaky sniffing: a genuine Nordic module from Digi-Key.
 - **Logic analyzer (owned):** 24 MS/s, 8-channel, works with sigrok/PulseView (`fx2lafw` driver). USB 0925:3881; WinUSB installed via Zadig and working in PulseView as "Saleae Logic", D0–D7 (Nov 7). Inputs −0.5 to 5.25 V. Primary tool for RF reverse engineering (see firmware plan step 4).
 - **Key switches (ordered Nov 13, DigiKey, FedEx Ground):** 100 × Same Sky TS02-66-130-BK-160-SCR-D (6 × 6 mm THT, 13.0 mm tall, 160 gf). For the handheld's keys and the test print's key fixture. The 5 mm SETUP switch (TS02-66-50-BK-160-SCR-D) is **not** ordered yet.
+- **Enclosure test piece (ordered Nov 13, JLC3DP):** the 7 parts from `hardware/enclosure/parts/test_piece.py` in MJF PA12 natural grey. Parts $10.79; most of the cost was shipping and import fees. On arrival, run the procedure in `hardware/enclosure/README.md` (Test piece) and update the model's placeholder values. Needs M2 self-tapping screws (~6 mm), a TSAL6200 and one TS02 13 mm switch.
 - Still needed: NPN (2N2222 / PN2222 preferred, 2N3904 OK for 1 LED), resistors (1 kΩ, 33 Ω, 2× 10 kΩ, 100 Ω), caps (100 µF, 10 µF, 2× 100 nF ceramic), 2 momentary N.O. pushbuttons, optional nRF24 adapter bases (onboard 3.3 V regulator).
 
 ### Pin map (original ESP32)
