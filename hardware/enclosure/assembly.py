@@ -275,9 +275,19 @@ def check(m, p, info):
     ok(not [1 for a, b in combinations(caps, 2) if ov(caps[a], caps[b]) > 1e-6], "keycaps clear each other")
     blocked = [n for n, c in caps.items() if ov(c.moved(Location((0, 0, -travel))), shells) > 1e-6]
     ok(not blocked, f"keycaps free when pressed {travel:.2f} mm {blocked or ''}")
+    # play at rest, measured: lowest point of each cap over its switch vs the plunger top
+    play = []
+    for n, c in caps.items():
+        d, y = m["SWITCHES"][n]
+        probe = Pos(L / 2 - d, y, m["PLUNGER_TOP"]) * Cylinder(1.75, 5, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        x = c & probe
+        play.append(x.bounding_box().min.Z - m["PLUNGER_TOP"] if x is not None else 99)
+    ok(min(play) >= m["CAP_PLAY"] - 0.01, f"keycap play over the plungers at rest {min(play):.2f}-{max(play):.2f} mm "
+       f"(design {m['CAP_PLAY']})")
     loose = [n for n, c in caps.items() if ov(c.moved(Location((0, 0, 0.05))), top) < 1e-6]
     ok(not loose, f"keycaps retained by the face {loose or ''}")
     unfilled = [n for n, f in m["legend_fill"].items() if f is None or f.volume < 0.1]
+    ok(m["LEGEND_DEPTH"] >= 0.8, f"legend depth >= 0.8 mm for MJF ({m['LEGEND_DEPTH']})")
     ok(not unfilled, f"every keycap legend is cut {unfilled or ''}")
 
     # A/B slider at both ends of its travel
@@ -292,6 +302,13 @@ def check(m, p, info):
     led_edge = m["LED_PITCH"] / 2 + m["LED_HOLE_D"] / 2 + m["LED_CSK"]
     ok(led_edge <= flat - 0.5, f"IR LED countersinks on the flat front wall (+-{led_edge:.1f} of +-{flat:.1f})")
     ok(m["USB_W"] / 2 <= flat - 0.5, "USB-C opening on the flat back wall")
+    ok(m["USB_POCKET_W"] / 2 <= flat - 0.5, "USB-C plug pocket on the flat back wall")
+    ok(m["WALL"] - m["USB_POCKET_DEPTH"] >= 0.8,
+       f"wall left behind the USB-C pocket >= 0.8 mm ({m['WALL'] - m['USB_POCKET_DEPTH']:.1f})")
+    # a 12 x 6.5 mm plug housing with 2 mm corners (a common size) can sink in by the recess
+    plug_face = Plane(origin=(-L / 2 - 0.01, 0, m["Z0"] + m["USB_Z"]), x_dir=(0, 1, 0), z_dir=(1, 0, 0))
+    plug = extrude(plug_face * RectangleRounded(12.0, 6.5, 2.0), amount=m["USB_RECESS"] - 0.02)
+    ok(ov(plug, bottom + top) < 1e-6, "a 12 x 6.5 mm plug housing (2 mm corners) fits the pocket")
     ok(info["usb_sh_front_x"] > info["board_back_x"] + 0.3, "USB-C shell-leg pads on the board")
     gap = info["usb_rear_d"] - (info["hdr_d"] + 1.27 + 0.85)
     ok(gap >= MIN_USB_ROUTING, f"USB-C routing room to the nRF socket >= {MIN_USB_ROUTING} mm ({gap:.1f})")

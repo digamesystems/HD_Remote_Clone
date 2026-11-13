@@ -213,11 +213,15 @@ def screenshots(m, p):
     """Shaded views from OCP CAD Viewer, camera reset to its standard isometric view."""
     for name, args in (("enclosure_finish.png", (0.0, 1.0, 1.0, True)),        # finished look
                        ("enclosure_exploded.png", (30.0, 0.2, 0.2, False))):   # see-through, exploded
+        path = OUT / name
+        before = path.stat().st_mtime if path.exists() else 0
         A.show_assembly(m, p, *args, reset_camera=True)
         time.sleep(4)
-        ocp_vscode.save_screenshot(str(OUT / name))
+        ocp_vscode.save_screenshot(str(path))
         time.sleep(3)
-        _crop(OUT / name)
+        if not path.exists() or path.stat().st_mtime == before:
+            raise SystemExit(f"{name} was not updated: is OCP CAD Viewer open? (or use --no-shots)")
+        _crop(path)
 
 
 def main():

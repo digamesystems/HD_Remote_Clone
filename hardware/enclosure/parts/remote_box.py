@@ -69,9 +69,13 @@ SW_H = 13.0            # key switches: 6 mm tactile, plunger top 13 mm above the
 CAP_PROUD = 1.5        # cap tops this far above the key face
 CAP_TOP_R = 0.6        # rounding on the cap's top edge
 FLANGE_W, FLANGE_T = 1.0, 0.8   # retaining flange under the face: overhang and thickness
-CAP_PLAY = 0.1         # gap between the flange underside and the switch plunger at rest
+CAP_PLAY = 0.3         # gap between the flange underside and the switch plunger at rest. Generous
+                       # on purpose (review 2026-11-13): MJF is +-0.3 mm per part, and shims under
+                       # the board can only take the gap down, so start large and tune on the print
 ARROW_GAP = 0.6        # gap between the UP and DOWN halves of the arrow oval
-LEGEND_DEPTH = 0.4     # legends recessed into the cap tops
+LEGEND_DEPTH = 0.8     # legends recessed into the cap tops; 0.8 so MJF's grain doesn't fill them
+                       # and the white paint has a clean channel (review 2026-11-13; was 0.4)
+LEGEND_SIZE_DIGIT, LEGEND_SIZE_WORD = 4.5, 4.0   # font sizes for 1-4 and ALL (were 4.0, 3.2)
 LEGENDS = {"1": "1", "2": "2", "3": "3", "4": "4", "ALL": "ALL"}
 IND_FROM_FRONT, IND_D = 14.0, 5.0   # bicolor indicator, 5 mm LED standing 2 mm proud
 # CHANNEL A/B: a printed slider in a slot across the width. A fork on its stem straddles the
@@ -102,6 +106,10 @@ USB_Z = PCB_TOP_Z + 3.26 / 2  # opening centre = shell centre
 # The receptacle's face sits this far inside the outer wall face. Flush didn't work: the front
 # shell-leg pads then hung 0.5 mm off the board edge. Check that a plug still seats (test print).
 USB_RECESS = 1.0
+# Pocket round the opening on the outside, so a cable's moulded plug housing can sink in by the
+# recess and the plug still seats fully (review 2026-11-13). Check with real cables.
+USB_POCKET_W, USB_POCKET_H, USB_POCKET_R = 12.5, 7.0, 1.5   # across, tall, corner radius
+USB_POCKET_DEPTH = USB_RECESS
 
 # --- Split, lip and case screws ---
 SPLIT = Z0 + LED_Z     # parting plane at the IR LED axis, so each shell holds half of each hole
@@ -193,6 +201,9 @@ with BuildPart() as body:
     with BuildSketch(Plane(origin=(-L / 2 - 0.5, 0, Z0 + USB_Z), x_dir=(0, 1, 0), z_dir=(1, 0, 0))):
         RectangleRounded(USB_W, USB_H, USB_CORNER_R)
     extrude(amount=WALL + 1.0, mode=Mode.SUBTRACT)
+    with BuildSketch(Plane(origin=(-L / 2 - 0.5, 0, Z0 + USB_Z), x_dir=(0, 1, 0), z_dir=(1, 0, 0))):
+        RectangleRounded(USB_POCKET_W, USB_POCKET_H, USB_POCKET_R)
+    extrude(amount=USB_POCKET_DEPTH + 0.5, mode=Mode.SUBTRACT)
 
     # key, A/B slider and indicator openings in the key face
     with BuildSketch(Plane.XY.offset(Z_TOP - TOP_T - 0.1)):
@@ -248,7 +259,10 @@ case = bottom + top    # closed assembly, for clearance checks
 FACE_UNDER = Z_TOP - TOP_T
 PLUNGER_TOP = Z0 + PCB_TOP_Z + SW_H
 NUB_H = FACE_UNDER - FLANGE_T - CAP_PLAY - PLUNGER_TOP   # pad under the flange down to the plunger
-assert NUB_H >= 0, f"flange would press the switch by {-NUB_H:.2f} mm: lower FLANGE_T or the board"
+# NUB_H < 0: the play doesn't fit under a full-thickness flange, so a relief pocket of that depth
+# is cut into the flange's underside over the plunger instead (the flange stays FLANGE_T elsewhere).
+RELIEF_D = 3.5 + 1.0   # plunger 3.5 mm + clearance
+assert FLANGE_T + NUB_H >= 0.5, f"flange over the plunger would be {FLANGE_T + NUB_H:.2f} mm thick"
 
 
 def _outline(d, y, lx, wy, grow=0.0):
@@ -266,11 +280,13 @@ def _cap(sk_body, sk_flange, at, legend=None, arrow=None):
     part += extrude(Plane.XY.offset(flange_bot) * sk_flange, amount=FLANGE_T)
     if NUB_H > 0:
         part += Pos(*at, flange_bot) * Cylinder(1.5, NUB_H, align=(Align.CENTER, Align.CENTER, Align.MAX))
+    elif NUB_H < 0:
+        part -= Pos(*at, flange_bot) * Cylinder(RELIEF_D / 2, -NUB_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
     mark = None
     if legend:
         # rotated 90 deg clockwise (seen from above) so the text reads upright when you hold the
         # remote pointing away from you (+X is "up" for the reader)
-        mark = Pos(*at, 0) * Rot(0, 0, -90) * Text(legend, font_size=3.2 if len(legend) > 1 else 4.0,
+        mark = Pos(*at, 0) * Rot(0, 0, -90) * Text(legend, font_size=LEGEND_SIZE_WORD if len(legend) > 1 else LEGEND_SIZE_DIGIT,
                                                     font_style=FontStyle.BOLD)
     if arrow:                          # +1: points to the front (OPEN), -1: to the back (CLOSE)
         # one triangle, rotated for DOWN (mirroring its points reverses the face, and the cut
