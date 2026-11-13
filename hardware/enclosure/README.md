@@ -2,7 +2,7 @@
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
-Status (2026-11-13), preliminary: `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes, and a lip. Keycaps, SETUP button, A/B switch and battery retention are not modelled yet. Internal parts (board, LEDs, USB, ESP32, nRF24, battery) exist only as placeholder previews used for clearance checks.
+Status (2026-11-13), preliminary: `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes, and a lip. Keycaps are modelled; the A/B slider and battery retention are not yet. Internal parts (board, LEDs, USB, ESP32, nRF24, battery) exist only as placeholder previews used for clearance checks.
 
 ## Decisions
 
@@ -17,8 +17,12 @@ Status (2026-11-13), preliminary: `parts/remote_box.py` models the case as a two
 | 2026-11-13 | **Clamshell split at the IR LED axis** (14.1 mm above the bottom): bottom shell with floor, standoffs and pads; top shell with the key face and a lip along the long sides. M2 × ~8 screws from underneath (counterbored) into bosses in the top shell. USB-C opening a rounded rectangle (straight sides) | The LEDs and USB-C reach into the end walls, so the board couldn't go into an open-top box (149 mm of board and parts vs 146 mm inside). Open-top notches closed by lid tabs worked but left 11–12 mm notches and long thin tabs at both ends. The split keeps the ends solid with one straight seam; straight-sided USB opening avoids an undercut, since the USB centre is 1.4 mm below the split |
 | 2026-11-13 | **IR LEDs 1.5 mm proud**, with a 1 mm × 45° countersink | Guarantees the wall can't clip the beam's edges (the LED's own lens sets its ±17° beam) |
 | 2026-11-13 | **USB-C receptacle recessed 1 mm** behind the outer face; nRF24 socket at least 4.5 mm from the USB pads | Flush, the front shell-leg pads hung 0.5 mm off the board edge; the socket was 0.46 mm from the USB pads, leaving no room for D+/D−/CC/VBUS |
+| 2026-11-13 | **Top face follows the original Hunter Douglas layout**: indicator at the tip, CHANNEL A/B slider (printed knob and fork over an MSK12C02 / PCM12 side-actuated switch, 1.5 mm travel), one oval for the UP/DOWN arrows (two caps, two switches), groups 1/2 and 3/4 beside the arrows, ALL below. SETUP is a floor pinhole 22 mm from the front, over a 5 mm switch on the board's underside | Familiar to anyone who has used the original (manual pp. 3–5 photos); 8 mm shorter key area than our first row layout |
+| 2026-11-13 | **Keycaps**: separate parts with a 1 mm × 0.8 mm retaining flange under the face, 1.5 mm proud, 0.1 mm clear of the switch plungers; legends recessed 0.4 mm (▲/▼ on the arrows, bold 1–4 and ALL reading upright with the remote pointing away) | Caps can't fall out; no preload on the switches |
+| 2026-11-13 | **Finish: natural grey shells, dyed-black caps and A/B knob, legends filled with white paint** | Close to the original's dark keys on a light body; recessed legends on black caps need the fill to be readable |
+| 2026-11-13 | **Corner radius 12 mm** (was 4); corner posts move onto the corner diagonal, lip stops where the side walls start to curve | Softer, more tapered look. A sweep (4–14 mm, all fit checks at each) found 12 the largest that keeps the IR LED countersinks on the flat part of the front wall; 14 puts them on the curve |
 
-PCB layout constraints from the case so far: 4 × 2.2 mm holes at (±61, ±15.5) mm from the board centre with ~5.5 mm head keep-outs; corner notches (radius 4 mm) around the case posts; **IR LED axis on the split plane** (footprint LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm: axis 3.0 mm above the board top), LED pads 8.4 mm from the front with the tips 1.5 mm proud; USB-C face 1 mm inside the back face, board edge 0.3 mm from the inside wall; lip gap in the top shell wherever a part reaches the board edge near the split (now: the ESP32 antenna end); bottom-side keep-outs (~4 mm) under each key switch for the pads; **no THT pins over the battery** (92–127 mm from the front, ±15 mm), or trim them flush, since only 0.5 mm separates pin tips from a swollen cell. Board top surface 11.1 mm above the case bottom, leaving 13.9 mm to the underside of the key face (nRF24 on a standard socket: 13.2 mm, too tight; plan a low-profile socket).
+PCB layout constraints from the case so far: 4 × 2.2 mm holes at (±61, ±15.5) mm from the board centre with ~5.5 mm head keep-outs; board outline with 9.7 mm corner radii (following the inner wall, 0.3 mm gap) and notches (radius 4 mm) around the case posts at (±67.9, ±15.4) mm; **IR LED axis on the split plane** (footprint LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm: axis 3.0 mm above the board top), LED pads 8.4 mm from the front with the tips 1.5 mm proud; USB-C face 1 mm inside the back face, board edge 0.3 mm from the inside wall; lip gap in the top shell wherever a part reaches the board edge near the split (now: the ESP32 antenna end); bottom-side keep-outs (~4 mm) under each key switch for the pads; **no THT pins over the battery** (92–127 mm from the front, ±15 mm), or trim them flush, since only 0.5 mm separates pin tips from a swollen cell. Board top surface 11.1 mm above the case bottom, leaving 13.9 mm to the underside of the key face (nRF24 on a standard socket: 13.2 mm, too tight; plan a low-profile socket).
 
 ## Setup (Windows)
 
@@ -36,6 +40,20 @@ Tested with Python 3.11.9.
 1. Install the **OCP CAD Viewer** extension (`bernhard-42.ocp-cad-viewer`).
 2. Select the interpreter `~\.venvs\hd_enclosure\Scripts\python.exe` (Ctrl+Shift+P → *Python: Select Interpreter*). PlatformIO is unaffected; it uses its own Python.
 3. Open the viewer (OCP CAD Viewer icon in the activity bar), then run a part script. A script calls `show(...)` from `ocp_vscode` to send its model to the viewer.
+
+## Fit checks: `assembly.py`
+
+`assembly.py` builds the case from `parts/remote_box.py`, adds placeholder models of the parts inside (board, switches, IR LEDs, USB-C, ESP32, nRF24 on its socket, battery, A/B slider, SETUP switch, indicator, keycaps) and runs every fit check: clearances, key-face webs, keycap travel and retention, legends, the A/B slider at both ends, openings on the flat end walls, USB-C routing room, and nRF24 headroom. It exits non-zero if any check fails, so run it after every change.
+
+```powershell
+$py = "$env:USERPROFILE\.venvs\hd_enclosure\Scripts\python.exe"
+& $py hardware\enclosuressembly.py                          # checks + exploded view
+& $py hardware\enclosuressembly.py --explode 0 --top-alpha 0.2   # assembled, see-through top
+& $py hardware\enclosuressembly.py --finish                 # grey shells, black keys, white legends
+& $py hardware\enclosuressembly.py --sweep CORNER_R 8 10 12 14   # rebuild + check per value
+```
+
+The internal parts are placeholders positioned from the layout explored on 2026-11-13; replace them with the board's STEP export once the PCB is laid out.
 
 ## Board model from KiCad
 
