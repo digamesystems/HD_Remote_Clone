@@ -15,8 +15,8 @@ Context for Claude Code. Summarized from a planning conversation in Claude chat 
   - A monitor window holding COM11 blocks upload/t2. Ask the user to close it (Ctrl+C) first, or close it if they say to.
   - If upload can't connect, have the user hold BOOT and tap EN.
 - Put hardware-independent logic in `lib/hdcore/` with Tier 1 tests, not in `src/`. The user can wire loopbacks or diagnostics on the breadboard to make hardware testable; ask when that would help, and keep `include/hw_config.h` in sync with what's wired.
-- **Licensing (decided Nov 12):** firmware and tools (`src/`, `lib/`, `include/`, `test/`, `hardware/tools/`) `GPL-2.0-or-later` (root `LICENSE`); KiCad design `CERN-OHL-S-2.0` (`hardware/LICENSE`); docs, captures and images `CC-BY-SA-4.0` (`docs/LICENSE`). Summary in README's License section.
-  - Every new source file we write starts with `// SPDX-License-Identifier: GPL-2.0-or-later` (`#` for Python). Not on third-party files.
+- **Licensing (decided Nov 12):** firmware and tools (`src/`, `lib/`, `include/`, `test/`, `hardware/tools/`) `GPL-2.0-or-later` (root `LICENSE`); hardware design `CERN-OHL-S-2.0` (`hardware/LICENSE`): the KiCad files (`hardware/hd_remote/`) and the enclosure models (`hardware/enclosure/`: build123d scripts, `requirements.txt`, STEP/STL output; added Nov 13); docs, captures and images `CC-BY-SA-4.0` (`docs/LICENSE`). Summary in README's License section.
+  - Every new source file we write starts with `// SPDX-License-Identifier: GPL-2.0-or-later` (`#` for Python), except under `hardware/enclosure/`, which uses `# SPDX-License-Identifier: CERN-OHL-S-2.0`. Not on third-party files.
   - License texts are verbatim from the official sources; never edit, reformat or summarize them (the GPL's `<year>`/"Gnomovision" lines are part of its text).
   - Hunter Douglas manual: paraphrase only; keep extracted manual text out of the repo.
   - A released firmware binary must come with its source (GPL): link the tagged commit.

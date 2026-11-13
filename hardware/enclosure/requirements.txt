@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: CERN-OHL-S-2.0
+# Enclosure CAD environment (see README.md). Pinned 2026-11-13.
+build123d==0.13.0
+ocp_vscode==4.2.0
