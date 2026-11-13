@@ -321,7 +321,12 @@ def check(m, p, info):
     return fails, out
 
 
-def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish):
+def _camera(reset):
+    """Viewer options: reset to the standard isometric view (for screenshots), else keep."""
+    return {"reset_camera": ocp_vscode.Camera.RESET} if reset else {}
+
+
+def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=False):
     up = Location((0, 0, explode))
     lifted = {"keycaps", "A/B slider"}
     objs = [m["bottom"], m["top"].moved(up)]
@@ -339,7 +344,8 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish):
             objs.append(p[n].moved(up) if n in lifted else p[n]); names.append(n); colors.append(col)
             alphas.append(1.0)
         objs.append(fill.moved(up)); names.append("legend fill"); colors.append(FINISH["legend"]); alphas.append(1.0)
-        ocp_vscode.show(*objs, names=names, colors=colors, alphas=alphas, metalness=0.0, roughness=0.9)
+        ocp_vscode.show(*objs, names=names, colors=colors, alphas=alphas, metalness=0.0, roughness=0.9,
+                        **_camera(reset_camera))
         return
     palette = {"PCB": "darkgreen", "key switches": "black", "board screws": "silver", "battery": "royalblue",
                "USB-C": "silver", "IR LEDs": "lightskyblue", "nRF socket": "dimgray", "nRF module": "purple",
@@ -351,7 +357,7 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish):
         objs.append(part.moved(up) if n in lifted else part)
         names.append(n); colors.append(palette[n])
         alphas.append(0.6 if n in ("PCB", "nRF module", "battery") else 1.0)
-    ocp_vscode.show(*objs, names=names, colors=colors, alphas=alphas)
+    ocp_vscode.show(*objs, names=names, colors=colors, alphas=alphas, **_camera(reset_camera))
 
 
 def main():

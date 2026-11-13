@@ -253,7 +253,68 @@ Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm
 
 The nRF24's SPI lines need no test points: the socket's through-hole pins on the back take analyzer clips.
 
-## Later revision idea: XIAO ESP32-S3
+## Reference: the original Platinum remote's layout (recorded 2026-11-13)
+
+From the front/back figure in Hunter Douglas's Platinum remote guide (described here, not reproduced; the guide's images stay out of the repo).
+
+**Front, from the tip:**
+- **Indicator light** at the very tip.
+- **Infrared Channel Selector:** an A/B slide switch across the width, labelled CHANNEL.
+- **OPEN / CLOSE:** one tall oval with ▲ on the upper half and ▼ on the lower half.
+- **Group keys:** 1 and 2 on either side of OPEN; 3 and 4 on either side of CLOSE.
+- **ALL**, centred below, inside an arc labelled GROUPS.
+- The maker's logo runs lengthwise down the lower half of the face.
+
+**Back:**
+- **Setup:** a pinhole about a quarter to a third of the way down from the tip, slightly off-centre.
+- A label with the maker's name and the FCC ID, in the middle.
+- **Battery compartment** with a door, in the lower half.
+- **Master Reset:** a second pinhole, just above the battery compartment.
+
+**Shape:** long and rounded. Widest near the top (key) end, tapering toward the bottom, which is the grip, with a curved back.
+
+**How our case maps onto it** (`hardware/enclosure/`):
+- **Same:** the order and arrangement of the top face, with the indicator, A/B slider, arrow oval, groups and ALL. SETUP is a floor pinhole near the front, as on the original.
+- **Different:**
+  - We have no Master Reset pinhole. The original's Master Reset concerns the remote's identity (duplicating a remote, manual p. 7); our `id` command covers that. See also *Reset and recovery* above for the ESP32 reset, which is a different thing.
+  - We charge over USB-C, with no battery door.
+  - Our case is a straight box with rounded edges, not tapered.
+- **The original's logo area is our empty back half.** A taper toward the grip, or a recessed name, is the obvious way to use it (open idea).
+
+**FCC ID: UXURC4U2** (read from our remote's back label, 2026-11-13; grantee code UXU, product code RC4U2). The FCC filing's test reports and internal photos show the hardware, including where the radio antenna sits, which bears on the hand-shielding question.
+
+The filing's summary page ([fccid.io/UXURC4U2](https://fccid.io/UXURC4U2), read 2026-11-13) lists:
+
+| Field | Value |
+|---|---|
+| Grantee | Hunter Douglas Window Fashions |
+| Description | "IF/RF Remote Control kit", model RC4U2 |
+| Grant date | 2012-05-02 |
+| Frequency range | **2433–2471 MHz**: exactly our sniffed channels 33, 52 and 71 (`docs/RF_PROTOCOL.md`), an independent confirmation |
+| Output power | 0.0001436 W = 0.14 mW ≈ **−8.4 dBm**. That's in line with our ~−6 dBm working figure. The summary doesn't say whether it's conducted or EIRP |
+
+Exhibits on that page: internal photos, external photos, test report, test setup photos, user manual, label, and letters. Automated downloads were blocked (HTTP 403); John viewed the internal photos in a browser. They're Hunter Douglas's, so they're described here, not committed.
+
+**Internal photos** (reviewed 2026-11-13; positions read off the photos' ruler, in cm from the tip, i.e. the IR end):
+
+- **Board:** one PCB about 13 cm long, tapered like the case, wider at the tip end.
+- **Key side:**
+  - **Keys:** seven gold interdigitated contact pads, ~1.5–5.5 cm, so a **rubber membrane keypad** with conductive pads, not tactile switches.
+  - **A/B and indicator:** a slide switch (S10) near the tip, and the indicator LED at the end.
+  - **Radio section:** ~8–12 cm: crystal, two QFN chips (nRF24 and microcontroller), programming pads.
+  - **Antenna:** a small blue part labelled **A1** at ~7.3 cm, beside a copper-free patch (~7.5–9.5 cm). Very likely a chip antenna (inferred from the "A" designator and the clear patch). That puts the **antenna about mid-board, on the key side**.
+  - A sticker on the test unit reads **"R-6dB"**: probably the transmit-power setting. That fits our ~−6 dBm figure and the filing's −8.4 dBm.
+- **Battery side:**
+  - **Pinhole buttons:** two tactile switches at ~2.8 cm and ~8.2 cm, behind the back's SETUP and Master Reset pinholes.
+  - **IR LED:** **one** IR LED lying flat and poking out of the tip, like ours (we have two).
+  - **Batteries:** silkscreen cell outlines at ~7.5–12.5 cm, **directly under the radio section and antenna**.
+  - **Unidentified:** a coil spring and wire near the tip, and a wire at the far end, probably battery contacts.
+
+**What we take from it:**
+1. **Hand shielding is a smaller worry than feared.** The original puts its antenna around mid-length, in or near the grip, with the batteries underneath, at about −6 dBm, and it works. Our nRF24 antenna (ending ~108 of 150 mm from the front) is in a comparable place. The grip test drops from must-do to nice-to-have.
+2. **SETUP on an underside switch near the tip matches the original.** No change needed.
+3. **Later-revision idea:** a rubber keypad on PCB contact pads instead of 13 mm tactile switches would make the case much thinner. Most of our height goes on the switches and keycaps. The cost is a moulded keypad and a different key design.
+
 
 This design uses 22 of the WROOM-32E's 26 usable GPIOs (free: 13, plus strapping pins 2, 12 and 15), so it won't fit a XIAO, which has 11. A smaller second revision could fit, by:
 

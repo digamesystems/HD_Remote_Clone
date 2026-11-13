@@ -57,6 +57,27 @@ $py = "$env:USERPROFILE\.venvs\hd_enclosure\Scripts\python.exe"
 
 The internal parts are placeholders positioned from the layout explored on 2026-11-13; replace them with the board's STEP export once the PCB is laid out.
 
+## Views
+
+Generated from the model by `views.py` into [`docs/images/enclosure/`](../../docs/images/enclosure/); rerun it after a change (the shaded views need OCP CAD Viewer open, or pass `--no-shots`). Internal parts are placeholders until the PCB is laid out.
+
+| | |
+|---|---|
+| ![Assembled, grey shells and black keys](../../docs/images/enclosure/enclosure_finish.png) | ![Exploded, both shells see-through](../../docs/images/enclosure/enclosure_exploded.png) |
+| Finished look: natural-grey MJF shells, dyed-black keys, white-filled legends | Exploded: top shell (with keycaps and A/B slider) lifted 30 mm |
+
+**PCB constraints** (top view, front end at the right): board outline, case-post notches, battery-lead notch, standoff holes with screw-head keep-outs, part positions, and keep-outs on the underside.
+
+![PCB constraints](../../docs/images/enclosure/enclosure_pcb_constraints.svg)
+
+**Sections** through the centre line and through an IR LED, with heights above the outside bottom.
+
+![Sections](../../docs/images/enclosure/enclosure_section.svg)
+
+**Top, bottom and end views** (hidden edges dashed in the top and bottom views): [`enclosure_views.svg`](../../docs/images/enclosure/enclosure_views.svg).
+
+**Board outline for KiCad:** [`enclosure_pcb_outline.dxf`](../../docs/images/enclosure/enclosure_pcb_outline.dxf), layer `Edge.Cuts`. Import it with *File → Import → Graphics* onto Edge.Cuts. It includes the four standoff holes as circles; delete those and place M2 mounting-hole footprints at the same spots.
+
 ## Board model from KiCad
 
 `kicad-cli pcb export step` exports the laid-out board with component models, so the case can be built around it. On this machine KiCad 10's CLI is at `%LOCALAPPDATA%\Programs\KiCad\10.0\bin\kicad-cli.exe` (not on PATH).
