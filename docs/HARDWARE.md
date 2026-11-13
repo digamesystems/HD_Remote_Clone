@@ -190,7 +190,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 | TE / Alcoswitch 2-1825910-6 (FSMJ series) | 100 gf | DigiKey: ~29,600 in stock, CA$0.38 (1) | 13.00 mm, 0.25 mm travel, 100k cycles |
 | Kinghelm KH-6X6X13H-TJ | 2.6 N (~260 gf) | LCSC / JLC C2837523 | Useful if JLC ever places the THT switches |
 
-160 gf is a typical remote-key feel; 100 gf is light, 260 gf firm. **SETUP switch:** the same series at 5.0 mm (TS02-66-50-BK-160-SCR-D), stock not checked yet. The leg spacing and plunger diameter are on the datasheets' drawings (not checked here): the test print's key fixture has holes at 6.5 × 4.5 mm, so it checks the real switch on arrival.
+160 gf is a typical remote-key feel; 100 gf is light, 260 gf firm. **SETUP switch:** the same series at 5.0 mm (TS02-66-50-BK-160-SCR-D: DigiKey 2223-TS02-66-50-BK-160-SCR-D-ND, ~18,000 in stock, US$0.12). For prototype 1, a 6×6×5 from the BOJACK assortment on hand will do once its dimensions are checked. The leg spacing and plunger diameter are on the datasheets' drawings (not checked here): the test print's key fixture has holes at 6.5 × 4.5 mm, so it checks the real switch on arrival.
 
 ## Layout notes
 
