@@ -162,6 +162,36 @@ Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid 
 - A/B slide switch (SPDT): GPIO 21 to 3V3 (B) or GND (A). No pull needed. It draws no current in either position.
 - The firmware debounces (~20–30 ms) and reads which button caused the wake with `esp_sleep_get_ext1_wakeup_status()`.
 
+## Board assembly (planned 2026-11-13)
+
+**JLC assembles the SMD parts:** the ESP32-WROOM-32E, CP2102N, charger, LDO, FETs and transistors, all passives, the A/B slide switch, and the USB-C receptacle (SMD pads plus through-hole shell legs, routine for JLC). The schematic sticks to parts JLC stocks for this reason.
+
+**The THT parts are hand-soldered**, about 40 easy joints:
+
+| Part | Qty | Note |
+|---|---|---|
+| Key switches, 6 × 6 mm, 13 mm tall | 7 | flat on the board, soldered from underneath |
+| SETUP switch, 6 × 6 mm, 5 mm tall | 1 | mounted on the **underside** (plunger down, behind the floor pinhole), soldered on top |
+| IR LEDs (TSAL6200) | 2 | legs bent 90° so the axis is **3.0 mm above the board** (footprint `..._Horizontal_O1.27mm_Z3.0mm`); a small printed bending jig helps |
+| Indicator LED (5 mm, 3-lead) | 1 | its height sets how far the dome stands proud of the key face (2 mm): use a spacer or jig |
+| nRF24 socket (2×4) | 1 | low-profile type planned (a standard one leaves 0.7 mm under the key face) |
+| Battery JST (S2B-PH-K) | 1 | |
+| Ground test loops (Keystone 5000) | 3 | optional |
+
+JLC can place THT parts too, at extra cost per part type and only from stock. Here the heights need hand-setting anyway (IR LED axis, indicator protrusion), and SETUP mounts upside down.
+
+### Key switch sourcing (checked 2026-11-13)
+
+Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_PUSH_6mm_H13mm`), **13.0 mm from the board to the top of the plunger**, ~0.25 mm travel. 7 per remote, plus spares.
+
+| Part | Force | Where | Notes |
+|---|---|---|---|
+| **Same Sky TS02-66-130-BK-160-SCR-D** (chosen; 100 ordered 2026-11-13) | 160 gf (1.6 N) | DigiKey 2223-TS02-66-130-BK-160-SCR-D-ND: 4,939 in stock, US$0.14 each (1), $0.114 (25) | Datasheet confirms the 13.0 mm height above the PCB and 0.25 mm travel. Same series: 100 gf (`-100-`, lighter) |
+| TE / Alcoswitch 2-1825910-6 (FSMJ series) | 100 gf | DigiKey: ~29,600 in stock, CA$0.38 (1) | 13.00 mm, 0.25 mm travel, 100k cycles |
+| Kinghelm KH-6X6X13H-TJ | 2.6 N (~260 gf) | LCSC / JLC C2837523 | Useful if JLC ever places the THT switches |
+
+160 gf is a typical remote-key feel; 100 gf is light, 260 gf firm. **SETUP switch:** the same series at 5.0 mm (TS02-66-50-BK-160-SCR-D), stock not checked yet. The leg spacing and plunger diameter are on the datasheets' drawings (not checked here): the test print's key fixture has holes at 6.5 × 4.5 mm, so it checks the real switch on arrival.
+
 ## Layout notes
 
 - 2-layer board, ground pour on both sides, stitched.

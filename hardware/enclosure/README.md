@@ -58,6 +58,32 @@ $py = "$env:USERPROFILE\.venvs\hd_enclosure\Scripts\python.exe"
 
 The internal parts are placeholders positioned from the layout explored on 2026-11-13; replace them with the board's STEP export once the PCB is laid out.
 
+## Case assembly
+
+After the board is assembled (see `docs/HARDWARE.md`, Board assembly):
+
+1. Stick a thin (≤ 0.2 mm) double-sided tape pad on the floor and press the cell down between its four corner ribs, leads toward the back.
+2. Put Kapton tape or fish paper on the board's underside over the cell area.
+3. Feed the battery leads up through the notch in the right-hand board edge. Lower the board onto its four standoffs and fit the M2 self-tapping screws.
+4. Plug in the battery JST and the nRF24 module.
+5. Set the A/B switch on the board to A. Drop the keycaps (flanges down) and the A/B slider (knob at A) into the top shell from inside.
+6. Lower the top shell onto the bottom (the slider's fork lands round the switch actuator), turn it over, and fit the four M2 case screws from underneath.
+
+## Test piece: `parts/test_piece.py`
+
+One small MJF print that replaces the model's placeholder values with measured ones. All sizes come from `remote_box.py`, so the samples test what the case uses. `python parts/test_piece.py --export` runs its checks (23) and writes STL and STEP files to `out/` (not committed; rerun to regenerate). Order in **MJF PA12, natural grey**, the case material.
+
+| Sample | How to test | Sets |
+|---|---|---|
+| IR LED holes 5.2 / 5.4 / 5.6 mm, with the outside countersink | Push a TSAL6200 into each from inside: want a snug slide, no wobble, no force | `LED_HOLE_D` |
+| USB-C opening + outside pocket | Push each of your real USB-C cables in from outside: the plug housing should sit in the pocket. Final seating is checked on the first board, with the receptacle 1 mm inside the wall | `USB_POCKET_*`, `USB_RECESS` |
+| Screw bosses, pilots 1.6 / 1.8 / 2.0 mm | Drive an M2 self-tapper into each: want firm threads, no splitting, removable | `SO_HOLE_D`, `PILOT_D` |
+| SETUP pinholes 1.4 / 1.6 / 1.8 mm | A straightened paperclip should pass freely, a fingertip shouldn't press anything | `SETUP_HOLE_D` |
+| Legends 0.4 / 0.6 / 0.8 mm deep | Fill with white paint, scrape, compare legibility | `LEGEND_DEPTH`, sizes |
+| Key stack: base + face + caps marked .0 / .1 / .2 / .3 (mm of play) | Fit one 6 mm × 13 mm tactile switch (legs through the base), screw on the face, try each cap: want no click at rest and a crisp click without a dead zone | `CAP_PLAY` |
+
+The key fixture reproduces the case's 0.90 mm plunger-to-face gap, so the best cap's play transfers directly. Shims under the board can only reduce the play in the real case.
+
 ## Views
 
 Generated from the model by `views.py` into [`docs/images/enclosure/`](../../docs/images/enclosure/); rerun it after a change (the shaded views need OCP CAD Viewer open, or pass `--no-shots`). Internal parts are placeholders until the PCB is laid out.
