@@ -15,7 +15,7 @@ KiCad project for the handheld replacement remote: [`hd_remote/hd_remote.kicad_p
 | IR (`ir.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-ir-sheet-draft-2026-11-12) |
 | nRF24 (`nrf24.kicad_sch`), Buttons and LEDs (`ui.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#schematic-nrf24-and-buttonsleds-sheets-draft-2026-11-12) |
 | Test and debug (`test.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#test-points-2026-11-12). Test points on nets local to other sheets live on those sheets |
-| Layout | not started; the board outline waits on the enclosure choice |
+| Layout | started 2026-11-13: all 109 footprints and 82 nets pulled in from the schematic (DRC schematic parity: 0 issues), parked below the sheet. Board outline (145.45 × 40.45 mm) from `docs/images/enclosure/enclosure_pcb_outline.dxf`, board centre at (100, 80) mm on the sheet, front end (IR LEDs) at +X, top view not mirrored; M2 holes H601–H604 placed and locked at (±61, ±15.5) mm. Design rules: KiCad defaults, inside JLC's standard process (0.2 mm track/clearance, 0.3 mm min hole). **U201 is modified locally:** its 12 ground-pad vias are 0.3 mm drill / 0.6 mm pad (the library has 0.2 mm, below JLC's standard drill), so DRC reports one expected `lib_footprint_mismatch`; don't update U201 from the library. Next: place the parts the case fixes |
 
 Synced with the enclosure (2026-11-13): mounting holes H601–H604 (M2), key switch MPNs (Same Sky TS02), low-profile nRF24 socket noted on J401.
 
