@@ -68,7 +68,7 @@ Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefu
 
 **Reverse-polarity protection (added 2026-11-12):** a reversed cell would destroy the charger and the LDO, so the battery lead runs through a P-MOSFET (Q103, AO3401A, SOT-23) with its gate to GND: drain to the battery side, source to VBAT. With the cell the right way round, the body diode lifts the source, Vgs ≈ −VBAT turns the FET fully on (~50–80 mΩ, ~20 mV at a 300 mA IR peak), and the charger still charges through it, since the channel conducts both ways. With the cell reversed, Vgs = 0 and the body diode is reverse-biased, so nothing flows. Mark + and − on the silkscreen at J102 as well. Any SOT-23 P-FET with |Vgs(th)| under ~1.5 V and Vgs max ≥ 8 V will do. *verify* the drop and the charger's termination on the first board.
 
-**Charging:** MCP73831 (SOT-23-5), programmed to ~250 mA (R_PROG ≈ 4 kΩ). Its STAT pin drives a separate small charge LED (lit while charging), powered from VBUS so it costs the battery nothing. The load runs straight from VBAT (no power path). That's simple, and fine at this charge current, though the charger may not terminate cleanly if the board draws current while charging. *verify*
+**Charging:** MCP73831 (SOT-23-5), programmed to ~256 mA (R_PROG 3.9 kΩ). Its STAT pin drives a separate small charge LED (lit while charging), powered from VBUS so it costs the battery nothing. The load runs straight from VBAT (no power path). That's simple, and fine at this charge current, though the charger may not terminate cleanly if the board draws current while charging. *verify*
 
 **3.3 V regulator:** RT9080-33 (SOT-23-5): 600 mA, ~2 µA quiescent, about 310 mV dropout at 600 mA. The ESP32 never uses Wi-Fi or Bluetooth here, so its active current is ~40–70 mA, plus the nRF24 at ~12 mA. The LDO stays in regulation down to about VBAT 3.4 V; the firmware warns at ~3.5 V and refuses to transmit below ~3.3 V.
 
@@ -215,17 +215,22 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 | Passives | 0603 | hand-reworkable; JLC-assemblable |
 | USB-C receptacle | HRO TYPE-C-31-M-12 footprint | common, cheap 16-pin USB 2.0 part; shield to GND |
 | CP2102N supply | bus-powered: VREGIN = VBUS (4.7 µF + 100 nF), VDD = VIO (4.7 µF + 100 nF) | checked 2026-11-13 against the CP2102N data sheet rev 1.3, §2.1: 4.7 µF + 0.1 µF on *each* power pin. VDD's cap was 1 µF; now 4.7 µF (C103). Pinout matches Fig. 5.2 (QFN24, centre pad GND) |
-| CP2102N VBUS sense | 22.1 kΩ / 47.5 kΩ divider from VBUS | checked: rev 1.3 §2.3 requires the divider in bus-powered designs too (VBUS abs. max is VIO + 2.5 V; rev 1.1 drew VBUS direct, rev 1.2 added the divider). 5 V gives 3.41 V on the pin, above VIH = VIO − 0.6 V |
+| CP2102N VBUS sense | 22 kΩ / 47 kΩ divider from VBUS | Silicon Labs show 22.1 kΩ / 47.5 kΩ; the JLC basic E12 values give 3.40 V instead of 3.41 V (changed 2026-11-13). Checked: rev 1.3 §2.3 requires the divider in bus-powered designs too (VBUS abs. max is VIO + 2.5 V; rev 1.1 drew VBUS direct, rev 1.2 added the divider). 5 V gives 3.40 V on the pin, above VIH = VIO − 0.6 V |
 | CP2102N RST | 1 kΩ pull-up to VIO | checked: rev 1.3 §2.1 recommends 1 kΩ to VIO. Unused inputs (CTS, DSR, DCD, RI) can float: the GPIO have weak pull-ups |
 | Auto-reset | 2× MMBT3904, 10 kΩ base resistors | the DevKitC circuit |
-| Charge current | R_PROG 4.02 kΩ, ~250 mA | 1000 V / R_PROG |
+| Charge current | R_PROG 3.9 kΩ, ~256 mA | 1000 V / R_PROG; was 4.02 kΩ (~249 mA), changed 2026-11-13 to a JLC basic part. The MCP73831's own tolerance is ±10%; ~0.5C on a 500 mAh cell |
 | Charger caps | 4.7 µF on VBUS and VBAT | MCP73831 datasheet minimum |
 | Charge LED | 0603, 1 kΩ from VBUS to STAT | lit while charging |
 | Battery connector | JST-PH 2-pin, side entry (S2B-PH-K) | + and − on the silkscreen; *check the cell's polarity* |
 | Reverse-polarity FET | Q103, AO3401A (SOT-23), gate to GND | see [Power](#power); placed last so the earlier references kept their numbers |
 | LDO | RT9080-33GJ5, 1 µF in and out | drawn with the AP2112K symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT). Checked 2026-11-13 against Richtek DS9080-09: pinout matches; EN may be tied to VIN (must not float); C_IN ≥ 1 µF; C_OUT ≥ 1 µF nominal, ≥ 0.7 µF effective. The ESP32's 10 µF + 100 nF on the MCU sheet sit on the same rail. Dropout 0.31 V typ / 0.53 V max at 600 mA; far less at our ~120 mA |
 
-LCSC part numbers aren't filled in yet.
+**LCSC part numbers (added 2026-11-13):** every SMD part has an `LCSC` field, found with the jlcsearch index of JLC's catalogue and confirmed by C number; stock wasn't available for most, so check it when ordering. Passives are JLC basic parts except R303/R304 (3.3 Ω 0805, C2907250) and the 100 µF (C15008). The ICs, connectors and switches are extended parts (one setup fee each per order). Notes:
+
+- **SW201/SW202:** KMR221NGLFS (C269272), the 4.2 × 2.8 mm body without the ground tab, to fit KiCad's 4-pad `SW_Push_1P1T_NO_CK_KMR2`. Check the land pattern against C&K's drawing before layout.
+- **SW509:** PCM12SMTR (C221841), matching the footprint. The case model's slider also allows an MSK12C02; that needs a different footprint.
+- **U103:** MCP73831T-2ACI/OT (C424093), the 4.20 V `-2` variant.
+- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, DNP J601/U301, test pads and JP101.
 
 ## Schematic: MCU sheet (draft, 2026-11-12)
 

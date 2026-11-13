@@ -2147,6 +2147,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C23179"
+			(at 30.48 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6e61ddb8-a659-5db7-80c8-f21e2540fe73")
 		)
@@ -2263,6 +2272,15 @@
 			)
 		)
 		(property "Description" "Keeps the LEDs off while GPIO 4 floats (boot, deep sleep)"
+			(at 30.48 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25803"
 			(at 30.48 127 0)
 			(effects
 				(font
@@ -2451,6 +2469,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C81598"
+			(at 50.8 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3609acb2-dd46-5899-bde7-18cea3d67862")
 		)
@@ -2556,6 +2583,15 @@
 			)
 		)
 		(property "Description" "75V 0.15A Fast Switching Diode, SOD-123"
+			(at 76.2 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C81598"
 			(at 76.2 106.68 0)
 			(effects
 				(font
@@ -2902,6 +2938,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C52801"
+			(at 121.92 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c389971d-bc44-5c13-8140-62b49282eb5f")
 		)
@@ -3032,6 +3077,15 @@
 			)
 		)
 		(property "Description" "Sets I_LED ~150 mA (value from the breadboard); ~0.1 W peak, so 0805"
+			(at 137.16 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2907250"
 			(at 137.16 127 0)
 			(effects
 				(font
@@ -3378,6 +3432,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C52801"
+			(at 182.88 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "100f44b0-c887-52b0-8d9a-42513a09284f")
 		)
@@ -3508,6 +3571,15 @@
 			)
 		)
 		(property "Description" "Sets I_LED ~150 mA (value from the breadboard); ~0.1 W peak, so 0805"
+			(at 198.12 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2907250"
 			(at 198.12 127 0)
 			(effects
 				(font
@@ -3971,6 +4043,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C15008"
+			(at 233.68 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4f7a4451-fbb5-59b6-9dfe-db6b28718b0e")
 		)
@@ -4188,6 +4269,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 243.84 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C14663"
 			(at 243.84 81.28 0)
 			(effects
 				(font
@@ -4637,6 +4727,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C22775"
+			(at 91.44 198.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8e42e095-167c-590c-bae9-1e2820901319")
 		)
@@ -4798,6 +4897,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 101.6 198.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C14663"
 			(at 101.6 198.12 0)
 			(effects
 				(font

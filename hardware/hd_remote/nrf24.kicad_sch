@@ -1529,6 +1529,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C21189"
+			(at 111.76 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e8dfa04c-be50-594d-ba85-66915ce022d7")
 		)
@@ -1690,6 +1699,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 127 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C15850"
 			(at 127 86.36 0)
 			(effects
 				(font
@@ -1867,6 +1885,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C14663"
+			(at 137.16 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5989f322-a223-54a3-a426-f32c6290b6cf")
 		)
@@ -2028,6 +2055,15 @@
 			)
 		)
 		(property "Description" "Bulk for a PA/LNA module only"
+			(at 147.32 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C15008"
 			(at 147.32 86.36 0)
 			(effects
 				(font
@@ -2216,6 +2252,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C21189"
+			(at 198.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a3cd1495-9697-5e6d-baba-8c213740b6df")
 		)
@@ -2351,6 +2396,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C25803"
+			(at 76.2 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c587f6f8-5be0-5e1b-b1c7-0cff6ba0440b")
 		)
@@ -2467,6 +2521,15 @@
 			)
 		)
 		(property "Description" "CE pull-down"
+			(at 91.44 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25803"
 			(at 91.44 127 0)
 			(effects
 				(font
