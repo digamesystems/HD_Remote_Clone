@@ -1079,7 +1079,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "nRF24L01+ module (the screened hiBCTR modules) in a 2x4 socket, 2.54 mm.\nPin numbers as on the module (docs/WIRING.md): odd row 1 GND, 3 CE, 5 SCK, 7 MISO;\neven row 2 VCC, 4 CSN, 6 MOSI, 8 IRQ. 3.3 V only.\nLayout: the module's PCB antenna overhangs the board edge; no copper under it, all\nlayers. Check the socket's orientation against the module (pin 1 = square pad = GND)."
+	(text "nRF24L01+ module (the screened hiBCTR modules) in a 2x4 socket, 2.54 mm.\nPin numbers as on the module (docs/WIRING.md): odd row 1 GND, 3 CE, 5 SCK, 7 MISO;\neven row 2 VCC, 4 CSN, 6 MOSI, 8 IRQ. 3.3 V only.\nLayout: the module's PCB antenna overhangs the board edge; no copper under it, all\nlayers. Check the socket's orientation against the module (pin 1 = square pad = GND).\nSocket: LOW-PROFILE (body <= ~5 mm). The module lies flat over it; a standard 8.5 mm\nsocket leaves 0.7 mm under the key face. Trim the module pins if they bottom out."
 		(exclude_from_sim no)
 		(at 20.32 20.32 0)
 		(effects

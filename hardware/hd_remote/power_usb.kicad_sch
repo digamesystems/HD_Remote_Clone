@@ -5570,7 +5570,7 @@
 		)
 		(uuid "3f697cd2-d1eb-50af-b5b0-5680a22198c0")
 	)
-	(text "CP2102N: powered from VBUS only. VBUS sense divider as on the CP2102N-EK.\n1k in series on TXD/RXD limits back-powering when USB is unplugged (verify sleep current)."
+	(text "CP2102N: powered from VBUS only. VBUS sense divider required (datasheet rev 1.3, sec. 2.3).\n4.7u + 100n on VREGIN and on VDD/VIO (sec. 2.1); 1k RSTb pull-up to VIO.\nSeries R limits back-powering with USB unplugged (RXD abs. max VIO + 2.5 V):\n10k on ESP32 TX -> CP RXD (R107, ~0.27 mA), 1k on CP TXD -> ESP32 RX (R106)."
 		(exclude_from_sim no)
 		(at 152.4 10.16 0)
 		(effects
@@ -6611,7 +6611,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1u"
+		(property "Value" "4.7u"
 			(at 179.07 31.75 0)
 			(effects
 				(font
@@ -7524,7 +7524,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1k"
+		(property "Value" "10k"
 			(at 275.59 72.39 0)
 			(effects
 				(font

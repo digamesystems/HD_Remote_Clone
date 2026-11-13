@@ -17,7 +17,7 @@ The goal is a battery handheld that replaces the original Platinum remote. It se
 | IR LEDs | Two TSAL6200 positions |
 | Charge status | **Separate LED** on the charger's STAT pin (not the bicolor LED) |
 | USB | USB-C with the USB-serial bridge kept on the board, so early revisions can be flashed and debugged over USB |
-| Enclosure | Candidate: OKW Style-Case M in IR-transparent black PMMA (B2803016), or the L (B2804016) if space is tight. Alternative: Smart-Case L. Not chosen yet; needs OKW's drawings for the internal space and pillars |
+| Enclosure | **Custom 3D-printed clamshell** (decided 2026-11-13, replacing the OKW candidates): 150 × 45 × 27 mm, modelled in `hardware/enclosure/`, whose README holds the PCB constraints (outline, holes, keep-outs) |
 
 ## Block diagram
 
@@ -88,6 +88,11 @@ Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefu
 
 That's years of standby on 500 mAh. Real battery life will be set by use: each press is about 0.7 s at ~60 mA plus the IR LED pulses.
 
+**Caveats (added 2026-11-13):**
+- **TX0's pull-up into the unpowered CP2102N.** GPIO 1 (U0TXD) has a weak internal pull-up at reset. If it stays on in deep sleep, it feeds the CP2102N's RXD clamp through R107: about (3.3 − 0.6 V) / (~45 kΩ + 10 kΩ) ≈ **50 µA**, three to five times the whole budget. The pull-up, not R107, sets most of that current. The pads are believed to go high-impedance in deep sleep, but that's unconfirmed. If the JP101 measurement shows it, fix it in firmware (disable the pull-up or isolate the pin before sleeping); no hardware change is needed. *verify*
+- **Pin states before sleep.** The firmware must leave every GPIO at its idle level (nRF24 powered down, CSN high, CE low, IR drive low). A pin driving against one of the 100 kΩ pulls costs ~33 µA; one floating at a mid level can cost more.
+- **Not on the board:** the cell's protection IC (typically ~3 µA) and its self-discharge (a few % a month) cost about as much again. JP101 doesn't see either.
+
 ## IR transmitter
 
 Two 940 nm LEDs, so we can mix a narrow one (TSAL6200, ±17°) with a wider one, or fit two of the same. Breadboard tests showed range and aim tolerance limit IR, so more light and a wider beam help.
@@ -109,7 +114,7 @@ The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses
 
 - **USB-C receptacle** (USB 2.0, 16-pin), 5.1 kΩ on CC1 and CC2 to GND (sink role), USBLC6-2SC6 ESD protection on D+/D−.
 - **CP2102N** (QFN-24), the same family as the DevKitC's USB bridge, so the driver is already installed and COM11-style behaviour is unchanged. It's powered from VBUS through its own regulator, so it draws nothing from the battery.
-  - *Back-powering:* with USB unplugged, the ESP32's TX0 drives the CP2102N's unpowered RXD pin and could leak current through its protection diodes. Put 1 kΩ in series on TX0 and RX0, and check the sleep current with USB unplugged. *verify*
+  - *Back-powering:* with USB unplugged, the ESP32's TX0 drives the CP2102N's unpowered RXD pin and could leak current through its protection diodes. Series resistors on TX0 and RX0 limit this; check the sleep current with USB unplugged. *verify* Datasheet check (2026-11-13, CP2102N rev 1.3, Table 3.10): with VIO below 3.3 V a UART pin's absolute maximum is VIO + 2.5 V, so 2.5 V when unpowered, against the ESP32's 3.3 V TX idle. The series resistor limits the diode current to about (3.3 − 0.6 V) / 1 kΩ ≈ 2.7 mA while the ESP32 is awake (in deep sleep TX0 isn't driven). That's the same current-limiting argument Silicon Labs uses for the VBUS divider, but 2.7 mA is a real drain during presses. **Decided 2026-11-13:** R107 (ESP32 TX0 → CP2102N RXD) is **10 kΩ** (~0.27 mA). With ~10 pF of pin capacitance that's a ~0.1 µs RC, fine at 921 600 baud (1.1 µs per bit); confirm uploads at full speed on the first board. R106 (CP2102N TXD → ESP32 RX0) stays 1 kΩ: the CP2102N doesn't drive it while unpowered.
 - **Auto-reset:** the DevKitC's two-NPN DTR/RTS circuit on EN and IO0, so `pio run -t upload` works without buttons. EN gets 10 kΩ pull-up + 1 µF; a small tactile EN reset button is included.
 
 ### Reset and recovery with the case closed (decided 2026-11-13)
@@ -199,7 +204,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - Keep the **nRF24 antenna overhang** clear, and keep the IR LEDs, charger and LDO away from it.
 - The IR LEDs sit at the front edge, aimed forward. Their current loop (VBAT cap → LEDs → transistors → R_E → GND) should be short and wide.
 - Buttons laid out like the original: arrows large and central, group keys in a row, ALL separate, SETUP on the back.
-- Size and shape follow the enclosure, which isn't chosen yet. *open*
+- Size, shape, mounting holes and keep-outs come from the enclosure: import `docs/images/enclosure/enclosure_pcb_outline.dxf` onto Edge.Cuts and follow the PCB constraints in `hardware/enclosure/README.md`.
 
 ## Schematic: Power and USB sheet (draft, 2026-11-12)
 
@@ -209,16 +214,16 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 |---|---|---|
 | Passives | 0603 | hand-reworkable; JLC-assemblable |
 | USB-C receptacle | HRO TYPE-C-31-M-12 footprint | common, cheap 16-pin USB 2.0 part; shield to GND |
-| CP2102N supply | bus-powered: VREGIN = VBUS (4.7 µF + 100 nF), VDD = VIO (1 µF + 100 nF) | *verify* against the CP2102N datasheet |
-| CP2102N VBUS sense | 22.1 kΩ / 47.5 kΩ divider from VBUS | as on Silicon Labs' CP2102N-EK; *verify* |
-| CP2102N RST | 1 kΩ pull-up to VIO | *verify* the value |
+| CP2102N supply | bus-powered: VREGIN = VBUS (4.7 µF + 100 nF), VDD = VIO (4.7 µF + 100 nF) | checked 2026-11-13 against the CP2102N data sheet rev 1.3, §2.1: 4.7 µF + 0.1 µF on *each* power pin. VDD's cap was 1 µF; now 4.7 µF (C103). Pinout matches Fig. 5.2 (QFN24, centre pad GND) |
+| CP2102N VBUS sense | 22.1 kΩ / 47.5 kΩ divider from VBUS | checked: rev 1.3 §2.3 requires the divider in bus-powered designs too (VBUS abs. max is VIO + 2.5 V; rev 1.1 drew VBUS direct, rev 1.2 added the divider). 5 V gives 3.41 V on the pin, above VIH = VIO − 0.6 V |
+| CP2102N RST | 1 kΩ pull-up to VIO | checked: rev 1.3 §2.1 recommends 1 kΩ to VIO. Unused inputs (CTS, DSR, DCD, RI) can float: the GPIO have weak pull-ups |
 | Auto-reset | 2× MMBT3904, 10 kΩ base resistors | the DevKitC circuit |
 | Charge current | R_PROG 4.02 kΩ, ~250 mA | 1000 V / R_PROG |
 | Charger caps | 4.7 µF on VBUS and VBAT | MCP73831 datasheet minimum |
 | Charge LED | 0603, 1 kΩ from VBUS to STAT | lit while charging |
 | Battery connector | JST-PH 2-pin, side entry (S2B-PH-K) | + and − on the silkscreen; *check the cell's polarity* |
 | Reverse-polarity FET | Q103, AO3401A (SOT-23), gate to GND | see [Power](#power); placed last so the earlier references kept their numbers |
-| LDO | RT9080-33GJ5, 1 µF in and out | drawn with the AP2112K symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT); *verify* against the RT9080 datasheet. The ESP32's 10 µF bulk goes on the MCU sheet |
+| LDO | RT9080-33GJ5, 1 µF in and out | drawn with the AP2112K symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT). Checked 2026-11-13 against Richtek DS9080-09: pinout matches; EN may be tied to VIN (must not float); C_IN ≥ 1 µF; C_OUT ≥ 1 µF nominal, ≥ 0.7 µF effective. The ESP32's 10 µF + 100 nF on the MCU sheet sit on the same rail. Dropout 0.31 V typ / 0.53 V max at 600 mA; far less at our ~120 mA |
 
 LCSC part numbers aren't filled in yet.
 
@@ -255,11 +260,12 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 
 | Item | Value | Note |
 |---|---|---|
-| nRF24 socket | 2×4 female, 2.54 mm, vertical; pins numbered as on the module (odd row GND, CE, SCK, MISO; even row VCC, CSN, MOSI, IRQ) | orientation and antenna overhang are layout tasks |
+| nRF24 socket | 2×4 female, 2.54 mm, vertical; pins numbered as on the module (odd row GND, CE, SCK, MISO; even row VCC, CSN, MOSI, IRQ) | **low-profile** part (body ≤ ~5 mm; added 2026-11-13): the module lies flat over it, and a standard 8.5 mm socket leaves only 0.7 mm under the key face. Same footprint. The module's pins (~6 mm below its spacer) may bottom out in a short socket: trim them, or pick a socket open at the bottom. Machined round-pin strips are low but don't take square header pins well. Part not chosen yet. Orientation and antenna overhang are layout tasks |
 | nRF24 supply | 3V3 → FB401 (0603: 0 Ω fitted; ferrite-bead option) → `NRF_VCC` with 10 µF (0805) + 100 nF at the socket, and a DNP 100 µF (1206) for a PA/LNA module | see [nRF24 supply filtering](#nrf24-supply-filtering) |
 | nRF24 IRQ | to GPIO 13 through a 0 Ω, DNP | firmware doesn't use IRQ |
 | nRF24 pulls | R402 100 kΩ CSN to `NRF_VCC`, R403 100 kΩ CE to GND | added 2026-11-12, see [nRF24 socket](#nrf24-socket) |
-| Keys | 6 mm THT tactile, tall plunger (13 mm); SETUP short (5 mm), recessed | placeholders until the enclosure is chosen |
+| Keys | Same Sky TS02-66-130-BK-160-SCR-D (13 mm, 160 gf) for the 7 keys; TS02-66-50-BK-160-SCR-D (5 mm) for SETUP, on the board's underside | footprints `SW_PUSH_6mm_H13mm` / `_H5mm` (6.5 × 4.5 mm legs); see [Key switch sourcing](#key-switch-sourcing-checked-2026-11-13). Part numbers in each symbol's MPN field (2026-11-13) |
+| Mounting holes | H601–H604, M2 (2.2 mm, unplated) on the Test and debug sheet | at (±61, ±15.5) mm from the board centre, ~5.5 mm head keep-outs; for M2 self-tappers into the case standoffs (2026-11-13) |
 | Key pull-downs | 100 kΩ each; 100 nF debounce caps DNP | firmware debounces |
 | A/B switch | SPDT slide (PCM12 footprint): common to GPIO 21, throws to GND (A) and 3V3 (B) | which throw is "A" depends on the part and its orientation |
 | Indicator | 3-lead red/green common cathode, 5 mm; red 330 Ω, green 270 Ω | *check which outer leg is red* on the part bought |
@@ -355,7 +361,6 @@ That's 11 pins: nRF24 5, IR 1, bicolor LED 2, ladder 1, battery sense 1, A/B 1. 
 
 ## Open questions
 
-1. **Enclosure:** OKW Style-Case M or L (IR-transparent PMMA), or Smart-Case L. Needs OKW's STEP/DXF drawing for the internal height, pillar positions and board outline. Fit concerns: the nRF24 module in its socket is ~12 mm tall (a right-angle header lays it flat if needed); keys through drilled holes (tactile switches with long plungers or keycaps) or a membrane keypad; a filed slot for the USB-C.
-2. **Cell:** flexible on size and connector. Pick to suit the enclosure; check the polarity of the purchased cell.
+1. **Cell:** flexible on size and connector. Pick to suit the enclosure; check the polarity of the purchased cell.
 
-Resolved 2026-11-11: two TSAL6200 positions; optional IR receiver footprint; separate charge LED; keep USB debugging on early revisions.
+Resolved 2026-11-13: the enclosure (custom printed clamshell, see Decisions). Resolved 2026-11-11: two TSAL6200 positions; optional IR receiver footprint; separate charge LED; keep USB debugging on early revisions.

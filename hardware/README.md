@@ -17,7 +17,9 @@ KiCad project for the handheld replacement remote: [`hd_remote/hd_remote.kicad_p
 | Test and debug (`test.kicad_sch`) | draft, 2026-11-12: [docs/HARDWARE.md](../docs/HARDWARE.md#test-points-2026-11-12). Test points on nets local to other sheets live on those sheets |
 | Layout | not started; the board outline waits on the enclosure choice |
 
-ERC (2026-11-12): **0 errors, 0 warnings** on the whole design. References are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR, 4xx nRF24, 5xx Buttons and LEDs, 6xx Test and debug.
+Synced with the enclosure (2026-11-13): mounting holes H601–H604 (M2), key switch MPNs (Same Sky TS02), low-profile nRF24 socket noted on J401.
+
+ERC (2026-11-13): **0 errors, 0 warnings** on the whole design. References are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR, 4xx nRF24, 5xx Buttons and LEDs, 6xx Test and debug.
 
 ## Generator scripts
 

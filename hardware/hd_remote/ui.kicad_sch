@@ -1316,6 +1316,24 @@
 				(hide yes)
 			)
 		)
+		(property "Manufacturer" "Same Sky"
+			(at 30.48 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-130-BK-160-SCR-D"
+			(at 30.48 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "05ec6c3c-a32c-5f80-a289-2db1f2d6ca2a")
 		)
@@ -1859,6 +1877,24 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, two pins"
+			(at 86.36 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Same Sky"
+			(at 86.36 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-130-BK-160-SCR-D"
 			(at 86.36 81.28 0)
 			(effects
 				(font
@@ -2418,6 +2454,24 @@
 				(hide yes)
 			)
 		)
+		(property "Manufacturer" "Same Sky"
+			(at 142.24 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-130-BK-160-SCR-D"
+			(at 142.24 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "d9e8a5b8-9dfd-59d7-b4f6-a601769444b5")
 		)
@@ -2961,6 +3015,24 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, two pins"
+			(at 198.12 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Same Sky"
+			(at 198.12 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-50-BK-160-SCR-D"
 			(at 198.12 81.28 0)
 			(effects
 				(font
@@ -3520,6 +3592,24 @@
 				(hide yes)
 			)
 		)
+		(property "Manufacturer" "Same Sky"
+			(at 30.48 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-130-BK-160-SCR-D"
+			(at 30.48 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4a6dcd76-ddc0-55ba-8a56-1e31badc7c92")
 		)
@@ -4063,6 +4153,24 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, two pins"
+			(at 86.36 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Same Sky"
+			(at 86.36 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-130-BK-160-SCR-D"
 			(at 86.36 142.24 0)
 			(effects
 				(font
@@ -4622,6 +4730,24 @@
 				(hide yes)
 			)
 		)
+		(property "Manufacturer" "Same Sky"
+			(at 142.24 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-130-BK-160-SCR-D"
+			(at 142.24 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "81cf9b6a-cb97-5df8-a99a-4a1ef2a755bf")
 		)
@@ -5165,6 +5291,24 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, two pins"
+			(at 198.12 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Same Sky"
+			(at 198.12 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "TS02-66-130-BK-160-SCR-D"
 			(at 198.12 142.24 0)
 			(effects
 				(font
