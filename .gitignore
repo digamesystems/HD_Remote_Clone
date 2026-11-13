@@ -22,6 +22,7 @@ _autosave-*
 *.lck
 fp-info-cache
 \#auto_saved_files#
+.history/
 
 # captures/ holds reference data (serial logs, PulseView .sr files) and IS committed.
 

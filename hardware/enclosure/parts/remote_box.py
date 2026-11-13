@@ -89,8 +89,10 @@ AB_SLOT = (AB_FROM_FRONT, 0, AB_KNOB_L + 0.6, AB_KNOB_W + AB_TRAVEL + 0.6)  # fr
 AB_SW_BODY = (2.8, 6.7, 1.5)      # along X, across Y, height (height: check the datasheet)
 AB_SW_ACT = (1.45, 1.3, 1.0)      # actuator: sticks out (X), width (Y), height
 # SETUP: pinhole in the floor (as on the original's back), over a 5 mm tactile switch mounted on
-# the board's underside, plunger down. Paperclip travels ~4.5 mm.
-SETUP_FROM_FRONT, SETUP_Y, SETUP_HOLE_D = 22, 0, 1.6
+# the board's underside, plunger down. Paperclip travels ~4.5 mm. 10 mm right of centre
+# (2026-11-13, PCB placement): on the centre line its through-hole pins land on the A/B switch's
+# pads (26 mm) or the indicator's leads (14 mm); DRC is clean from 8 mm off-centre outward.
+SETUP_FROM_FRONT, SETUP_Y, SETUP_HOLE_D = 22, -10, 1.6
 
 # --- IR LEDs: two 5 mm TSAL6200s lying flat on the PCB, pointing out of the front end ---
 LED_HOLE_D = 5.4       # 5 mm LED + clearance (placeholder; set from the test print)

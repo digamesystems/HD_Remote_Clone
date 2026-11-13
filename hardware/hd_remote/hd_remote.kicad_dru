@@ -1,0 +1,9 @@
+(version 1)
+# SPDX-License-Identifier: CERN-OHL-S-2.0
+
+# The LiPo cell sits under the board, 92-127 mm from the front, with only ~0.5 mm between a
+# swollen cell and the pin tips (hardware/enclosure/README.md). No through-hole component pins
+# over it. Plated vias are flush, so U201's ground-pad vias (pad 39) are allowed.
+(rule "No THT pins over the battery"
+	(condition "A.Pad_Type == 'Through-hole' && !A.memberOfFootprint('U201') && A.intersectsArea('Battery')")
+	(constraint disallow pad))
