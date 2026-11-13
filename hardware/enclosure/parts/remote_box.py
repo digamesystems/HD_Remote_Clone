@@ -14,6 +14,8 @@ TOP_T = 2.0            # key face thickness; overall height H + TOP_T
 WALL = 2.0             # wall and floor thickness, mm
 CORNER_R = 12          # vertical corner radius, mm. 12 is the most that keeps the IR LED
                        # countersinks on the flat part of the front wall (sweep 2026-11-13: 14 fails)
+EDGE_R = 2.5           # rounding of the top and bottom perimeter edges (2026-11-13). With a
+                       # 2 mm wall, ~1.8 mm of material remains through the curve at 2.5
 Z0 = -H / 2            # outside bottom; heights below are measured from here
 Z_TOP = H / 2 + TOP_T  # outside top
 FLOOR_TOP = Z0 + WALL
@@ -129,6 +131,8 @@ with BuildPart() as body:
     with BuildSketch(Plane.XY.offset(Z0)):
         RectangleRounded(L, W, CORNER_R)
     extrude(amount=Z_TOP - Z0)
+    # round the top and bottom perimeter edges (before hollowing, so the wall follows the curve)
+    fillet(body.edges().group_by(Axis.Z)[0] + body.edges().group_by(Axis.Z)[-1], radius=EDGE_R)
     with BuildSketch(Plane.XY.offset(FLOOR_TOP)):
         RectangleRounded(L - 2 * WALL, W - 2 * WALL, CORNER_R - WALL)
     extrude(amount=(Z_TOP - TOP_T) - FLOOR_TOP, mode=Mode.SUBTRACT)
