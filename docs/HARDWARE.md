@@ -306,7 +306,9 @@ Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm
 | TP607 | IR_TX | Test and debug | carrier and duty cycle on the analyzer |
 | TP608 | VBAT_SENSE | Test and debug | calibrate the battery ADC against a meter |
 | TP609 | GPIO 13 (`NRF_IRQ_OPT`) | Test and debug | **debug strobe**: the firmware toggles it at RF / IR step boundaries, so the analyzer can time the wake against the IR. Shared with the optional nRF24 IRQ link (R401, DNP): fit one or the other |
-| ~~J601~~ | (removed 2026-11-13) | Test and debug | Was a DNP 1×6 header (GND, 3V3, U0TXD, U0RXD, EN, IO0) for an external USB-serial adapter in case the onboard CP2102N failed. Removed to simplify routing: its EN line crossed the board, and it only worked with the case open. **Fallback without it:** solder wires to the ESP32's TX0/RX0 (R106/R107 pads), EN (C203) and IO0 (SW202), with GND and 3V3 from TP604–606 and TP602 |
+| ~~J601~~ | (removed 2026-11-13) | Test and debug | Was a DNP 1×6 header (GND, 3V3, U0TXD, U0RXD, EN, IO0) for an external USB-serial adapter in case the onboard CP2102N failed. Removed to simplify routing: its EN line crossed the board, and it only worked with the case open. Replaced on 2026-11-14 by the four pads below |
+| TP610, TP611 | U0TXD, U0RXD | Test and debug | **UART fallback** (replaces J601): ESP32 TX0 → adapter RX, RX0 ← adapter TX, for flashing and monitoring with an external 3.3 V USB-serial adapter if the CP2102N fails. Unplug USB-C first; power from the adapter's 3V3 (to TP602) or from the battery, not both |
+| TP612, TP613 | EN, IO0 | Test and debug | reset and boot strap for the same fallback: hold IO0 low, pulse EN low to enter the bootloader (or let the adapter's DTR/RTS drive them). GND from TP604–606 |
 
 The nRF24's SPI lines need no test points: the socket's through-hole pins on the back take analyzer clips.
 

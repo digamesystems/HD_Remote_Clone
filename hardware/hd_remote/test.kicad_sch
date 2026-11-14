@@ -2526,5 +2526,415 @@
 		)
 		(uuid "f49bff6a-f844-4504-83e2-c451e6ce39bd")
 	)
+		(symbol
+		(lib_id "Connector:TestPoint")
+		(at 25.4 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(uuid "453b8eae-1a55-4e38-a767-44862981d421")
+		(property "Reference" "TP610"
+			(at 27.94 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "U0TXD"
+			(at 27.94 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 25.4 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 25.4 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 25.4 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "44bbd307-f389-4ae5-91fb-fafc1cf40af5")
+		)
+		(instances
+			(project "hd_remote"
+				(path "/12ff3655-5116-468c-be29-1c7c9dc83474/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60"
+					(reference "TP610")
+					(unit 1)
+				)
+			)
+		)
+	)
+		(wire
+		(pts
+			(xy 25.4 157.48)
+			(xy 25.4 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5ba31dce-23d7-41c6-8480-7ece05f4180f")
+	)
+		(global_label "U0TXD"
+		(shape bidirectional)
+		(at 25.4 160.02 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "56418623-5478-46eb-9e14-ad676ca21437")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 25.4 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+		(symbol
+		(lib_id "Connector:TestPoint")
+		(at 45.72 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(uuid "65278042-e06b-4440-be8a-45360d026b72")
+		(property "Reference" "TP611"
+			(at 48.26 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "U0RXD"
+			(at 48.26 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 45.72 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 45.72 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 45.72 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "307c6804-822c-4b09-8ecc-323077ac2067")
+		)
+		(instances
+			(project "hd_remote"
+				(path "/12ff3655-5116-468c-be29-1c7c9dc83474/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60"
+					(reference "TP611")
+					(unit 1)
+				)
+			)
+		)
+	)
+		(wire
+		(pts
+			(xy 45.72 157.48)
+			(xy 45.72 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a9ef408-3b2c-4099-b97d-1d18eca61ad1")
+	)
+		(global_label "U0RXD"
+		(shape bidirectional)
+		(at 45.72 160.02 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c24fb698-79cd-4644-9751-2b6fc42c02ef")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 45.72 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+		(symbol
+		(lib_id "Connector:TestPoint")
+		(at 66.04 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(uuid "bc0a917d-75cb-4977-9b2c-d6ac165f5706")
+		(property "Reference" "TP612"
+			(at 68.58 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "EN"
+			(at 68.58 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 66.04 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 66.04 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 66.04 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d1d3690c-36f8-4e00-8d03-58b03300240e")
+		)
+		(instances
+			(project "hd_remote"
+				(path "/12ff3655-5116-468c-be29-1c7c9dc83474/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60"
+					(reference "TP612")
+					(unit 1)
+				)
+			)
+		)
+	)
+		(wire
+		(pts
+			(xy 66.04 157.48)
+			(xy 66.04 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3533a52d-e821-4af8-8dab-6244ce2fc0ba")
+	)
+		(global_label "EN"
+		(shape bidirectional)
+		(at 66.04 160.02 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0e79256d-0c57-4e8d-817f-bdda7c7beb97")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 66.04 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+		(symbol
+		(lib_id "Connector:TestPoint")
+		(at 86.36 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(uuid "df0d07eb-3aa9-4c71-8377-62e601e8758b")
+		(property "Reference" "TP613"
+			(at 88.9 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "IO0"
+			(at 88.9 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 86.36 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 86.36 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 86.36 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b04c1e46-eb78-4138-a718-9c35803ed9c3")
+		)
+		(instances
+			(project "hd_remote"
+				(path "/12ff3655-5116-468c-be29-1c7c9dc83474/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60"
+					(reference "TP613")
+					(unit 1)
+				)
+			)
+		)
+	)
+		(wire
+		(pts
+			(xy 86.36 157.48)
+			(xy 86.36 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2feebf23-eb8f-4375-9692-f9741292e3bf")
+	)
+		(global_label "IO0"
+		(shape bidirectional)
+		(at 86.36 160.02 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "974fbbfb-8b32-4d41-8ab3-4d2726308c51")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 86.36 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(text "UART / boot pads (replace the J601 header, 2026-11-14): flash or debug the ESP32
+with an external 3.3 V USB-serial adapter if the onboard CP2102N or auto-reset fails.
+Clip or tack-solder to TP610 (ESP32 TX0 -> adapter RX), TP611 (RX0 <- adapter TX), TP612 EN,
+TP613 IO0; GND from TP604-606, 3V3 from TP602. Unplug USB-C first; power from the adapter OR the battery."
+		(exclude_from_sim no)
+		(at 20.32 142.24 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "8cc145d7-5915-4a67-80ea-d8250bf445b0")
+	)
 	(embedded_fonts no)
 )
