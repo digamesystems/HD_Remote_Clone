@@ -2836,7 +2836,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "VBAT"
+		(property "Value" "VSYS"
 			(at 128.27 68.58 0)
 			(effects
 				(font
@@ -3330,7 +3330,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "VBAT"
+		(property "Value" "VSYS"
 			(at 189.23 68.58 0)
 			(effects
 				(font
@@ -4097,7 +4097,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "VBAT"
+		(property "Value" "VSYS"
 			(at 233.68 73.66 0)
 			(effects
 				(font
@@ -4331,7 +4331,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "VBAT"
+		(property "Value" "VSYS"
 			(at 243.84 73.66 0)
 			(effects
 				(font

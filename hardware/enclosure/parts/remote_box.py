@@ -118,7 +118,7 @@ SPLIT = Z0 + LED_Z     # parting plane at the IR LED axis, so each shell holds h
 LIP_H, LIP_W, LIP_GAP = 2.0, 1.5, 0.2   # lip on the top shell, inside the long walls
 # Gaps in the lip (mm from the front to, side +1/-1) where parts reach the board edge near the
 # split, in the current placeholder layout (assembly.py).
-LIP_GAPS = [(88, 108, +1),   # ESP32 antenna end at the +Y board edge
+LIP_GAPS = [(88, 108, -1),   # ESP32 antenna end at the -Y board edge (rotated 2026-11-13, PCB routing)
             (127, 134, -1)]  # battery leads crossing to the -Y board-edge notch
 BOSS_D = 6.0           # corner posts, touching both walls
 BOSS_INSET = WALL + BOSS_D / 2

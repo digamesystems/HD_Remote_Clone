@@ -11,7 +11,7 @@ The goal is a battery handheld that replaces the original Platinum remote. It se
 | MCU | **ESP32-WROOM-32E** module (same chip family as the DevKitC; the pin map and firmware carry over) |
 | Power | **1-cell Li-ion/LiPo**, **USB-C** charging, low-quiescent 3.3 V LDO |
 | Controls | **7 keys like the original** (UP, DOWN, 1, 2, 3, 4, ALL), a **recessed SETUP button**, and an **A/B IR channel slide switch** |
-| Radio | **2×4 socket** for the nRF24 modules we already have and have screened (antenna overhanging the board edge) |
+| Radio | **2×4 socket** for the nRF24 modules we already have and have screened (the module lies flat over the board, its PCB antenna over a no-copper keep-out on both layers) |
 | Indicator | **Red/green bicolor LED**, common cathode |
 | IR receiver | **Optional footprint** (TSOP382xx / VS1838B, 3-pin), unpopulated in normal builds, for diagnostics. It takes little space |
 | IR LEDs | Two TSAL6200 positions |
@@ -24,14 +24,16 @@ The goal is a battery handheld that replaces the original Platinum remote. It se
 ```
 USB-C ──┬─ ESD (USBLC6) ── CP2102N USB-UART ── auto-reset (2× NPN) ── ESP32 EN / IO0 / TX0 / RX0
         │
-        └─ VBUS ── MCP73831 charger ── VBAT ── LiPo cell (protected, JST-PH 2-pin)
+        └─ VBUS ─┬─ MCP73831 charger ── VBAT ── LiPo cell (protected, JST-PH 2-pin)
+                 │                        │  └── divider (2× 1 MΩ) ── ADC (battery voltage)
+                 │                        │ Q104 P-FET (on when no USB)
+                 └── D102 Schottky ──────┴── VSYS  (power path, Microchip AN1149)
                                         │
                                         ├── RT9080 LDO ── 3V3 ── ESP32-WROOM-32E
                                         │                    ├── nRF24 socket (+10 µF, 100 nF)
                                         │                    ├── 8 buttons (active-high, pull-downs)
                                         │                    ├── A/B switch
                                         │                    └── bicolor LED (2× resistor)
-                                        ├── divider (2× 1 MΩ) ── ADC (battery voltage)
                                         └── IR LEDs (2×) ── current sinks ── GPIO 4
 ```
 
@@ -68,7 +70,12 @@ Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefu
 
 **Reverse-polarity protection (added 2026-11-12):** a reversed cell would destroy the charger and the LDO, so the battery lead runs through a P-MOSFET (Q103, AO3401A, SOT-23) with its gate to GND: drain to the battery side, source to VBAT. With the cell the right way round, the body diode lifts the source, Vgs ≈ −VBAT turns the FET fully on (~50–80 mΩ, ~20 mV at a 300 mA IR peak), and the charger still charges through it, since the channel conducts both ways. With the cell reversed, Vgs = 0 and the body diode is reverse-biased, so nothing flows. Mark + and − on the silkscreen at J102 as well. Any SOT-23 P-FET with |Vgs(th)| under ~1.5 V and Vgs max ≥ 8 V will do. *verify* the drop and the charger's termination on the first board.
 
-**Charging:** MCP73831 (SOT-23-5), programmed to ~256 mA (R_PROG 3.9 kΩ). Its STAT pin drives a separate small charge LED (lit while charging), powered from VBUS so it costs the battery nothing. The load runs straight from VBAT (no power path). That's simple, and fine at this charge current, though the charger may not terminate cleanly if the board draws current while charging. *verify*
+**Charging:** MCP73831 (SOT-23-5), programmed to ~256 mA (R_PROG 3.9 kΩ). Its STAT pin drives a separate small charge LED (lit while charging), powered from VBUS so it costs the battery nothing. **Power path (added 2026-11-13, Microchip AN1149):** the board's loads run from **VSYS**, not VBAT. With USB present, VBUS feeds VSYS through Schottky D102, and P-FET Q104 (gate = VBUS) disconnects the cell, so the charger sees only the cell: charging terminates cleanly whatever the board is doing, and the board runs from USB with or without a cell fitted. Without USB, R114 (100 kΩ) pulls Q104's gate low and Q104 connects the cell to VSYS (~20 mV at 300 mA). The charger output, Q103, JP101 and the battery divider stay on VBAT, so the ADC still reads the cell.
+
+- **D102:** STPS1H100AY (ST, 100 V 1 A, SMA, LCSC C181833), chosen for **low reverse leakage**: with USB absent it is reverse-biased by the cell and its leakage is a permanent battery drain. Rated 4 µA max at 100 V and 25 °C; at ~4 V it should be far lower (estimate under 1 µA; *verify* with the JP101 measurement, and note leakage roughly doubles every 10 °C). Common 40 V Schottkys leak 50–500 µA at rated voltage (PMEG4010CEH: 50 µA), too much for a ~15 µA budget. Rohm's "super low IR" RB168M series would be smaller (SOD-123) but had no LCSC stock (checked 2026-11-13). The price of a 100 V part is a higher forward drop, ~0.5–0.6 V at our currents, so VSYS ≈ 4.4–4.5 V from a 5 V port: plenty for the LDO.
+- **Q104:** AO3401A (same JLC basic part as Q103, C15127): |Vgs(th)| 0.5–1.3 V, within AN1149's 0 to −2.4 V.
+- **Conditions to keep:** VSYS from USB must stay above VBAT minus Q104's body-diode drop, or the cell would help feed the load while charging: 4.4 V against a full 4.2 V cell gives margin, but a weak USB port (4.4–4.5 V at the device) narrows it. Diode leakage must stay small enough that R114 still pulls the gate low (10 µA × ~41 kΩ, R114 in parallel with the VBUS divider ≈ 0.4 V: fine).
+- **No cell fitted, USB present:** the board runs; the charger output hunts (no cell), so the battery ADC reading is meaningless. Firmware should treat "USB present and VBAT reading odd" as "no battery".
 
 **3.3 V regulator:** RT9080-33 (SOT-23-5): 600 mA, ~2 µA quiescent, about 310 mV dropout at 600 mA. The ESP32 never uses Wi-Fi or Bluetooth here, so its active current is ~40–70 mA, plus the nRF24 at ~12 mA. The LDO stays in regulation down to about VBAT 3.4 V; the firmware warns at ~3.5 V and refuses to transmit below ~3.3 V.
 
@@ -83,6 +90,7 @@ Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefu
 | nRF24 power-down | ~1 µA |
 | Battery divider | ~2 µA |
 | MCP73831 reverse leakage, no USB | ~1 µA |
+| D102 reverse leakage at ~4 V, no USB (power path) | < 1 µA (estimate; rated 4 µA max at 100 V, 25 °C) *verify* |
 | CP2102N | 0 (powered from VBUS only) |
 | **Total** | **~11–16 µA** |
 
@@ -97,14 +105,15 @@ That's years of standby on 500 mAh. Real battery life will be set by use: each p
 
 Two 940 nm LEDs, so we can mix a narrow one (TSAL6200, ±17°) with a wider one, or fit two of the same. Breadboard tests showed range and aim tolerance limit IR, so more light and a wider beam help.
 
-The LEDs run from **VBAT**, not 3.3 V, so the regulator doesn't carry the pulses. VBAT varies from 4.2 V down to 3.3 V, so each LED gets a **current sink** that holds the current roughly constant:
+The LEDs run from **VSYS** (VBAT when on battery, ~4.4–4.5 V from USB; changed from VBAT 2026-11-13 with the power path), not 3.3 V, so the regulator doesn't carry the pulses. VSYS varies from ~4.5 V down to 3.3 V, so each LED gets a **current sink** that holds the current roughly constant:
 
 - GPIO 4 → 470 Ω → a common base node, clamped by two 1N4148 diodes in series to GND (~1.3 V).
 - 100 kΩ from the base node to GND, so the LEDs stay off while GPIO 4 floats (during boot, and in deep sleep unless the pin is held). Added 2026-11-12.
 - For each LED: BC817-40 NPN, base on that node, emitter → R_E to GND, collector → LED cathode, LED anode → VBAT.
 - I_LED ≈ (V_clamp − Vbe) / R_E. Corrected 2026-11-12 (review): the first draft used Vbe = 0.65 V, but a BC817-40 needs ~0.75–0.8 V at 150 mA, and the clamp sits near 1.3 V with ~4 mA through the diodes. That leaves only ~0.5 V across R_E, so 4.3 Ω would give ~110–120 mA, not 150. The schematic now shows **3.3 Ω (~150–165 mA)**; set the final value from the breadboard. With only ~0.5 V across R_E, the current depends noticeably on Vbe and the diode drops, so measure rather than trust the formula. (The breadboard ran one LED at 88 mA, measured; see below.)
-- Headroom at VBAT 3.3 V: 3.3 − 1.6 (LED at 150 mA) − 0.5 (R_E) ≈ 1.2 V across the transistor. OK.
-- Bulk capacitance on VBAT at the LEDs: 100 µF + 100 nF.
+- Headroom at VSYS 3.3 V: 3.3 − 1.6 (LED at 150 mA) − 0.5 (R_E) ≈ 1.2 V across the transistor. OK.
+- **Dissipation on USB** (VSYS ~4.5 V): ~2.4 V across each BC817 × 150 mA × 50 % duty ≈ 0.18 W during a burst (~0.7 s), against 0.25 W rated (SOT-23). Within rating; check the transistor temperature on the first board during repeated presses on USB. *verify*
+- Bulk capacitance on VSYS at the LEDs: 100 µF + 100 nF.
 
 *verify:* build the sink on the breadboard first and check the current with the scope across R_E at 3.3 V and 4.2 V.
 
@@ -140,7 +149,7 @@ Apart from the parts the case model already covers (`hardware/enclosure/assembly
 
 ## nRF24 socket
 
-- 2×4 female header, 2.54 mm. The module plugs in with its antenna **overhanging the board edge**, with no copper (all layers) under the overhang.
+- 2×4 female header, 2.54 mm. The module plugs in lying flat over the board, antenna end toward the front. Its PCB antenna (the module's front 8 mm) sits over a no-copper keep-out on both layers (rule area in the PCB). Corrected 2026-11-13: the first draft had the antenna overhanging the board edge, before the case design.
 - 10 µF + 100 nF at the socket's VCC pin.
 - The firmware puts the radio in power-down between presses (~1 µA). No power switch for now.
 - **Pulls (added 2026-11-12, review):** 100 kΩ pull-up on CSN (R402) and 100 kΩ pull-down on CE (R403). While the ESP32 boots or sleeps, its pins float; a floating CSN plus noise on SCK could clock garbage into the radio's registers, and a floating-high CE could start TX/RX. CSN is GPIO 5, a strapping pin whose default is high, so the pull-up agrees with it. Each costs nothing while its line sits at its idle level.
@@ -153,7 +162,7 @@ Evaluated 2026-11-12. The radio draws ~11–13 mA (genuine part, TX at 0 dBm or 
 - **Shared ground return.** Keep the IR current loop (VBAT cap → LEDs → transistors → R_E → GND) short and routed to the battery connector away from the radio.
 - **ESP32 digital noise** on 3V3: modest with Wi-Fi off. FB401 lets a ferrite bead be fitted later if range or packet loss suggests supply noise (check for bead/ceramic resonance if one is fitted).
 
-Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid ground pour under the module except under the antenna overhang.
+Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid ground pour under the module except under its antenna (the keep-out).
 
 ## Indicator LED
 
@@ -200,6 +209,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 ## Layout notes
 
 - 2-layer board, ground pour on both sides, stitched.
+- **ESP32 orientation (2026-11-13):** antenna end at the right-hand (−Y) board edge, holding the remote pointing away. The key GPIOs must be RTC pins, which all sit in the module's left pin column (pins 4–12), so that column has to face the keys; the SPI and UART pins (right column) then face the nRF24 socket and CP2102N at the back. With the antenna at the other edge, 14 key and SPI lines crossed each other round the module.
 - Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines. The ESP32's radio isn't used, but this keeps the option open and is free.
 - Keep the **nRF24 antenna overhang** clear, and keep the IR LEDs, charger and LDO away from it.
 - The IR LEDs sit at the front edge, aimed forward. Their current loop (VBAT cap → LEDs → transistors → R_E → GND) should be short and wide.
@@ -220,6 +230,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 | Auto-reset | 2× MMBT3904, 10 kΩ base resistors | the DevKitC circuit |
 | Charge current | R_PROG 3.9 kΩ, ~256 mA | 1000 V / R_PROG; was 4.02 kΩ (~249 mA), changed 2026-11-13 to a JLC basic part. The MCP73831's own tolerance is ±10%; ~0.5C on a 500 mAh cell |
 | Charger caps | 4.7 µF on VBUS and VBAT | MCP73831 datasheet minimum |
+| Power path | D102 STPS1H100AY (SMA), Q104 AO3401A, R114 100 kΩ VBUS→GND, TP102 on VSYS | Microchip AN1149; see [Power](#power). LDO input (U104 pins 1, 3) and C107 moved to VSYS (2026-11-13) |
 | Charge LED | 0603, 1 kΩ from VBUS to STAT | lit while charging |
 | Battery connector | JST-PH 2-pin, side entry (S2B-PH-K) | + and − on the silkscreen; *check the cell's polarity* |
 | Reverse-polarity FET | Q103, AO3401A (SOT-23), gate to GND | see [Power](#power); placed last so the earlier references kept their numbers |
@@ -256,7 +267,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | IR LEDs | 2× TSAL6200, 5 mm, footprint bent 90° (`LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm`) | lying flat, pointing out of the board edge; either position can take a wider-angle LED |
 | Current sinks | BC817-40 (SOT-23), R_E 3.3 Ω 0805 | ~0.1 W peak in R_E, hence 0805; value set from the breadboard (was 4.3 Ω, see [IR transmitter](#ir-transmitter)) |
 | Clamp | 2× 1N4148W (SOD-123), base resistor 470 Ω, 100 kΩ pull-down | |
-| Bulk on VBAT | 100 µF 1206 ceramic + 100 nF | a 100 µF ceramic keeps well under half its capacity at 4 V; check the derating, or use a tantalum or polymer cap |
+| Bulk on VSYS | 100 µF 1206 ceramic + 100 nF | a 100 µF ceramic keeps well under half its capacity at 4 V; check the derating, or use a tantalum or polymer cap |
 | Receiver (DNP) | TSOP382xx footprint (Vishay MINICAST), 100 Ω + 100 nF supply filter | not fitted in normal builds; a VS1838B has the same pin order but a different body |
 
 ## Schematic: nRF24 and Buttons/LEDs sheets (draft, 2026-11-12)
@@ -286,6 +297,7 @@ Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm
 | TP301, TP302 | IR_E1, IR_E2 | IR | top of each emitter resistor: scope to GND, I_LED = V / R_E, at VBAT 3.3 and 4.2 V |
 | TP303 | IR_BASE | IR | the clamp voltage (~1.3 V) and the drive waveform |
 | TP601–TP603 | VBAT, +3V3, VBUS | Test and debug | rail checks; LDO dropout under IR load |
+| TP102 | VSYS | Power and USB | power-path output: should read ~VBUS − 0.5 V with USB, ~VBAT without (added 2026-11-13) |
 | TP604–TP606 | GND | Test and debug | THT loops (Keystone 5000) for scope ground clips: one near the IR stage, one near the radio |
 | TP607 | IR_TX | Test and debug | carrier and duty cycle on the analyzer |
 | TP608 | VBAT_SENSE | Test and debug | calibrate the battery ADC against a meter |

@@ -27,7 +27,7 @@ import ocp_vscode
 MODEL = Path(__file__).parent / "parts" / "remote_box.py"
 
 # ---- placeholder board layout (mm from the front end unless noted) ----
-ESP_FRONT, ESP_L, ESP_W, ESP_H, ESP_ANT = 89.0, 25.5, 18.0, 3.1, 6.0   # WROOM-32E, antenna at +Y edge
+ESP_FRONT, ESP_L, ESP_W, ESP_H, ESP_ANT = 89.0, 25.5, 18.0, 3.1, 6.0   # WROOM-32E, antenna at -Y edge
 NRF_BACK = 136.5                       # nRF24 module's back end; antenna end points forward
 NRF_SOCKET_H, NRF_SPACER_H, NRF_PCB_T, NRF_PARTS_H = 8.5, 2.5, 1.0, 1.2
 NRF_L, NRF_W, NRF_HDR_FROM_END = 29.0, 15.3, 2.5
@@ -185,9 +185,10 @@ def build_parts(m):
                                                                           align=(Align.CENTER, Align.CENTER, Align.MIN)))
     nrf_top = z_mod + NRF_PCB_T + NRF_PARTS_H
 
-    # ESP32 across the board, antenna end at the +Y board edge
+    # ESP32 across the board, antenna end at the -Y board edge (rotated 2026-11-13: its RTC/key pins
+    # then face the keys and its SPI/UART pins face the nRF24 socket and CP2102N)
     edge_y = W / 2 - WALL - PCB_GAP
-    p["ESP32"] = Pos(fx(ESP_FRONT + ESP_W / 2), edge_y - ESP_L / 2, top) * Box(
+    p["ESP32"] = Pos(fx(ESP_FRONT + ESP_W / 2), -(edge_y - ESP_L / 2), top) * Box(
         ESP_W, ESP_L, ESP_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
     # A/B: side-actuated switch + printed slider (knob, retaining plate, blade, fork)
