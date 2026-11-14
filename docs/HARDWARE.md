@@ -13,7 +13,7 @@ The goal is a battery handheld that replaces the original Platinum remote. It se
 | Controls | **7 keys like the original** (UP, DOWN, 1, 2, 3, 4, ALL), a **recessed SETUP button**, and an **A/B IR channel slide switch** |
 | Radio | **2×4 socket** for the nRF24 modules we already have and have screened (the module lies flat over the board, its PCB antenna over a no-copper keep-out on both layers) |
 | Indicator | **Red/green bicolor LED**, common cathode |
-| IR receiver | **Optional footprint** (TSOP382xx / VS1838B, 3-pin), unpopulated in normal builds, for diagnostics. It takes little space |
+| IR receiver | **None** (removed 2026-11-13, PCB layout). It was an optional, unfitted diagnostic footprint; it would have needed a window in the front wall to see out, and its lines added crossings at the key area. IR capture stays on the breadboard (DevKitC + TSOP38238/VS1838B) |
 | IR LEDs | Two TSAL6200 positions |
 | Charge status | **Separate LED** on the charger's STAT pin (not the bicolor LED) |
 | USB | USB-C with the USB-serial bridge kept on the board, so early revisions can be flashed and debugged over USB |
@@ -45,24 +45,28 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 |---|---|---|
 | UP | 32 | RTC; same as the breadboard |
 | DOWN | 33 | RTC; same as the breadboard |
-| Group 1 | 34 | RTC, input-only, **no internal pull**: external pull-down required (all buttons get one anyway) |
-| Group 2 | 35 | RTC, input-only |
-| Group 3 | 36 (VP) | RTC, input-only |
-| Group 4 | 27 | RTC |
+| Group 1 | 26 | RTC (was 34 until 2026-11-13) |
+| Group 2 | 34 | RTC, input-only, **no internal pull**: external pull-down required (all buttons get one anyway) (was 35) |
+| Group 3 | 27 | RTC (was 36) |
+| Group 4 | 36 (VP) | RTC, input-only (was 27). See the GPIO 36/39 note below |
 | ALL | 25 | RTC |
-| SETUP | 26 | RTC; recessed (paperclip) button |
-| A/B switch | 21 | Read on wake; no wake needed. Not RTC |
+| SETUP | 35 | RTC, input-only; recessed (paperclip) button (was 26) |
+| A/B switch | 14 | Via R202 (10 kΩ series). Read on wake; no wake needed. Moved from GPIO 21 on 2026-11-14: GPIO 14 is in the module's front-facing pin column, so the line no longer runs round the module. R202 limits current if GPIO 14 drives during boot (widely reported for this JTAG pin) against the switch, which ties the pin hard to GND or 3V3 |
 | Battery sense | 39 (VN) | ADC1_CH3, from a 1 MΩ / 1 MΩ divider on VBAT, 100 nF to GND |
 | IR LED drive | 4 | Same as the breadboard |
 | LED red / green | 22 / 16 | Via resistors, PWM (LEDC). GPIO 16 was the nRF24 IRQ, which the firmware doesn't use |
 | nRF24 SCK / MISO / MOSI | 18 / 19 / 23 | VSPI, same as the breadboard |
 | nRF24 CSN / CE | 5 / 17 | Same as the breadboard. GPIO 5 is a strapping pin; CSN idles high, which is its default |
 | nRF24 IRQ | not connected | Pad or 0 Ω option to GPIO 13 if ever needed |
-| IR receiver OUT (optional) | 14 | Same as the breadboard. Footprint only; 100 Ω + 100 nF supply filter |
+| (spare) | 14 | Was the optional IR receiver's OUT (removed 2026-11-13); now unconnected, no-connect flag in the schematic |
 | UART TX0 / RX0 | 1 / 3 | To the CP2102N |
 | EN / IO0 | EN / 0 | Auto-reset from DTR/RTS (DevKitC circuit); also small EN (reset) and IO0 (BOOT) buttons. BOOT added 2026-11-12 as a fallback if auto-reset fails on an early board |
 
-Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefully).
+Free afterwards: 13 (spare pad / debug strobe TP609), 21 (spare since 2026-11-14), 2, 12, 15 (strapping; leave alone or use carefully). Firmware: enable an internal pull on unused pins (Espressif checklist).
+
+**Key pins re-assigned (2026-11-13, PCB layout):** the RTC pins all sit in the module's left pin column, and their order up that column decides how the eight key lines fan out to the keys. The first assignment crossed itself 20 times there. A search over every valid assignment (key pins interchangeable; VBAT_SENSE on an ADC1 pin) found 3 crossings at best; the one used has 4 but keeps VBAT_SENSE on GPIO 39 and only one key (G4) on GPIO 36/39, the same as before. UP, DOWN and ALL are unchanged, so the breadboard firmware (UP 32, DOWN 33) still matches. Across the whole board the ratsnest crossings fell from 187 to 159.
+
+**GPIO 36/39 note:** ESP32 erratum: while the SAR ADC (or Wi-Fi) is powered, GPIO 36 and 39 can show short (~80 ns) low pulses. Here that means one key line (G4 on 36) next to the battery-sense ADC (39). The ~20 ms software debounce ignores pulses that short; don't rely on edge interrupts on GPIO 36 without debouncing.
 
 ## Power
 
@@ -145,7 +149,7 @@ Apart from the parts the case model already covers (`hardware/enclosure/assembly
 
 - **Battery connector** (JST PH S2B-PH-K, side entry): now placed on top of the board with a board-edge notch for the leads from the cell underneath. See the PCB constraints in `hardware/enclosure/README.md`.
 - **Keystone 5000 test loops** (TP604–606): through-hole wire loops roughly 7–9 mm tall (check the datasheet). Keep them out from under the nRF24 module (11 mm) and the key face, or use flat pads on production boards.
-- **DNP parts usable only with the case open:** J601 (1×6 serial header; a plugged cable needs ~20 mm of height) and the IR receiver footprint, which would also need a window in the front wall to see out.
+- **DNP parts usable only with the case open:** none left. The 1×6 UART header J601 and the optional IR receiver footprint (U301) were both removed on 2026-11-13.
 
 ## nRF24 socket
 
@@ -210,7 +214,8 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 
 - 2-layer board, ground pour on both sides, stitched.
 - **ESP32 orientation (2026-11-13):** antenna end at the right-hand (−Y) board edge, holding the remote pointing away. The key GPIOs must be RTC pins, which all sit in the module's left pin column (pins 4–12), so that column has to face the keys; the SPI and UART pins (right column) then face the nRF24 socket and CP2102N at the back. With the antenna at the other edge, 14 key and SPI lines crossed each other round the module.
-- Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines. The ESP32's radio isn't used, but this keeps the option open and is free.
+- Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines.
+- **Battery under the ESP32 antenna area (noted 2026-11-14):** the cell's keep-out (cell 30 mm wide + 0.5 mm margin, ±15.5 mm) overlaps the ESP32 antenna keep-out by a 1.5 mm strip along the −Y side (Y −15.5 to −14.0, X −47 to −16.5), so the cell's foil-laminated edge sits about 1 mm under the inner end of the antenna area. No effect in this design, since the ESP32's radio is unused (no Wi-Fi or Bluetooth; all RF is the nRF24). If the ESP32 radio is ever used, expect detuning and lost range: use a narrower cell (25 mm wide leaves ~4 mm clearance), shift the cell toward +Y in the case model, or accept the loss. The two keep-outs don't conflict in DRC: one forbids copper, the other THT pins and underside parts. The ESP32's radio isn't used, but this keeps the option open and is free.
 - Keep the **nRF24 antenna overhang** clear, and keep the IR LEDs, charger and LDO away from it.
 - The IR LEDs sit at the front edge, aimed forward. Their current loop (VBAT cap → LEDs → transistors → R_E → GND) should be short and wide.
 - Buttons laid out like the original: arrows large and central, group keys in a row, ALL separate, SETUP on the back.
@@ -241,7 +246,27 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - **SW201/SW202:** KMR221NGLFS (C269272), the 4.2 × 2.8 mm body without the ground tab, to fit KiCad's 4-pad `SW_Push_1P1T_NO_CK_KMR2`. Check the land pattern against C&K's drawing before layout.
 - **SW509:** PCM12SMTR (C221841), matching the footprint. The case model's slider also allows an MSK12C02; that needs a different footprint.
 - **U103:** MCP73831T-2ACI/OT (C424093), the 4.20 V `-2` variant.
-- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, DNP J601/U301, test pads and JP101.
+- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, test pads and JP101.
+
+## Reference design review (2026-11-14)
+
+The ESP32 core, USB-serial and auto-reset were compared line by line against Espressif's [ESP32-WROOM-32E datasheet v2.1](https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf) (section 9, Peripheral Schematics), the [ESP32-DevKitC V4 schematic](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf) and Espressif's [ESP32 schematic checklist](https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32/schematic-checklist.html). The power path was checked against Microchip AN1149 separately (see [Power](#power)).
+
+| Item | References | Ours | Result |
+|---|---|---|---|
+| 3V3 supply | ≥ 500 mA (checklist) | RT9080, 600 mA | ✓ |
+| 3V3 decoupling at the module | 22 µF + 0.1 µF (datasheet, DevKitC); ≥ 10 µF + 0.1 µF (checklist) | was 10 µF + 100 nF | **C201 raised to 22 µF** |
+| EN RC | 10 kΩ / 1 µF (datasheet, checklist); DevKitC uses 0.1 µF | 10 kΩ / 1 µF, C203 ~5 mm from the pin | ✓. Keep the EN trace short (checklist) |
+| Slow supply ramps | checklist: for slow rise/fall (e.g. battery charging) an RC may not be enough; consider a supervisor (~3.0 V) on EN | none | Accepted for now: the power path gives a fast VSYS from USB, and the firmware cuts off at ~3.3 V VBAT, well above the ESP32's operating minimum. Revisit if bring-up shows resets during slow battery discharge or recovery |
+| Strapping pins | GPIO0 pull-up, no large caps on IO0; GPIO2 low/float; MTDI (GPIO12) low; MTDO; GPIO5 high | IO0: internal pull-up + BOOT + Q102, no cap; GPIO2, 12, 15 unconnected; GPIO5 = CSN with 100 kΩ pull-up | ✓ |
+| Auto-reset | DTR/RTS → 10 kΩ → 2 NPN (DevKitC) | same, MMBT3904 | ✓ (still *verify* on the first board) |
+| U0TXD series resistor | 499 Ω for harmonic suppression (checklist); DevKitC 0 Ω | R107 10 kΩ (chosen for back-powering) | ✓; slower edges, fine at 921 600 baud |
+| CP2102N | VBUS divider 22.1 k / 47.5 k; 4.7 µF + 0.1 µF (DevKitC) | 22 k / 47 k; 4.7 µF + 100 nF per pin | ✓ |
+| USB ESD | ESD diodes on D+/D− (DevKitC: LESD5D5.0) | USBLC6-2SC6 | ✓ |
+| ADC pin | 0.1 µF filter at the pin (checklist) | C109 at GPIO 39 | ✓ |
+| Input-only pins (34–39) | no internal pulls: add external | all key pins have 100 kΩ pull-downs | ✓ |
+| GPIO 36/39 glitch | ~80 ns pulses while RTC/ADC is powered (checklist) | one key on GPIO 36 | ✓ noted; debounce in software |
+| RESET/BOOT switches (KMR221NGLFS) | C&K KMR2 "NG" recommended layout: 0.9 × 1.0 mm pads at ±2.05 / ±0.8 mm | KiCad `SW_Push_1P1T_NO_CK_KMR2` | ✓ exact match |
 
 ## Schematic: MCU sheet (draft, 2026-11-12)
 
@@ -249,7 +274,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 
 | Item | Value | Note |
 |---|---|---|
-| 3V3 decoupling | 10 µF (0805) + 100 nF at the module | per Espressif's guidance |
+| 3V3 decoupling | **22 µF** (0805, C45783) + 100 nF at the module | was 10 µF; raised 2026-11-14 to match the module datasheet's reference circuit and the DevKitC (see [Reference design review](#reference-design-review-2026-11-14)) |
 | EN | 10 kΩ pull-up, 1 µF to GND, RESET button | DevKitC values |
 | BOOT | button from IO0 to GND | IO0 has an internal pull-up |
 | Buttons | C&K KMR2 footprint (small SMD tactile) | for RESET and BOOT; the user keys are on the buttons sheet |
@@ -260,7 +285,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 
 ## Schematic: IR sheet (draft, 2026-11-12)
 
-[`hardware/hd_remote/ir.kicad_sch`](../hardware/hd_remote/ir.kicad_sch) implements [IR transmitter](#ir-transmitter) above, plus the optional receiver.
+[`hardware/hd_remote/ir.kicad_sch`](../hardware/hd_remote/ir.kicad_sch) implements [IR transmitter](#ir-transmitter) above. (The optional receiver was removed on 2026-11-13.)
 
 | Item | Value | Note |
 |---|---|---|
@@ -268,7 +293,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | Current sinks | BC817-40 (SOT-23), R_E 3.3 Ω 0805 | ~0.1 W peak in R_E, hence 0805; value set from the breadboard (was 4.3 Ω, see [IR transmitter](#ir-transmitter)) |
 | Clamp | 2× 1N4148W (SOD-123), base resistor 470 Ω, 100 kΩ pull-down | |
 | Bulk on VSYS | 100 µF 1206 ceramic + 100 nF | a 100 µF ceramic keeps well under half its capacity at 4 V; check the derating, or use a tantalum or polymer cap |
-| Receiver (DNP) | TSOP382xx footprint (Vishay MINICAST), 100 Ω + 100 nF supply filter | not fitted in normal builds; a VS1838B has the same pin order but a different body |
+| ~~Receiver (DNP)~~ | removed 2026-11-13 | was a TSOP382xx footprint (U301) with a 100 Ω + 100 nF supply filter (R305, C303); GPIO 14 is now spare |
 
 ## Schematic: nRF24 and Buttons/LEDs sheets (draft, 2026-11-12)
 
@@ -302,7 +327,9 @@ Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm
 | TP607 | IR_TX | Test and debug | carrier and duty cycle on the analyzer |
 | TP608 | VBAT_SENSE | Test and debug | calibrate the battery ADC against a meter |
 | TP609 | GPIO 13 (`NRF_IRQ_OPT`) | Test and debug | **debug strobe**: the firmware toggles it at RF / IR step boundaries, so the analyzer can time the wake against the IR. Shared with the optional nRF24 IRQ link (R401, DNP): fit one or the other |
-| J601 (DNP) | GND, 3V3, U0TXD, U0RXD, EN, IO0 | Test and debug | 1×6 2.54 mm header for an external 3.3 V USB-serial adapter, if the onboard CP2102N misbehaves. Unplug USB-C first; power the board from the adapter's 3V3 or from the battery, not both |
+| ~~J601~~ | (removed 2026-11-13) | Test and debug | Was a DNP 1×6 header (GND, 3V3, U0TXD, U0RXD, EN, IO0) for an external USB-serial adapter in case the onboard CP2102N failed. Removed to simplify routing: its EN line crossed the board, and it only worked with the case open. Replaced on 2026-11-14 by the four pads below |
+| TP610, TP611 | U0TXD, U0RXD | Test and debug | **UART fallback** (replaces J601): ESP32 TX0 → adapter RX, RX0 ← adapter TX, for flashing and monitoring with an external 3.3 V USB-serial adapter if the CP2102N fails. Unplug USB-C first; power from the adapter's 3V3 (to TP602) or from the battery, not both |
+| TP612, TP613 | EN, IO0 | Test and debug | reset and boot strap for the same fallback: hold IO0 low, pulse EN low to enter the bootloader (or let the adapter's DTR/RTS drive them). GND from TP604–606 |
 
 The nRF24's SPI lines need no test points: the socket's through-hole pins on the back take analyzer clips.
 
@@ -372,7 +399,7 @@ Exhibits on that page: internal photos, external photos, test report, test setup
 This design uses 22 of the WROOM-32E's 26 usable GPIOs (free: 13, plus strapping pins 2, 12 and 15), so it won't fit a XIAO, which has 11. A smaller second revision could fit, by:
 
 - putting all 8 buttons on **one ADC pin through a resistor ladder**; the cost is no simultaneous presses, which the original never needs. **Wake needs care:** deep-sleep wake on a GPIO is digital, so a ladder tap that sits below the logic-high threshold won't wake the chip. Either design the ladder so every key clears the threshold (which squeezes the ADC spacing), or OR every key onto a separate wake pin through diodes (one more pin), or wake with the ULP reading the ADC (more current and firmware). Corrected 2026-11-12: the first draft said any press would wake it;
-- dropping the IR receiver footprint, and maybe folding the A/B switch into the ladder.
+- folding the A/B switch into the ladder (the IR receiver footprint is already gone).
 
 That's 11 pins: nRF24 5, IR 1, bicolor LED 2, ladder 1, battery sense 1, A/B 1. The XIAO's own USB-C and LiPo charger would replace the CP2102N, the MCP73831 and probably the LDO. The costs are no spare pins, single-press-only buttons and an ESP32-S3 firmware port. Agreed 2026-11-11: WROOM first, XIAO as a possible later revision.
 

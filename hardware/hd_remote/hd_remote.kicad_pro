@@ -243,7 +243,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "0.1"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -741,13 +741,42 @@
       {
         "filename": "hd_remote.kicad_sch",
         "name": "hd_remote",
-        "uuid": "00000000-0000-0000-0000-000000000000"
+        "uuid": "12ff3655-5116-468c-be29-1c7c9dc83474"
       }
     ],
     "used_designators": "",
     "variants": []
   },
-  "sheets": [],
+  "sheets": [
+    [
+      "12ff3655-5116-468c-be29-1c7c9dc83474",
+      "hd_remote"
+    ],
+    [
+      "2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10",
+      "Power and USB"
+    ],
+    [
+      "4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20",
+      "MCU"
+    ],
+    [
+      "5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30",
+      "IR"
+    ],
+    [
+      "6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40",
+      "nRF24"
+    ],
+    [
+      "7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50",
+      "Buttons and LEDs"
+    ],
+    [
+      "80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60",
+      "Test and debug"
+    ]
+  ],
   "text_variables": {},
   "tuning_profiles": {
     "meta": {
