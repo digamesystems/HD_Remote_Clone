@@ -45,12 +45,12 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 |---|---|---|
 | UP | 32 | RTC; same as the breadboard |
 | DOWN | 33 | RTC; same as the breadboard |
-| Group 1 | 34 | RTC, input-only, **no internal pull**: external pull-down required (all buttons get one anyway) |
-| Group 2 | 35 | RTC, input-only |
-| Group 3 | 36 (VP) | RTC, input-only |
-| Group 4 | 27 | RTC |
+| Group 1 | 26 | RTC (was 34 until 2026-11-13) |
+| Group 2 | 34 | RTC, input-only, **no internal pull**: external pull-down required (all buttons get one anyway) (was 35) |
+| Group 3 | 27 | RTC (was 36) |
+| Group 4 | 36 (VP) | RTC, input-only (was 27). See the GPIO 36/39 note below |
 | ALL | 25 | RTC |
-| SETUP | 26 | RTC; recessed (paperclip) button |
+| SETUP | 35 | RTC, input-only; recessed (paperclip) button (was 26) |
 | A/B switch | 21 | Read on wake; no wake needed. Not RTC |
 | Battery sense | 39 (VN) | ADC1_CH3, from a 1 MΩ / 1 MΩ divider on VBAT, 100 nF to GND |
 | IR LED drive | 4 | Same as the breadboard |
@@ -63,6 +63,10 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 | EN / IO0 | EN / 0 | Auto-reset from DTR/RTS (DevKitC circuit); also small EN (reset) and IO0 (BOOT) buttons. BOOT added 2026-11-12 as a fallback if auto-reset fails on an early board |
 
 Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefully).
+
+**Key pins re-assigned (2026-11-13, PCB layout):** the RTC pins all sit in the module's left pin column, and their order up that column decides how the eight key lines fan out to the keys. The first assignment crossed itself 20 times there. A search over every valid assignment (key pins interchangeable; VBAT_SENSE on an ADC1 pin) found 3 crossings at best; the one used has 4 but keeps VBAT_SENSE on GPIO 39 and only one key (G4) on GPIO 36/39, the same as before. UP, DOWN and ALL are unchanged, so the breadboard firmware (UP 32, DOWN 33) still matches. Across the whole board the ratsnest crossings fell from 187 to 159.
+
+**GPIO 36/39 note:** ESP32 erratum: while the SAR ADC (or Wi-Fi) is powered, GPIO 36 and 39 can show short (~80 ns) low pulses. Here that means one key line (G4 on 36) next to the battery-sense ADC (39). The ~20 ms software debounce ignores pulses that short; don't rely on edge interrupts on GPIO 36 without debouncing.
 
 ## Power
 
@@ -145,7 +149,7 @@ Apart from the parts the case model already covers (`hardware/enclosure/assembly
 
 - **Battery connector** (JST PH S2B-PH-K, side entry): now placed on top of the board with a board-edge notch for the leads from the cell underneath. See the PCB constraints in `hardware/enclosure/README.md`.
 - **Keystone 5000 test loops** (TP604–606): through-hole wire loops roughly 7–9 mm tall (check the datasheet). Keep them out from under the nRF24 module (11 mm) and the key face, or use flat pads on production boards.
-- **DNP parts usable only with the case open:** J601 (1×6 serial header; a plugged cable needs ~20 mm of height) and the IR receiver footprint, which would also need a window in the front wall to see out.
+- **DNP part usable only with the case open:** the IR receiver footprint, which would also need a window in the front wall to see out. (The 1×6 UART header J601 was removed on 2026-11-13, see [Test points](#test-points-2026-11-12).)
 
 ## nRF24 socket
 
@@ -241,7 +245,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - **SW201/SW202:** KMR221NGLFS (C269272), the 4.2 × 2.8 mm body without the ground tab, to fit KiCad's 4-pad `SW_Push_1P1T_NO_CK_KMR2`. Check the land pattern against C&K's drawing before layout.
 - **SW509:** PCM12SMTR (C221841), matching the footprint. The case model's slider also allows an MSK12C02; that needs a different footprint.
 - **U103:** MCP73831T-2ACI/OT (C424093), the 4.20 V `-2` variant.
-- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, DNP J601/U301, test pads and JP101.
+- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, DNP U301, test pads and JP101.
 
 ## Schematic: MCU sheet (draft, 2026-11-12)
 
@@ -302,7 +306,7 @@ Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm
 | TP607 | IR_TX | Test and debug | carrier and duty cycle on the analyzer |
 | TP608 | VBAT_SENSE | Test and debug | calibrate the battery ADC against a meter |
 | TP609 | GPIO 13 (`NRF_IRQ_OPT`) | Test and debug | **debug strobe**: the firmware toggles it at RF / IR step boundaries, so the analyzer can time the wake against the IR. Shared with the optional nRF24 IRQ link (R401, DNP): fit one or the other |
-| J601 (DNP) | GND, 3V3, U0TXD, U0RXD, EN, IO0 | Test and debug | 1×6 2.54 mm header for an external 3.3 V USB-serial adapter, if the onboard CP2102N misbehaves. Unplug USB-C first; power the board from the adapter's 3V3 or from the battery, not both |
+| ~~J601~~ | (removed 2026-11-13) | Test and debug | Was a DNP 1×6 header (GND, 3V3, U0TXD, U0RXD, EN, IO0) for an external USB-serial adapter in case the onboard CP2102N failed. Removed to simplify routing: its EN line crossed the board, and it only worked with the case open. **Fallback without it:** solder wires to the ESP32's TX0/RX0 (R106/R107 pads), EN (C203) and IO0 (SW202), with GND and 3V3 from TP604–606 and TP602 |
 
 The nRF24's SPI lines need no test points: the socket's through-hole pins on the back take analyzer clips.
 

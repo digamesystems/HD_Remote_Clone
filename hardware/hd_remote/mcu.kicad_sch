@@ -1808,7 +1808,7 @@
 		)
 		(uuid "733bea6f-5711-557f-b246-34b4a1b3ac04")
 	)
-	(global_label "BTN_G3"
+	(global_label "BTN_G4"
 		(shape bidirectional)
 		(at 134.62 127 180)
 		(fields_autoplaced yes)
@@ -1874,7 +1874,7 @@
 		)
 		(uuid "e7a024c9-d678-59d0-9ef0-948a3e463d2f")
 	)
-	(global_label "BTN_G1"
+	(global_label "BTN_G2"
 		(shape bidirectional)
 		(at 170.18 177.8 0)
 		(fields_autoplaced yes)
@@ -1907,7 +1907,7 @@
 		)
 		(uuid "cbacd93e-1b4f-54bd-9702-e3c1f598124b")
 	)
-	(global_label "BTN_G2"
+	(global_label "BTN_SETUP"
 		(shape bidirectional)
 		(at 170.18 180.34 0)
 		(fields_autoplaced yes)
@@ -2039,7 +2039,7 @@
 		)
 		(uuid "e6b26978-89a7-56e9-97ce-19d19fc84c15")
 	)
-	(global_label "BTN_SETUP"
+	(global_label "BTN_G1"
 		(shape bidirectional)
 		(at 170.18 167.64 0)
 		(fields_autoplaced yes)
@@ -2072,7 +2072,7 @@
 		)
 		(uuid "2818404f-2bae-5a21-b9c2-3126523c6b40")
 	)
-	(global_label "BTN_G4"
+	(global_label "BTN_G3"
 		(shape bidirectional)
 		(at 170.18 170.18 0)
 		(fields_autoplaced yes)
