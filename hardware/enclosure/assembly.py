@@ -203,14 +203,19 @@ def build_parts(m):
     knob = extrude(Plane.XY.offset(face_under) * Pos(sw_x, pos_a) * RectangleRounded(kl, kw, kl / 2 - 0.01),
                    amount=m["TOP_T"] + 1.0)
     plate = Pos(sw_x, pos_a, face_under) * Box(kl + 4, kw + 4, 1.0, align=(Align.CENTER, Align.CENTER, Align.MAX))
-    blade_x = sw_x - bx / 2 - 0.2 - 0.8
-    stem = Pos(blade_x, pos_a, face_under - 1.0) * Box(
-        1.6, 6.0, (face_under - 1.0) - (top + bh + 0.5), align=(Align.CENTER, Align.CENTER, Align.MAX))
-    prong_bot = top + bh / 2 - ah / 2 + 0.2
-    prongs = [Pos(blade_x, pos_a + s * (ay_w / 2 + 0.15 + 0.6), top + bh + 0.5)
-              * Box(1.6, 1.2, (top + bh + 0.5) - prong_bot, align=(Align.CENTER, Align.CENTER, Align.MAX))
-              for s in (-1, 1)]
-    p["A/B slider"] = knob + plate + stem + prongs[0] + prongs[1]
+    # Drive block (2026-11-14, replaces a thin stem with two 1.2 x 1.6 mm prongs, which were fragile):
+    # one solid block down from the plate, with a notch cut up into its bottom face that takes the
+    # actuator. The walls either side of the notch are the block's full thickness and 1.5 mm wide.
+    blk_t, blk_w = m["AB_BLOCK_T"], m["AB_BLOCK_W"]
+    blk_x = sw_x - bx / 2 - 0.2 - blk_t / 2          # 0.2 mm behind the switch body, growing back
+    blk_top, blk_bot = face_under - 1.0, top + bh / 2 - ah / 2 + 0.2
+    block = Pos(blk_x, pos_a, blk_top) * Box(
+        blk_t, blk_w, blk_top - blk_bot, align=(Align.CENTER, Align.CENTER, Align.MAX))
+    notch_w = ay_w + 2 * m["AB_NOTCH_PLAY"]
+    notch_top = top + bh / 2 + ah / 2 + 0.3          # 0.3 mm above the actuator's top
+    notch = Pos(blk_x, pos_a, blk_bot - 0.1) * Box(
+        blk_t + 0.2, notch_w, notch_top - blk_bot + 0.1, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    p["A/B slider"] = knob + plate + block - notch
 
     # SETUP: 5 mm tactile switch on the board's underside, plunger down
     p["SETUP switch"] = Pos(fx(m["SETUP_FROM_FRONT"]), m["SETUP_Y"], bot) * Box(
@@ -297,6 +302,14 @@ def check(m, p, info):
     for dy, end in ((0, "A"), (m["AB_TRAVEL"], "B")):
         s = p["A/B slider"].moved(Location((0, dy, 0)))
         ok(ov(s, body) < 1e-6 and ov(s, top) < 1e-6, f"A/B slider clear at the {end} end")
+    # the notch grips the actuator: clear of it at rest, but it can't move more than the play
+    ax_, ay_w, ah = m["AB_SW_ACT"]
+    t0 = m["Z0"] + m["PCB_TOP_Z"]
+    act = Pos(info["sw_x"] - bx / 2 - ax_ / 2, -m["AB_TRAVEL"] / 2, t0 + bh / 2 - ah / 2) * Box(
+        ax_, ay_w, ah, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    s, nudge = p["A/B slider"], m["AB_NOTCH_PLAY"] + 0.05
+    ok(ov(s, act) < 1e-6 and all(ov(s, act.moved(Location((0, d, 0)))) > 1e-6 for d in (nudge, -nudge)),
+       f"A/B notch holds the actuator (play {m['AB_NOTCH_PLAY']} mm each side)")
 
     # end walls: openings on the flat part, USB pads on the board, routing room, heights
     flat = W / 2 - m["CORNER_R"]
@@ -304,6 +317,12 @@ def check(m, p, info):
     ok(led_edge <= flat - 0.5, f"IR LED countersinks on the flat front wall (+-{led_edge:.1f} of +-{flat:.1f})")
     ok(m["USB_W"] / 2 <= flat - 0.5, "USB-C opening on the flat back wall")
     ok(m["USB_POCKET_W"] / 2 <= flat - 0.5, "USB-C plug pocket on the flat back wall")
+    chg_lo, chg_hi = m["CHG_Y"] - m["CHG_HOLE_D"] / 2, m["CHG_Y"] + m["CHG_HOLE_D"] / 2
+    ok(chg_hi <= flat - 0.5, f"charge LED window on the flat back wall ({chg_hi:.1f} of +-{flat:.1f})")
+    ok(chg_lo - m["USB_POCKET_W"] / 2 >= 0.5,
+       f"charge LED window clear of the USB-C pocket >= 0.5 mm ({chg_lo - m['USB_POCKET_W'] / 2:.2f})")
+    ok(m["Z0"] + m["CHG_Z"] + m["CHG_HOLE_D"] / 2 <= m["SPLIT"] - 0.5,
+       "charge LED window in the bottom shell, below the split")
     ok(m["WALL"] - m["USB_POCKET_DEPTH"] >= 0.8,
        f"wall left behind the USB-C pocket >= 0.8 mm ({m['WALL'] - m['USB_POCKET_DEPTH']:.1f})")
     # a 12 x 6.5 mm plug housing with 2 mm corners (a common size) can sink in by the recess

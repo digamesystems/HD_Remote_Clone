@@ -21,8 +21,10 @@ Z_TOP = H / 2 + TOP_T  # outside top
 FLOOR_TOP = Z0 + WALL
 
 # --- Battery: LiPo pouch lying on the floor under the board, in the back section ---
-# Placeholder cell 503035 (5.0 x 30 x 35 mm, ~500 mAh); not chosen yet.
-BATT_T, BATT_W, BATT_L = 5.0, 30.0, 35.0
+# Cell chosen 2026-11-14: Adafruit #1578, 500 mAh, nominal 29 x 36 x 4.75 mm (re-measure on arrival
+# and set W/L from calipers). BATT_T stays at the old 5.0 mm placeholder as a thickness allowance:
+# it sets the board height, which the ordered test piece already uses.
+BATT_T, BATT_W, BATT_L = 5.0, 29.0, 36.0
 BATT_SWELL = 0.10      # allow ~10 % thickness growth over the cell's life
 BATT_FRONT_FROM_FRONT = 92.0  # cell's front edge, mm from the front end (behind the ALL pad)
 BATT_X = L / 2 - BATT_FRONT_FROM_FRONT - BATT_L / 2
@@ -88,6 +90,10 @@ AB_KNOB_W, AB_KNOB_L = 8.0, 3.6   # knob in the slot: across the width, along th
 AB_SLOT = (AB_FROM_FRONT, 0, AB_KNOB_L + 0.6, AB_KNOB_W + AB_TRAVEL + 0.6)  # from front, y, X, Y
 AB_SW_BODY = (2.8, 6.7, 1.5)      # along X, across Y, height (height: check the datasheet)
 AB_SW_ACT = (1.45, 1.3, 1.0)      # actuator: sticks out (X), width (Y), height
+# Slider drive (2026-11-14): a solid block with a notch for the actuator, not a two-prong fork.
+AB_BLOCK_T, AB_BLOCK_W = 2.4, 4.6  # along X (grows toward the back); across Y, inside the switch body
+# (6.7 mm) at both ends of travel, so it misses the switch's mounting legs at the body ends
+AB_NOTCH_PLAY = 0.15               # notch clearance each side of the actuator
 # SETUP: pinhole in the floor (as on the original's back), over a 5 mm tactile switch mounted on
 # the board's underside, plunger down. Paperclip travels ~4.5 mm. 10 mm right of centre
 # (2026-11-13, PCB placement): on the centre line its through-hole pins land on the A/B switch's
@@ -112,6 +118,13 @@ USB_RECESS = 1.0
 # recess and the plug still seats fully (review 2026-11-13). Check with real cables.
 USB_POCKET_W, USB_POCKET_H, USB_POCKET_R = 12.5, 7.0, 1.5   # across, tall, corner radius
 USB_POCKET_DEPTH = USB_RECESS
+
+# --- Charge LED window in the back wall (added 2026-11-14) ---
+# D101 is a side-view LED (Kingbright APA1606, 0.6 mm tall) at the board's back edge, KiCad
+# (28.6, 72.25), lens facing -X: model Y = 80 - 72.25. The hole is centred on its emitting face.
+CHG_Y = 80.0 - 72.25
+CHG_HOLE_D = 1.6
+CHG_Z = PCB_TOP_Z + 0.3
 
 # --- Split, lip and case screws ---
 SPLIT = Z0 + LED_Z     # parting plane at the IR LED axis, so each shell holds half of each hole
@@ -206,6 +219,10 @@ with BuildPart() as body:
     with BuildSketch(Plane(origin=(-L / 2 - 0.5, 0, Z0 + USB_Z), x_dir=(0, 1, 0), z_dir=(1, 0, 0))):
         RectangleRounded(USB_POCKET_W, USB_POCKET_H, USB_POCKET_R)
     extrude(amount=USB_POCKET_DEPTH + 0.5, mode=Mode.SUBTRACT)
+
+    # charge LED window through the back wall, beside the USB-C pocket
+    with Locations(Location((-L / 2 + WALL / 2, CHG_Y, Z0 + CHG_Z), (0, 90, 0))):
+        Cylinder(CHG_HOLE_D / 2, WALL * 2, mode=Mode.SUBTRACT)
 
     # key, A/B slider and indicator openings in the key face
     with BuildSketch(Plane.XY.offset(Z_TOP - TOP_T - 0.1)):

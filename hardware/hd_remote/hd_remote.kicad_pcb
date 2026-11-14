@@ -22691,11 +22691,11 @@
 	(footprint "TestPoint:TestPoint_Pad_D1.5mm"
 		(layer "B.Cu")
 		(uuid "507cc523-681f-4d86-8948-3f7af3ff2ba5")
-		(at 45.5 82 180)
+		(at 45.1 82 180)
 		(descr "SMD pad as test Point, diameter 1.5mm")
 		(tags "test point SMD pad")
 		(property "Reference" "TP603"
-			(at 0.001254 -2.144499 0)
+			(at 1.25 -3.75 0)
 			(layer "B.SilkS")
 			(uuid "80a8b198-e113-4536-b597-3841980c581f")
 			(effects
@@ -24228,7 +24228,7 @@
 		(embedded_fonts no)
 	)
 	(gr_rect
-		(start 47.5 64.5)
+		(start 46.5 64.5)
 		(end 83.5 95.5)
 		(stroke
 			(width 0.15)
@@ -24453,7 +24453,7 @@
 	)
 	(gr_text "BATTERY (LiPo under board)"
 		(locked yes)
-		(at 65.5 80 0)
+		(at 65 80 0)
 		(layer "B.SilkS")
 		(uuid "5592c1bb-33a4-4296-82d7-1825bff9ad99")
 		(effects
@@ -26795,7 +26795,7 @@
 		)
 		(polygon
 			(pts
-				(xy 83.5 64.5) (xy 47.5 64.5) (xy 47.5 95.5) (xy 83.5 95.5)
+				(xy 83.5 64.5) (xy 46.5 64.5) (xy 46.5 95.5) (xy 83.5 95.5)
 			)
 		)
 	)

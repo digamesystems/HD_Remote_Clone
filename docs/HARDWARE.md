@@ -70,7 +70,11 @@ Free afterwards: 13 (spare pad / debug strobe TP609), 21 (spare since 2026-11-14
 
 ## Power
 
-**Cell:** single Li-ion/LiPo **with a protection circuit** (most pouch cells with leads have one), ~500–1000 mAh to suit the enclosure, on a JST-PH 2-pin connector. Check the polarity of the purchased cell: there is no common standard.
+**Cell:** single Li-ion/LiPo **with a protection circuit**, on a JST-PH 2-pin connector. **Chosen 2026-11-14: [Adafruit #1578](https://www.adafruit.com/product/1578)**, 500 mAh, 3.7 V nominal, 29 × 36 × 4.75 mm, 10.5 g, 102 mm lead (JST-PH in Adafruit's documented polarity), protection cutting out at 3.0 V, charge rate ≤ 500 mA (ours is ~256 mA, ~0.5C). About $8 from Adafruit or DigiKey. Buy two: one for the remote, one for the bench.
+- **Fit:** the case model uses 29 × 36 mm (rib pocket 30 × 37 mm) and keeps a 5.0 mm thickness allowance (plus 10 % swelling), so the board height didn't change. The board's battery keep-out and its underside outline grew 1 mm toward the back to match (now KiCad x 46.5–83.5); TP603 moved 0.4 mm to clear it. **Measure the cell on arrival** (calipers, including the bulge where the protection board sits) and set the ribs from the measured size.
+- **Polarity:** check the cell's plug against J102's + / − before connecting. Q103 protects against a reversed cell, but the remote then won't run.
+- **Life:** roughly 0.6–0.7 mAh/day (sleep ~15 µA plus ~20 presses), so the cell's self-discharge dominates: expect to recharge every 6–12 months.
+- Considered: SparkFun PRT-13851 (400 mAh, 26.5 × 36.9 × 5.0 mm, about 1 mm too long for the old pocket) and generic PKCELL LP503035 cells (up to 31 × 38 × 5.3 mm, polarity varies by seller).
 
 **Reverse-polarity protection (added 2026-11-12):** a reversed cell would destroy the charger and the LDO, so the battery lead runs through a P-MOSFET (Q103, AO3401A, SOT-23) with its gate to GND: drain to the battery side, source to VBAT. With the cell the right way round, the body diode lifts the source, Vgs ≈ −VBAT turns the FET fully on (~50–80 mΩ, ~20 mV at a 300 mA IR peak), and the charger still charges through it, since the channel conducts both ways. With the cell reversed, Vgs = 0 and the body diode is reverse-biased, so nothing flows. Mark + and − on the silkscreen at J102 as well. Any SOT-23 P-FET with |Vgs(th)| under ~1.5 V and Vgs max ≥ 8 V will do. *verify* the drop and the charger's termination on the first board.
 
@@ -173,8 +177,8 @@ Apart from the parts the case model already covers (`hardware/enclosure/assembly
 
 Evaluated 2026-11-12. The radio draws ~11–13 mA (genuine part, TX at 0 dBm or RX); clones at their "+7 dBm" setting may draw 25–35 mA (unverified). With 10 µF at the socket, even a 30 mA step lasting 5 µs before the LDO responds dips the rail by only ~15 mV. The breadboard worked on long jumpers with no capacitor at all. So the capacitors are adequate; the risks lie elsewhere:
 
-- **IR pulses on VBAT.** ~300 mA at 40 kHz through the cell's ~0.2–0.3 Ω (cell + protection) sags VBAT ~60–90 mV per pulse, which can push the LDO into dropout near the 3.3 V cutoff. Mitigated because the firmware never transmits RF and IR at the same time, and by the 100 µF at the LEDs. Keep it that way, and keep the low-battery cutoff above the LDO's dropout.
-- **Shared ground return.** Keep the IR current loop (VBAT cap → LEDs → transistors → R_E → GND) short and routed to the battery connector away from the radio.
+- **IR pulses on VSYS.** The IR LEDs and the LDO share VSYS (since the 2026-11-13 power path). On USB, VSYS comes from VBUS through D102 and the pulses barely matter. On battery, VSYS is the cell through Q104, so ~300 mA at 40 kHz through the cell's ~0.2–0.3 Ω (cell + protection) plus Q104 sags VSYS ~60–90 mV per pulse, which can push the LDO into dropout near the low-battery cutoff. Mitigated because the firmware never transmits RF and IR at the same time, and by the bulk capacitors at the LEDs (C301/C302). Keep it that way, and keep the low-battery cutoff above the LDO's dropout.
+- **Shared ground return.** Keep the IR current loop (VSYS bulk cap → LEDs → transistors → R_E → GND) short and routed to the battery connector away from the radio.
 - **ESP32 digital noise** on 3V3: modest with Wi-Fi off. FB401 lets a ferrite bead be fitted later if range or packet loss suggests supply noise (check for bead/ceramic resonance if one is fitted).
 
 Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid ground pour under the module except under its antenna (the rule area; signal tracks may cross it, ground fill may not).
@@ -184,6 +188,7 @@ Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid 
 - 3-lead, 5 mm or 3 mm diffused red/green, common cathode. Pick a ~2.1 V "standard" green (not a 3 V InGaN), or lower its resistor.
 - Red: GPIO 22 → 330 Ω. Green: GPIO 16 → 270 Ω. About 4 mA each, PWM for brightness.
 - Behaviour copies the original (manual): red while sending IR; steady green on a group command and during the group window; flashing green in setup mode; red flashes at low battery (our choice).
+- **Firmware note (John, 2026-11-14): show "battery too low" on an arrow press.** When an arrow key is pressed and VBAT (read at rest, before sending) is below the level where IR is allowed, don't send; blink a distinct low-battery pattern instead, so a press never fails silently. John asked for the **charge LED** to do the blinking. With the current wiring the ESP32 can't drive it: D101 is powered from VBUS through R111 and switched only by the charger's STAT pin, so on battery it can't light at all. Until the hardware changes, use this indicator's red (e.g. three quick flashes).
 
 ## Buttons and switch
 
@@ -228,7 +233,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines.
 - **Battery under the ESP32 antenna area (noted 2026-11-14):** the cell's keep-out (cell 30 mm wide + 0.5 mm margin, ±15.5 mm) overlaps the ESP32 antenna keep-out by a 1.5 mm strip along the −Y side (Y −15.5 to −14.0, X −47 to −16.5), so the cell's foil-laminated edge sits about 1 mm under the inner end of the antenna area. No effect in this design, since the ESP32's radio is unused (no Wi-Fi or Bluetooth; all RF is the nRF24). If the ESP32 radio is ever used, expect detuning and lost range: use a narrower cell (25 mm wide leaves ~4 mm clearance), shift the cell toward +Y in the case model, or accept the loss. The two keep-outs don't conflict in DRC: one forbids copper, the other THT pins and underside parts. The ESP32's radio isn't used, but this keeps the option open and is free.
 - Keep the **nRF24 antenna overhang** free of ground fill (signal tracks may cross it; see [nRF24 socket](#nrf24-socket)), and keep the IR LEDs, charger and LDO away from it.
-- The IR LEDs sit at the front edge, aimed forward. Their current loop (VBAT cap → LEDs → transistors → R_E → GND) should be short and wide.
+- The IR LEDs sit at the front edge, aimed forward. Their current loop (VSYS bulk cap → LEDs → transistors → R_E → GND) should be short and wide.
 - Buttons laid out like the original: arrows large and central, group keys in a row, ALL separate, SETUP on the back.
 - Size, shape, mounting holes and keep-outs come from the enclosure: import `docs/images/enclosure/enclosure_pcb_outline.dxf` onto Edge.Cuts and follow the PCB constraints in `hardware/enclosure/README.md`.
 
@@ -247,7 +252,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 | Charge current | R_PROG 3.9 kΩ, ~256 mA | 1000 V / R_PROG; was 4.02 kΩ (~249 mA), changed 2026-11-13 to a JLC basic part. The MCP73831's own tolerance is ±10%; ~0.5C on a 500 mAh cell |
 | Charger caps | 4.7 µF on VBUS and VBAT | MCP73831 datasheet minimum |
 | Power path | D102 STPS1H100AY (SMA), Q104 AO3401A, R114 100 kΩ VBUS→GND, TP102 on VSYS | Microchip AN1149; see [Power](#power). LDO input (U104 pins 1, 3) and C107 moved to VSYS (2026-11-13) |
-| Charge LED | D101 Kingbright APA1606SURCK (LCSC C3034753), red **side-view** 1.6 × 0.6 mm; 1 kΩ (R111) from VBUS to STAT, ~3 mA | lit while charging. Changed 2026-11-14 from a top-view 0603 (C2286): the case had no window for it. D101 sits at the back edge (KiCad (28.6, 72.25), lens facing −X), between the board's corner cutout and J101, and shines through a hole in the end wall about 8 mm from the USB-C centre line, on the flat part of the wall. **Enclosure hole still to add** (`remote_box.py`) |
+| Charge LED | D101 Kingbright APA1606SURCK (LCSC C3034753), red **side-view** 1.6 × 0.6 mm; 1 kΩ (R111) from VBUS to STAT, ~3 mA | lit while charging. Changed 2026-11-14 from a top-view 0603 (C2286): the case had no window for it. D101 sits at the back edge (KiCad (28.6, 72.25), lens facing −X), between the board's corner cutout and J101, and shines through a hole in the end wall about 8 mm from the USB-C centre line, on the flat part of the wall. Window in the case: a 1.6 mm hole through the back wall (`CHG_*` in `remote_box.py`, added 2026-11-14), centred on the LED's emitting face, 0.7 mm clear of the USB-C plug pocket |
 | Battery connector | JST-PH 2-pin, side entry (S2B-PH-K) | + and − on the silkscreen; *check the cell's polarity* |
 | Reverse-polarity FET | Q103, AO3401A (SOT-23), gate to GND | see [Power](#power); placed last so the earlier references kept their numbers |
 | LDO | RT9080-33GJ5, 1 µF in and out | drawn with the AP2112K symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT). Checked 2026-11-13 against Richtek DS9080-09: pinout matches; EN may be tied to VIN (must not float); C_IN ≥ 1 µF; C_OUT ≥ 1 µF nominal, ≥ 0.7 µF effective. The ESP32's 10 µF + 100 nF on the MCU sheet sit on the same rail. Dropout 0.31 V typ / 0.53 V max at 600 mA; far less at our ~120 mA |
