@@ -51,7 +51,7 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 | Group 4 | 36 (VP) | RTC, input-only (was 27). See the GPIO 36/39 note below |
 | ALL | 25 | RTC |
 | SETUP | 35 | RTC, input-only; recessed (paperclip) button (was 26) |
-| A/B switch | 21 | Read on wake; no wake needed. Not RTC |
+| A/B switch | 14 | Via R202 (10 kΩ series). Read on wake; no wake needed. Moved from GPIO 21 on 2026-11-14: GPIO 14 is in the module's front-facing pin column, so the line no longer runs round the module. R202 limits current if GPIO 14 drives during boot (widely reported for this JTAG pin) against the switch, which ties the pin hard to GND or 3V3 |
 | Battery sense | 39 (VN) | ADC1_CH3, from a 1 MΩ / 1 MΩ divider on VBAT, 100 nF to GND |
 | IR LED drive | 4 | Same as the breadboard |
 | LED red / green | 22 / 16 | Via resistors, PWM (LEDC). GPIO 16 was the nRF24 IRQ, which the firmware doesn't use |
@@ -62,7 +62,7 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 | UART TX0 / RX0 | 1 / 3 | To the CP2102N |
 | EN / IO0 | EN / 0 | Auto-reset from DTR/RTS (DevKitC circuit); also small EN (reset) and IO0 (BOOT) buttons. BOOT added 2026-11-12 as a fallback if auto-reset fails on an early board |
 
-Free afterwards: 13 (spare pad), 14 (spare since the IR receiver was removed), 2, 12, 15 (strapping; leave alone or use carefully).
+Free afterwards: 13 (spare pad / debug strobe TP609), 21 (spare since 2026-11-14), 2, 12, 15 (strapping; leave alone or use carefully). Firmware: enable an internal pull on unused pins (Espressif checklist).
 
 **Key pins re-assigned (2026-11-13, PCB layout):** the RTC pins all sit in the module's left pin column, and their order up that column decides how the eight key lines fan out to the keys. The first assignment crossed itself 20 times there. A search over every valid assignment (key pins interchangeable; VBAT_SENSE on an ADC1 pin) found 3 crossings at best; the one used has 4 but keeps VBAT_SENSE on GPIO 39 and only one key (G4) on GPIO 36/39, the same as before. UP, DOWN and ALL are unchanged, so the breadboard firmware (UP 32, DOWN 33) still matches. Across the whole board the ratsnest crossings fell from 187 to 159.
 
@@ -248,13 +248,33 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - **U103:** MCP73831T-2ACI/OT (C424093), the 4.20 V `-2` variant.
 - **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, test pads and JP101.
 
+## Reference design review (2026-11-14)
+
+The ESP32 core, USB-serial and auto-reset were compared line by line against Espressif's [ESP32-WROOM-32E datasheet v2.1](https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf) (section 9, Peripheral Schematics), the [ESP32-DevKitC V4 schematic](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf) and Espressif's [ESP32 schematic checklist](https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32/schematic-checklist.html). The power path was checked against Microchip AN1149 separately (see [Power](#power)).
+
+| Item | References | Ours | Result |
+|---|---|---|---|
+| 3V3 supply | ≥ 500 mA (checklist) | RT9080, 600 mA | ✓ |
+| 3V3 decoupling at the module | 22 µF + 0.1 µF (datasheet, DevKitC); ≥ 10 µF + 0.1 µF (checklist) | was 10 µF + 100 nF | **C201 raised to 22 µF** |
+| EN RC | 10 kΩ / 1 µF (datasheet, checklist); DevKitC uses 0.1 µF | 10 kΩ / 1 µF, C203 ~5 mm from the pin | ✓. Keep the EN trace short (checklist) |
+| Slow supply ramps | checklist: for slow rise/fall (e.g. battery charging) an RC may not be enough; consider a supervisor (~3.0 V) on EN | none | Accepted for now: the power path gives a fast VSYS from USB, and the firmware cuts off at ~3.3 V VBAT, well above the ESP32's operating minimum. Revisit if bring-up shows resets during slow battery discharge or recovery |
+| Strapping pins | GPIO0 pull-up, no large caps on IO0; GPIO2 low/float; MTDI (GPIO12) low; MTDO; GPIO5 high | IO0: internal pull-up + BOOT + Q102, no cap; GPIO2, 12, 15 unconnected; GPIO5 = CSN with 100 kΩ pull-up | ✓ |
+| Auto-reset | DTR/RTS → 10 kΩ → 2 NPN (DevKitC) | same, MMBT3904 | ✓ (still *verify* on the first board) |
+| U0TXD series resistor | 499 Ω for harmonic suppression (checklist); DevKitC 0 Ω | R107 10 kΩ (chosen for back-powering) | ✓; slower edges, fine at 921 600 baud |
+| CP2102N | VBUS divider 22.1 k / 47.5 k; 4.7 µF + 0.1 µF (DevKitC) | 22 k / 47 k; 4.7 µF + 100 nF per pin | ✓ |
+| USB ESD | ESD diodes on D+/D− (DevKitC: LESD5D5.0) | USBLC6-2SC6 | ✓ |
+| ADC pin | 0.1 µF filter at the pin (checklist) | C109 at GPIO 39 | ✓ |
+| Input-only pins (34–39) | no internal pulls: add external | all key pins have 100 kΩ pull-downs | ✓ |
+| GPIO 36/39 glitch | ~80 ns pulses while RTC/ADC is powered (checklist) | one key on GPIO 36 | ✓ noted; debounce in software |
+| RESET/BOOT switches (KMR221NGLFS) | C&K KMR2 "NG" recommended layout: 0.9 × 1.0 mm pads at ±2.05 / ±0.8 mm | KiCad `SW_Push_1P1T_NO_CK_KMR2` | ✓ exact match |
+
 ## Schematic: MCU sheet (draft, 2026-11-12)
 
 [`hardware/hd_remote/mcu.kicad_sch`](../hardware/hd_remote/mcu.kicad_sch): the ESP32-WROOM-32E with every GPIO in the pin map on a named global label (`BTN_UP`, `IR_TX`, `NRF_CSN`, ...), which the IR, nRF24 and buttons sheets will use. Also:
 
 | Item | Value | Note |
 |---|---|---|
-| 3V3 decoupling | 10 µF (0805) + 100 nF at the module | per Espressif's guidance |
+| 3V3 decoupling | **22 µF** (0805, C45783) + 100 nF at the module | was 10 µF; raised 2026-11-14 to match the module datasheet's reference circuit and the DevKitC (see [Reference design review](#reference-design-review-2026-11-14)) |
 | EN | 10 kΩ pull-up, 1 µF to GND, RESET button | DevKitC values |
 | BOOT | button from IO0 to GND | IO0 has an internal pull-up |
 | Buttons | C&K KMR2 footprint (small SMD tactile) | for RESET and BOOT; the user keys are on the buttons sheet |
