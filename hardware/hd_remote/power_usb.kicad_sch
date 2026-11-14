@@ -11098,7 +11098,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
+		(property "Footprint" "LED_SMD:LED_Kingbright_APA1606_1.6x0.6mm_Horizontal"
 			(at 106.68 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -11120,7 +11120,7 @@
 				)
 			)
 		)
-		(property "Description" "Charge LED (red or orange)"
+		(property "Description" "Charge LED, red, side-view (Kingbright APA1606SURCK); at the back edge, shines through a hole in the end wall"
 			(at 106.68 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -11131,7 +11131,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C2286"
+		(property "LCSC" "C3034753"
 			(at 106.68 198.12 0)
 			(hide yes)
 			(show_name no)
