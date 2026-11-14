@@ -2094,39 +2094,6 @@
 			)
 		)
 	)
-	(wire
-		(pts
-			(xy 167.64 142.24)
-			(xy 170.18 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "40bb69e7-d673-5c87-8283-812fbec8fe77")
-	)
-	(global_label "IR_RX"
-		(shape bidirectional)
-		(at 170.18 142.24 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "c3fcf6f5-2330-5c69-b678-d6e8e28c622a")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 170.18 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(no_connect
 		(at 167.64 137.16)
 		(uuid "ba62a6f6-9ede-5f51-be44-3f6eb9ab92b9")
@@ -3930,6 +3897,10 @@
 				)
 			)
 		)
+	)
+	(no_connect
+		(at 167.64 142.24)
+		(uuid "dffb28d4-3a2a-44b3-92ce-4cd34e8a0bbe")
 	)
 	(embedded_fonts no)
 )

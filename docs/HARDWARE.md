@@ -13,7 +13,7 @@ The goal is a battery handheld that replaces the original Platinum remote. It se
 | Controls | **7 keys like the original** (UP, DOWN, 1, 2, 3, 4, ALL), a **recessed SETUP button**, and an **A/B IR channel slide switch** |
 | Radio | **2×4 socket** for the nRF24 modules we already have and have screened (the module lies flat over the board, its PCB antenna over a no-copper keep-out on both layers) |
 | Indicator | **Red/green bicolor LED**, common cathode |
-| IR receiver | **Optional footprint** (TSOP382xx / VS1838B, 3-pin), unpopulated in normal builds, for diagnostics. It takes little space |
+| IR receiver | **None** (removed 2026-11-13, PCB layout). It was an optional, unfitted diagnostic footprint; it would have needed a window in the front wall to see out, and its lines added crossings at the key area. IR capture stays on the breadboard (DevKitC + TSOP38238/VS1838B) |
 | IR LEDs | Two TSAL6200 positions |
 | Charge status | **Separate LED** on the charger's STAT pin (not the bicolor LED) |
 | USB | USB-C with the USB-serial bridge kept on the board, so early revisions can be flashed and debugged over USB |
@@ -58,11 +58,11 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 | nRF24 SCK / MISO / MOSI | 18 / 19 / 23 | VSPI, same as the breadboard |
 | nRF24 CSN / CE | 5 / 17 | Same as the breadboard. GPIO 5 is a strapping pin; CSN idles high, which is its default |
 | nRF24 IRQ | not connected | Pad or 0 Ω option to GPIO 13 if ever needed |
-| IR receiver OUT (optional) | 14 | Same as the breadboard. Footprint only; 100 Ω + 100 nF supply filter |
+| (spare) | 14 | Was the optional IR receiver's OUT (removed 2026-11-13); now unconnected, no-connect flag in the schematic |
 | UART TX0 / RX0 | 1 / 3 | To the CP2102N |
 | EN / IO0 | EN / 0 | Auto-reset from DTR/RTS (DevKitC circuit); also small EN (reset) and IO0 (BOOT) buttons. BOOT added 2026-11-12 as a fallback if auto-reset fails on an early board |
 
-Free afterwards: 13 (spare pad), 2, 12, 15 (strapping; leave alone or use carefully).
+Free afterwards: 13 (spare pad), 14 (spare since the IR receiver was removed), 2, 12, 15 (strapping; leave alone or use carefully).
 
 **Key pins re-assigned (2026-11-13, PCB layout):** the RTC pins all sit in the module's left pin column, and their order up that column decides how the eight key lines fan out to the keys. The first assignment crossed itself 20 times there. A search over every valid assignment (key pins interchangeable; VBAT_SENSE on an ADC1 pin) found 3 crossings at best; the one used has 4 but keeps VBAT_SENSE on GPIO 39 and only one key (G4) on GPIO 36/39, the same as before. UP, DOWN and ALL are unchanged, so the breadboard firmware (UP 32, DOWN 33) still matches. Across the whole board the ratsnest crossings fell from 187 to 159.
 
@@ -149,7 +149,7 @@ Apart from the parts the case model already covers (`hardware/enclosure/assembly
 
 - **Battery connector** (JST PH S2B-PH-K, side entry): now placed on top of the board with a board-edge notch for the leads from the cell underneath. See the PCB constraints in `hardware/enclosure/README.md`.
 - **Keystone 5000 test loops** (TP604–606): through-hole wire loops roughly 7–9 mm tall (check the datasheet). Keep them out from under the nRF24 module (11 mm) and the key face, or use flat pads on production boards.
-- **DNP part usable only with the case open:** the IR receiver footprint, which would also need a window in the front wall to see out. (The 1×6 UART header J601 was removed on 2026-11-13, see [Test points](#test-points-2026-11-12).)
+- **DNP parts usable only with the case open:** none left. The 1×6 UART header J601 and the optional IR receiver footprint (U301) were both removed on 2026-11-13.
 
 ## nRF24 socket
 
@@ -245,7 +245,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - **SW201/SW202:** KMR221NGLFS (C269272), the 4.2 × 2.8 mm body without the ground tab, to fit KiCad's 4-pad `SW_Push_1P1T_NO_CK_KMR2`. Check the land pattern against C&K's drawing before layout.
 - **SW509:** PCM12SMTR (C221841), matching the footprint. The case model's slider also allows an MSK12C02; that needs a different footprint.
 - **U103:** MCP73831T-2ACI/OT (C424093), the 4.20 V `-2` variant.
-- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, DNP U301, test pads and JP101.
+- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, test pads and JP101.
 
 ## Schematic: MCU sheet (draft, 2026-11-12)
 
@@ -264,7 +264,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 
 ## Schematic: IR sheet (draft, 2026-11-12)
 
-[`hardware/hd_remote/ir.kicad_sch`](../hardware/hd_remote/ir.kicad_sch) implements [IR transmitter](#ir-transmitter) above, plus the optional receiver.
+[`hardware/hd_remote/ir.kicad_sch`](../hardware/hd_remote/ir.kicad_sch) implements [IR transmitter](#ir-transmitter) above. (The optional receiver was removed on 2026-11-13.)
 
 | Item | Value | Note |
 |---|---|---|
@@ -272,7 +272,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | Current sinks | BC817-40 (SOT-23), R_E 3.3 Ω 0805 | ~0.1 W peak in R_E, hence 0805; value set from the breadboard (was 4.3 Ω, see [IR transmitter](#ir-transmitter)) |
 | Clamp | 2× 1N4148W (SOD-123), base resistor 470 Ω, 100 kΩ pull-down | |
 | Bulk on VSYS | 100 µF 1206 ceramic + 100 nF | a 100 µF ceramic keeps well under half its capacity at 4 V; check the derating, or use a tantalum or polymer cap |
-| Receiver (DNP) | TSOP382xx footprint (Vishay MINICAST), 100 Ω + 100 nF supply filter | not fitted in normal builds; a VS1838B has the same pin order but a different body |
+| ~~Receiver (DNP)~~ | removed 2026-11-13 | was a TSOP382xx footprint (U301) with a 100 Ω + 100 nF supply filter (R305, C303); GPIO 14 is now spare |
 
 ## Schematic: nRF24 and Buttons/LEDs sheets (draft, 2026-11-12)
 
@@ -376,7 +376,7 @@ Exhibits on that page: internal photos, external photos, test report, test setup
 This design uses 22 of the WROOM-32E's 26 usable GPIOs (free: 13, plus strapping pins 2, 12 and 15), so it won't fit a XIAO, which has 11. A smaller second revision could fit, by:
 
 - putting all 8 buttons on **one ADC pin through a resistor ladder**; the cost is no simultaneous presses, which the original never needs. **Wake needs care:** deep-sleep wake on a GPIO is digital, so a ladder tap that sits below the logic-high threshold won't wake the chip. Either design the ladder so every key clears the threshold (which squeezes the ADC spacing), or OR every key onto a separate wake pin through diodes (one more pin), or wake with the ULP reading the ADC (more current and firmware). Corrected 2026-11-12: the first draft said any press would wake it;
-- dropping the IR receiver footprint, and maybe folding the A/B switch into the ladder.
+- folding the A/B switch into the ladder (the IR receiver footprint is already gone).
 
 That's 11 pins: nRF24 5, IR 1, bicolor LED 2, ladder 1, battery sense 1, A/B 1. The XIAO's own USB-C and LiPo charger would replace the CP2102N, the MCP73831 and probably the LDO. The costs are no spare pins, single-press-only buttons and an ESP32-S3 firmware port. Agreed 2026-11-11: WROOM first, XIAO as a possible later revision.
 
