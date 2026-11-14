@@ -214,7 +214,8 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 
 - 2-layer board, ground pour on both sides, stitched.
 - **ESP32 orientation (2026-11-13):** antenna end at the right-hand (−Y) board edge, holding the remote pointing away. The key GPIOs must be RTC pins, which all sit in the module's left pin column (pins 4–12), so that column has to face the keys; the SPI and UART pins (right column) then face the nRF24 socket and CP2102N at the back. With the antenna at the other edge, 14 key and SPI lines crossed each other round the module.
-- Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines. The ESP32's radio isn't used, but this keeps the option open and is free.
+- Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines.
+- **Battery under the ESP32 antenna area (noted 2026-11-14):** the cell's keep-out (cell 30 mm wide + 0.5 mm margin, ±15.5 mm) overlaps the ESP32 antenna keep-out by a 1.5 mm strip along the −Y side (Y −15.5 to −14.0, X −47 to −16.5), so the cell's foil-laminated edge sits about 1 mm under the inner end of the antenna area. No effect in this design, since the ESP32's radio is unused (no Wi-Fi or Bluetooth; all RF is the nRF24). If the ESP32 radio is ever used, expect detuning and lost range: use a narrower cell (25 mm wide leaves ~4 mm clearance), shift the cell toward +Y in the case model, or accept the loss. The two keep-outs don't conflict in DRC: one forbids copper, the other THT pins and underside parts. The ESP32's radio isn't used, but this keeps the option open and is free.
 - Keep the **nRF24 antenna overhang** clear, and keep the IR LEDs, charger and LDO away from it.
 - The IR LEDs sit at the front edge, aimed forward. Their current loop (VBAT cap → LEDs → transistors → R_E → GND) should be short and wide.
 - Buttons laid out like the original: arrows large and central, group keys in a row, ALL separate, SETUP on the back.
