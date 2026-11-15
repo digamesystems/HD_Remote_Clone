@@ -263,7 +263,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - **SW201/SW202:** KMR221NGLFS (C269272), the 4.2 × 2.8 mm body without the ground tab, to fit KiCad's 4-pad `SW_Push_1P1T_NO_CK_KMR2`. Check the land pattern against C&K's drawing before layout.
 - **SW509:** PCM12SMTR (C221841), matching the footprint. The case model's slider also allows an MSK12C02; that needs a different footprint.
 - **U103:** MCP73831T-2ACI/OT (C424093), the 4.20 V `-2` variant.
-- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, test pads and JP101.
+- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, test pads.
 
 ## Reference design review (2026-11-14)
 
@@ -324,7 +324,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | nRF24 pulls | R402 100 kΩ CSN to `NRF_VCC`, R403 100 kΩ CE to GND | added 2026-11-12, see [nRF24 socket](#nrf24-socket) |
 | Keys | Same Sky TS02-66-130-BK-160-SCR-D (13 mm, 160 gf) for the 7 keys; TS02-66-50-BK-160-SCR-D (5 mm) for SETUP, on the board's underside | footprints `SW_PUSH_6mm_H13mm` / `_H5mm` (6.5 × 4.5 mm legs); see [Key switch sourcing](#key-switch-sourcing-checked-2026-11-13). Part numbers in each symbol's MPN field (2026-11-13) |
 | Mounting holes | H601–H604, M2 (2.2 mm, unplated) on the Test and debug sheet | at (±61, ±15.5) mm from the board centre, ~5.5 mm head keep-outs; for M2 self-tappers into the case standoffs (2026-11-13) |
-| Key pull-downs | 100 kΩ each; 100 nF debounce caps DNP | firmware debounces |
+| Key pull-downs | 100 kΩ each, plus 100 nF debounce caps C501–C508 (fitted by JLC since 2026-11-15; were DNP) | ~10 ms release filter; the firmware still debounces |
 | A/B switch | SPDT slide (PCM12 footprint): common to GPIO 14 via R202 (moved from 21 on 2026-11-14), throws to GND (A) and 3V3 (B) | which throw is "A" depends on the part and its orientation |
 | Indicator | 3-lead red/green common cathode, 5 mm; red 330 Ω, green 270 Ω | *check which outer leg is red* on the part bought |
 
@@ -334,7 +334,7 @@ Chosen for bring-up and for the checks still open in this spec. SMD pads (1.5 mm
 
 | Ref | Net | Sheet | Use |
 |---|---|---|---|
-| JP101 | VBAT_BATT – VBAT_JP | Power and USB | **Battery current link**, a bridged solder jumper between the battery connector and everything else (it sits before the reverse-polarity FET Q103). Cut it and put a µA meter across the pads to measure total battery current: the sleep budget (~11–16 µA) and the CP2102N back-powering check with USB unplugged. Re-bridge with solder afterwards |
+| JP101 | VBAT_BATT – VBAT_JP | Power and USB | **Battery current link** between the battery connector and everything else (it sits before the reverse-polarity FET Q103). A **0 Ω 0805** (C17477; was a bridged solder jumper until 2026-11-15, changed because sleep-current tuning will mean several measurements and a solder jumper degrades each time it's cut and re-bridged). Lift it and put a µA meter across the pads to measure total battery current: the sleep budget (~11–16 µA) and the CP2102N back-powering check with USB unplugged. Refit it afterwards |
 | TP101 | PROG | Power and USB | charge current: V(PROG) = 1 V at the full ~250 mA |
 | TP301, TP302 | IR_E1, IR_E2 | IR | top of each emitter resistor: scope to GND, I_LED = V / R_E, at VBAT 3.3 and 4.2 V |
 | TP303 | IR_BASE | IR | the clamp voltage (~1.3 V) and the drive waveform |

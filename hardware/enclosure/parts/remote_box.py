@@ -24,7 +24,11 @@ FLOOR_TOP = Z0 + WALL
 # Cell chosen 2026-11-14: Adafruit #1578, 500 mAh, nominal 29 x 36 x 4.75 mm (re-measure on arrival
 # and set W/L from calipers). BATT_T stays at the old 5.0 mm placeholder as a thickness allowance:
 # it sets the board height, which the ordered test piece already uses.
-BATT_T, BATT_W, BATT_L = 5.0, 29.0, 36.0
+# BATT_W is 30, not Adafruit's 29 (2026-11-15): the cell's own datasheet drawing (PKCELL LP-503035)
+# says 30 +-0.1 x 35 +-0.1 x 5.0 mm. With BATT_CLEAR the rib pocket is 31 mm wide, so a 30 mm cell
+# gets 0.5 mm per side and a 29 mm cell 1.0 mm; never a press fit. The board's battery keep-out is
+# already +-15.5 mm (31 mm). Measure the real cell, including the protection-board bulge.
+BATT_T, BATT_W, BATT_L = 5.0, 30.0, 36.0
 BATT_SWELL = 0.10      # allow ~10 % thickness growth over the cell's life
 BATT_FRONT_FROM_FRONT = 92.0  # cell's front edge, mm from the front end (behind the ALL pad)
 BATT_X = L / 2 - BATT_FRONT_FROM_FRONT - BATT_L / 2

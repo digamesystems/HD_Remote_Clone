@@ -1,0 +1,724 @@
+{
+ "C101": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C102": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C103": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C104": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C105": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C106": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C107": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C108": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C109": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C201": {
+  "footprint": "Capacitor_SMD:C_0805_2012Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C202": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C203": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C301": {
+  "footprint": "Capacitor_SMD:C_1206_3216Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C302": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C401": {
+  "footprint": "Capacitor_SMD:C_0805_2012Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C402": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C403": {
+  "footprint": "Capacitor_SMD:C_1206_3216Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd dnp"
+ },
+ "C501": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C502": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C503": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C504": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C505": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C506": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C507": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "C508": {
+  "footprint": "Capacitor_SMD:C_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "D101": {
+  "footprint": "LED_SMD:LED_Kingbright_APA1606_1.6x0.6mm_Horizontal",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd",
+  "pad_overrides": {
+   "1": {
+    "thermal_bridge_angle": "45"
+   },
+   "2": {
+    "thermal_bridge_angle": "45"
+   }
+  }
+ },
+ "D102": {
+  "footprint": "Diode_SMD:D_SMA",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "D301": {
+  "footprint": "Diode_SMD:D_SOD-123",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "D302": {
+  "footprint": "Diode_SMD:D_SOD-123",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "D303": {
+  "footprint": "LED_THT:LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "D304": {
+  "footprint": "LED_THT:LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "D501": {
+  "footprint": "LED_THT:LED_D5.0mm-3",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "FB401": {
+  "footprint": "Inductor_SMD:L_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "H601": {
+  "footprint": "MountingHole:MountingHole_2.2mm_M2",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "H602": {
+  "footprint": "MountingHole:MountingHole_2.2mm_M2",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "H603": {
+  "footprint": "MountingHole:MountingHole_2.2mm_M2",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "H604": {
+  "footprint": "MountingHole:MountingHole_2.2mm_M2",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "J101": {
+  "footprint": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "J102": {
+  "footprint": "Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "J401": {
+  "footprint": "Connector_PinSocket_2.54mm:PinSocket_2x04_P2.54mm_Vertical",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "JP101": {
+  "footprint": "Resistor_SMD:R_0805_2012Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "Q101": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "Q102": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "Q103": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "Q104": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "Q301": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "Q302": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R101": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R102": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R103": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R104": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R105": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R106": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R107": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R108": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R109": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R110": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R111": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R112": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R113": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R114": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R201": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R202": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R301": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R302": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R303": {
+  "footprint": "Resistor_SMD:R_0805_2012Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R304": {
+  "footprint": "Resistor_SMD:R_0805_2012Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R401": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd dnp"
+ },
+ "R402": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R403": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R501": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R502": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R503": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R504": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R505": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R506": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R507": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R508": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R509": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "R510": {
+  "footprint": "Resistor_SMD:R_0603_1608Metric",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "SW201": {
+  "footprint": "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KMR2",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "yes",
+  "attr": "smd"
+ },
+ "SW202": {
+  "footprint": "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KMR2",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "yes",
+  "attr": "smd"
+ },
+ "SW501": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H13mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW502": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H13mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW503": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H13mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW504": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H5mm",
+  "side": "B.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW505": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H13mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW506": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H13mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW507": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H13mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW508": {
+  "footprint": "Button_Switch_THT:SW_PUSH_6mm_H13mm",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "SW509": {
+  "footprint": "Button_Switch_SMD:SW_SPDT_PCM12",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "TP101": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP102": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP301": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP302": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP303": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP601": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP602": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP603": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP604": {
+  "footprint": "TestPoint:TestPoint_Keystone_5000-5004_Miniature",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "TP605": {
+  "footprint": "TestPoint:TestPoint_Keystone_5000-5004_Miniature",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "TP606": {
+  "footprint": "TestPoint:TestPoint_Keystone_5000-5004_Miniature",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "through_hole"
+ },
+ "TP607": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP608": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP609": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP610": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP611": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP612": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "TP613": {
+  "footprint": "TestPoint:TestPoint_Pad_D1.5mm",
+  "side": "B.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "exclude_from_bom"
+ },
+ "U101": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23-6",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "U102": {
+  "footprint": "Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd",
+  "pad_overrides": {
+   "25": {
+    "zone_connect": "2"
+   }
+  }
+ },
+ "U103": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23-5",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "U104": {
+  "footprint": "Package_TO_SOT_SMD:SOT-23-5",
+  "side": "F.Cu",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd"
+ },
+ "U201": {
+  "footprint": "RF_Module:ESP32-WROOM-32E",
+  "side": "F.Cu",
+  "locked": "yes",
+  "duplicate_pad_numbers_are_jumpers": "no",
+  "attr": "smd",
+  "pad_overrides": {
+   "39": {
+    "zone_connect": "2"
+   }
+  }
+ }
+}

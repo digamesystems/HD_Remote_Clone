@@ -2761,7 +2761,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "0f041f94-e6d0-53fc-a33c-9830e9a08a02")
 		(property "Reference" "C507"
 			(at 168.91 156.21 0)
@@ -2853,7 +2853,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "111d34e4-cf2c-5b2a-8775-8419a5225e9c")
 		(property "Reference" "C506"
 			(at 113.03 156.21 0)
@@ -3651,7 +3651,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "28adbd08-a4de-5d7b-affe-faa25d58f8f4")
 		(property "Reference" "C504"
 			(at 224.79 95.25 0)
@@ -3930,7 +3930,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "49a2becb-bd10-5c44-a14a-bfc944ff83f4")
 		(property "Reference" "C502"
 			(at 113.03 95.25 0)
@@ -4114,7 +4114,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "4f41198e-8f02-5e2b-8019-5ac8be53ed63")
 		(property "Reference" "C503"
 			(at 168.91 95.25 0)
@@ -4785,7 +4785,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "6d52a475-f5d7-5984-be94-b4dbeefda4a7")
 		(property "Reference" "C505"
 			(at 57.15 156.21 0)
@@ -6474,7 +6474,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "cad72d48-c630-54a1-82cb-b6a255a12a70")
 		(property "Reference" "C501"
 			(at 57.15 95.25 0)
@@ -6645,7 +6645,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "de3eff35-179d-54be-bef8-1f51b6a32bdf")
 		(property "Reference" "C508"
 			(at 224.79 156.21 0)

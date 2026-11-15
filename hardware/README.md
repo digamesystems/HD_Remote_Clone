@@ -21,6 +21,8 @@ Synced with the enclosure (2026-11-13): mounting holes H601–H604 (M2), key swi
 
 **Firmware pin map check:** `python -I hardware/tools/check_pins.py` (from the repo root) exports the schematic netlist and confirms every `PIN_` constant in the handheld block of `include/pins.h` is on the right ESP32 net, and that no ESP32 signal net is missing from it. Run it after any change to the MCU sheet or `pins.h`; it exits 1 on a mismatch.
 
+**Footprint settings check:** `python -I hardware/tools/check_fp_overrides.py` compares every footprint's per-board settings (locked, attributes such as DNP and exclude-from-BOM, the duplicate-pads-are-jumpers and net-tie settings, local clearance/mask/paste/zone overrides) with the committed baseline `hd_remote/fp_overrides.json`. Run it after every Update PCB from Schematic (F8) or footprint swap: F8 silently reset SW202's jumper setting once. If a change is intended, `--update` and commit the baseline with the board.
+
 **Bring-up:** the staged plan for the first boards is [docs/BRINGUP.md](../docs/BRINGUP.md).
 
 **Parts list:** [docs/BOM.md](../docs/BOM.md). Its board table is generated from the schematic by `hardware/tools/make_bom.py` (LCSC details cached in `hardware/bom/lcsc_cache.json`, fetched by `lcsc_fetch.py`); rerun it after any schematic change.

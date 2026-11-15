@@ -78,7 +78,8 @@ def main():
     for r in rows:
         c = cache.get(r["LCSC"], {})
         mpn = r["MPN"] if not blank(r["MPN"]) else c.get("mpn", "")
-        key = (r["LCSC"] or mpn or r["Value"], r["Footprint"])
+        dnp = bool(r.get("DNP", "").strip())   # kicad-cli labels the ${DNP} column "DNP"
+        key = (r["LCSC"] or mpn or r["Value"], r["Footprint"], dnp)
         g = groups.setdefault(key, {"refs": [], "values": [], "row": r, "c": c, "mpn": mpn})
         g["refs"].append(r["Reference"])
         if r["Value"] not in g["values"]:
@@ -86,9 +87,9 @@ def main():
 
     lines = ["| Ref | Qty | Value | Manufacturer | MPN | LCSC | Fit | Datasheet | Description |",
              "|---|---|---|---|---|---|---|---|---|"]
-    n_parts = n_jlc = n_hand = 0
+    n_parts = n_jlc = n_hand = n_dnp = 0
     todo = []
-    for (lcsc, fp), g in sorted(groups.items(), key=lambda kv: ref_key(sorted(kv[1]["refs"], key=ref_key)[0])):
+    for (lcsc, fp, dnp), g in sorted(groups.items(), key=lambda kv: ref_key(sorted(kv[1]["refs"], key=ref_key)[0])):
         r, c = g["row"], g["c"]
         mfr = r["Manufacturer"] if not blank(r["Manufacturer"]) else c.get("manufacturer", "")
         # The datasheet must be the exact part that gets fitted: for an LCSC part that's LCSC's
@@ -102,15 +103,17 @@ def main():
         else:
             fit = "hand"
         qty = len(g["refs"])
-        n_parts += qty
-        if fit == "JLC":
-            n_jlc += qty
+        if dnp:
+            fit = "**DNP** (not fitted)"
+            n_dnp += qty
         else:
-            n_hand += qty
-        if r.get("${DNP}", "").strip():
-            fit += ", DNP"
+            n_parts += qty
+            if fit == "JLC":
+                n_jlc += qty
+            else:
+                n_hand += qty
         refs = ref_ranges(g["refs"])
-        if blank(g["mpn"]):
+        if blank(g["mpn"]) and not dnp:
             todo.append(refs)
         cells = [refs, str(qty), ", ".join(g["values"]), mfr or "—",
                  g["mpn"] or "**to choose**",
@@ -119,8 +122,9 @@ def main():
                  desc.replace("|", "/")]
         lines.append("| " + " | ".join(cells) + " |")
 
-    summary = (f"{len(groups)} lines, {n_parts} parts: {n_jlc} SMD parts JLC assembles, "
-               f"{n_hand} through-hole or hand-fitted. Generated {date.today().isoformat()} from "
+    summary = (f"{len(groups)} lines, {n_parts} fitted parts: {n_jlc} SMD parts JLC assembles, "
+               f"{n_hand} through-hole or hand-fitted; plus {n_dnp} footprints left empty (DNP, "
+               f"population options). Generated {date.today().isoformat()} from "
                f"`hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand.")
     if todo:
         summary += " **No part chosen yet:** " + "; ".join(todo) + "."

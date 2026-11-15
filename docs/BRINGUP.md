@@ -74,7 +74,7 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 1. **Cell polarity first:** meter the Adafruit #1578's JST plug: its + must land on J102 pin 1 (VBAT_BATT). Q103 blocks a reversed cell, so a wrong one shouldn't damage anything; it just won't power the board.
 2. USB unplugged, cell plugged in: VSYS (TP102) ≈ cell voltage, +3V3 = 3.3 V, the board runs; `btn` VBAT ≈ the cell voltage (the divider halves it; the firmware doubles it back).
 3. USB plugged in with the cell: D101 lights while charging; PROG (TP101) shows the charge current (MCP73831 datasheet); VSYS returns to ~4.4–4.5 V; the board keeps running throughout the plug/unplug.
-4. **Battery current through JP101:** JP101 ships **bridged** (closed solder jumper). To measure, cut its trace, put the meter (µA/mA range) across its pads, measure, then re-bridge it with solder. Measure: running idle, and later in deep sleep against the ~15 µA budget ([HARDWARE.md](HARDWARE.md), Sleep current budget; watch for the ~50 µA TX0 pull-up case).
+4. **Battery current through JP101:** JP101 is a 0 Ω 0805 in the battery path (fitted by JLC). To measure, lift it (hot tweezers or two irons), put the meter (µA/mA range) across its pads, measure, then refit it. Measure: running idle, and later in deep sleep against the ~15 µA budget ([HARDWARE.md](HARDWARE.md), Sleep current budget; watch for the ~50 µA TX0 pull-up case).
 
 ## Stage 8: in the case
 

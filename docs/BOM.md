@@ -17,7 +17,7 @@ python -I hardware/tools/make_bom.py
 
 <!-- BEGIN GENERATED: hardware/tools/make_bom.py -->
 
-41 lines, 94 parts: 78 SMD parts JLC assembles, 16 through-hole or hand-fitted. Generated 2026-11-15 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** D501; J401; TP604–TP606.
+43 lines, 93 fitted parts: 77 SMD parts JLC assembles, 16 through-hole or hand-fitted; plus 2 footprints left empty (DNP, population options). Generated 2026-11-15 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** D501; J401; TP604–TP606.
 
 | Ref | Qty | Value | Manufacturer | MPN | LCSC | Fit | Datasheet | Description |
 |---|---|---|---|---|---|---|---|---|
@@ -25,8 +25,9 @@ python -I hardware/tools/make_bom.py
 | C102, C104, C109, C202, C302, C402, C501–C508 | 14 | 100n | YAGEO | CC0603KRX7R9BB104 | [C14663](https://www.lcsc.com/product-detail/C14663.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/23ccee80ee542e7cf156a772bb589942.pdf?productCode=C14663) | Unpolarized capacitor, small symbol |
 | C107, C108, C203 | 3 | 1u | Samsung Electro-Mechanics | CL10A105KB8NNNC | [C15849](https://www.lcsc.com/product-detail/C15849.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15849) | Unpolarized capacitor, small symbol |
 | C201 | 1 | 22u | Samsung Electro-Mechanics | CL21A226MAQNNNE | [C45783](https://www.lcsc.com/product-detail/C45783.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C45783) | Unpolarized capacitor, small symbol |
-| C301, C403 | 2 | 100u | Samsung Electro-Mechanics | CL31A107MQHNNNE | [C15008](https://www.lcsc.com/product-detail/C15008.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15008) | Unpolarized capacitor, small symbol |
+| C301 | 1 | 100u | Samsung Electro-Mechanics | CL31A107MQHNNNE | [C15008](https://www.lcsc.com/product-detail/C15008.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15008) | Unpolarized capacitor, small symbol |
 | C401 | 1 | 10u | Samsung Electro-Mechanics | CL21A106KAYNNNE | [C15850](https://www.lcsc.com/product-detail/C15850.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15850) | Unpolarized capacitor, small symbol |
+| C403 | 1 | 100u | Samsung Electro-Mechanics | CL31A107MQHNNNE | [C15008](https://www.lcsc.com/product-detail/C15008.html) | **DNP** (not fitted) | [PDF](https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15008) | Bulk for a PA/LNA module only |
 | D101 | 1 | CHG | Kingbright | APA1606SURCK | [C3034753](https://www.lcsc.com/product-detail/C3034753.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/122e2364290b5f1df75f9b7478d32ba1.pdf?productCode=C3034753) | Charge LED, red, side-view (Kingbright APA1606SURCK); at the back edge, shines through a hole in the end wall |
 | D102 | 1 | STPS1H100AY | ST | STPS1H100AY | [C181833](https://www.lcsc.com/product-detail/C181833.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/e36c8d0b90ddefa44b5149020fd5d96a.pdf?productCode=C181833) | Schottky diode, 100 V 1 A, low leakage (power path) |
 | D301, D302 | 2 | 1N4148W | ST(Semtech) | 1N4148W | [C81598](https://www.lcsc.com/product-detail/C81598.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/8abd7fc00ebe41ffb03ad1383c10753b.pdf?productCode=C81598) | 75V 0.15A Fast Switching Diode, SOD-123 |
@@ -36,6 +37,7 @@ python -I hardware/tools/make_bom.py
 | J101 | 1 | USB_C_Receptacle | Korean Hroparts Elec | TYPE-C-31-M-12 | [C165948](https://www.lcsc.com/product-detail/C165948.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/9e56b777c022540fcce7c7f67825f55e.pdf?productCode=C165948) | USB 2.0-only 16P Type-C Receptacle connector |
 | J102 | 1 | Battery | JST | S2B-PH-K-S(LF)(SN) | [C173752](https://www.lcsc.com/product-detail/C173752.html) | JLC (THT) or hand | [PDF](https://datasheet.lcsc.com/datasheet/pdf/6c6fce4367275d84ec6a99bf09f1250f.pdf?productCode=C173752) | Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/) |
 | J401 | 1 | nRF24_socket | — | **to choose** | — | hand | — | Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/) |
+| JP101 | 1 | 0R | UNI-ROYAL | 0805W8F0000T5E | [C17477](https://www.lcsc.com/product-detail/C17477.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C17477) | 0 ohm link in the battery path (I_BAT): lift it to measure battery current, then refit. Drawn with the solder-jumper symbol |
 | Q101, Q102 | 2 | MMBT3904 | JSCJ | MMBT3904(RANGE:100-300) | [C20526](https://www.lcsc.com/product-detail/C20526.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/9335632bcfa83df8351353eab379720e.pdf?productCode=C20526) | 0.2A Ic, 40V Vce, Small Signal NPN Transistor, SOT-23 |
 | Q103, Q104 | 2 | AO3401A | AOS | AO3401A | [C15127](https://www.lcsc.com/product-detail/C15127.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/fee353dd1e9e0bc90b295f14f381aa4c.pdf?productCode=C15127) | Reverse-polarity protection; any SOT-23 P-FET with /Vgs(th)/ < ~1.5 V, Vgs max >= 8 V |
 | Q301, Q302 | 2 | BC817-40 | Nexperia | BC817-40,215 | [C52801](https://www.lcsc.com/product-detail/C52801.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/82b42ce666a535f4f2a2391d7fd3bc11.pdf?productCode=C52801) | 0.8A Ic, 45V Vce, NPN Transistor, SOT-23 |
@@ -49,7 +51,7 @@ python -I hardware/tools/make_bom.py
 | R114, R302, R402, R403, R501–R508 | 12 | 100k | UNI-ROYAL | 0603WAF1003T5E | [C25803](https://www.lcsc.com/product-detail/C25803.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25803) | Resistor, small symbol |
 | R301 | 1 | 470 | UNI-ROYAL | 0603WAF4700T5E | [C23179](https://www.lcsc.com/product-detail/C23179.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23179) | Resistor, small symbol |
 | R303, R304 | 2 | 3.3 | FOJAN | FRC0805F3R30TS | [C2907250](https://www.lcsc.com/product-detail/C2907250.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/106fb934f95f063b695dad1b31b1eab8.pdf?productCode=C2907250) | Sets I_LED ~150 mA (value from the breadboard); ~0.1 W peak, so 0805 |
-| R401 | 1 | 0 | UNI-ROYAL | 0603WAF0000T5E | [C21189](https://www.lcsc.com/product-detail/C21189.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/f42da6c80a0747bae77c2f98f4e46d1d.pdf?productCode=C21189) | Resistor, small symbol |
+| R401 | 1 | 0 | UNI-ROYAL | 0603WAF0000T5E | [C21189](https://www.lcsc.com/product-detail/C21189.html) | **DNP** (not fitted) | [PDF](https://datasheet.lcsc.com/datasheet/pdf/f42da6c80a0747bae77c2f98f4e46d1d.pdf?productCode=C21189) | Resistor, small symbol |
 | R509 | 1 | 330 | UNI-ROYAL | 0603WAF3300T5E | [C23138](https://www.lcsc.com/product-detail/C23138.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23138) | Resistor, small symbol |
 | R510 | 1 | 270 | UNI-ROYAL | 0603WAF2700T5E | [C22966](https://www.lcsc.com/product-detail/C22966.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C22966) | Resistor, small symbol |
 | SW201, SW202 | 2 | RESET, BOOT | C&K | KMR221NGLFS | [C269272](https://www.lcsc.com/product-detail/C269272.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/1daa78c4b09299d7c6fc0a1267a41ee9.pdf?productCode=C269272) | Push button switch, generic, two pins |
@@ -65,7 +67,9 @@ python -I hardware/tools/make_bom.py
 
 <!-- END GENERATED -->
 
-Not listed (no part to buy): test pads TP101–TP303, TP601–TP603 and TP607–TP613, solder jumper JP101 (ships bridged), mounting holes H601–H604.
+Not listed (no part to buy): test pads TP101–TP303, TP601–TP603 and TP607–TP613, mounting holes H601–H604.
+
+**DNP rows** are footprints deliberately left empty, so their part isn't bought or placed: C403 (extra nRF24 bulk for a PA/LNA module) and R401 (the nRF24 IRQ link to GPIO 13). They're listed with a part number so they can be fitted later. The key debounce caps C501–C508 were DNP too, until 2026-11-15; JLC now fits them (same 100 nF part as the board's other decoupling caps).
 
 ## Parts not on the board
 
@@ -86,14 +90,16 @@ Not listed (no part to buy): test pads TP101–TP303, TP601–TP603 and TP607–
 
 **Check on arrival**
 
-4. **Battery width:** Adafruit lists 29 × 36 × 4.75 mm; the cell datasheet's drawing says **30** × 35 × 5.0 mm (±0.1). The case model uses 29 mm with 0.5 mm play per side, so a 30 mm cell would have none. Measure the real cell, set `BATT_W` in `hardware/enclosure/parts/remote_box.py` and rerun `assembly.py`.
-5. **Battery polarity (checked on paper 2026-11-15):** J102 pin 1 = + (VBAT_BATT). Adafruit's own charger board design (`Adafruit USB C microlipo charger`, [GitHub](https://github.com/adafruit/Adafruit-MicroLipo-PCB)) puts + on the same side of the socket (left, looking into the opening with the board underneath), and Adafruit says its cells match its boards. The cell datasheet marks the plug "Reverse the plug, JST PH-2P", i.e. reversed from the cell maker's default, which is how it matches Adafruit. **Still meter the plug before the first connection** ([BRINGUP.md](BRINGUP.md), stage 7); Q103 blocks a reversed cell.
+4. **Battery width:** Adafruit lists 29 × 36 × 4.75 mm; the cell datasheet's drawing says **30** × 35 × 5.0 mm (±0.1). Since 2026-11-15 the case model uses 30 mm (`BATT_W`), so the rib pocket is 31 mm: 0.5 mm play per side for a 30 mm cell, 1.0 mm for a 29 mm one, never a press fit. The board's battery keep-out was already 31 mm. Still measure the real cell, including the bulge at its protection board, and rerun `assembly.py` with the measured size.
+5. **J401 orientation:** the nRF24's 2×4 header fits either way round, and reversed it puts 3.3 V on the wrong pins. The silkscreen shows the module's outline and "nRF24 ANT →": fit the module so its antenna end lies toward the IR LEDs, inside that outline.
+6. **Battery polarity (checked on paper 2026-11-15):** J102 pin 1 = + (VBAT_BATT). Adafruit's own charger board design (`Adafruit USB C microlipo charger`, [GitHub](https://github.com/adafruit/Adafruit-MicroLipo-PCB)) puts + on the same side of the socket (left, looking into the opening with the board underneath), and Adafruit says its cells match its boards. The cell datasheet marks the plug "Reverse the plug, JST PH-2P", i.e. reversed from the cell maker's default, which is how it matches Adafruit. **Still meter the plug before the first connection** ([BRINGUP.md](BRINGUP.md), stage 7); Q103 blocks a reversed cell.
 
 **Notes**
 
-6. **U104 (RT9080-33GJ5)** is drawn with KiCad's AP2112K-3.3 symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT). Its datasheet field pointed at the AP2112 until 2026-11-15; it now points at the RT9080.
-7. **SW509, A/B switch:** C&K PCM12SMTR (LCSC C221841), matching the footprint. The case's slider also fits an MSK12C02, but that needs a different footprint.
-8. **Key switches SW501–SW508:** Same Sky TS02 from DigiKey (100 ordered 2026-11-13): 13 mm for the seven top keys, 5 mm for SETUP on the underside ([HARDWARE.md, Key switch sourcing](HARDWARE.md#key-switch-sourcing-checked-2026-11-13)).
-9. **D101, charge LED:** Kingbright APA1606SURCK, a red side-view LED seen through the end-wall window.
-10. **D301/D302, 1N4148W:** LCSC lists the maker as "ST(Semtech)", a Chinese manufacturer, not STMicroelectronics or the US Semtech; use the linked datasheet, not st.com.
-11. **Datasheet links:** for parts with an LCSC number, the table always links LCSC's copy of the datasheet for *that exact part* (the schematic's own link is often a generic family PDF or another maker's version), so a pinout review checks what JLC actually fits. LCSC's links can change: refresh with `lcsc_fetch.py --all --refresh`.
+7. **U104 (RT9080-33GJ5)** is drawn with KiCad's AP2112K-3.3 symbol (same SOT-23-5 pinout: 1 VIN, 2 GND, 3 EN, 4 NC, 5 VOUT). Its datasheet field pointed at the AP2112 until 2026-11-15; it now points at the RT9080.
+8. **SW509, A/B switch:** C&K PCM12SMTR (LCSC C221841), matching the footprint. The case's slider also fits an MSK12C02, but that needs a different footprint.
+9. **Key switches SW501–SW508:** Same Sky TS02 from DigiKey (100 ordered 2026-11-13): 13 mm for the seven top keys, 5 mm for SETUP on the underside ([HARDWARE.md, Key switch sourcing](HARDWARE.md#key-switch-sourcing-checked-2026-11-13)).
+10. **D101, charge LED:** Kingbright APA1606SURCK, a red side-view LED seen through the end-wall window.
+11. **D301/D302, 1N4148W:** LCSC lists the maker as "ST(Semtech)", a Chinese manufacturer, not STMicroelectronics or the US Semtech; use the linked datasheet, not st.com.
+12. **Datasheet links:** for parts with an LCSC number, the table always links LCSC's copy of the datasheet for *that exact part* (the schematic's own link is often a generic family PDF or another maker's version), so a pinout review checks what JLC actually fits. LCSC's links can change: refresh with `lcsc_fetch.py --all --refresh`.
+13. **JP101, battery current link:** a 0 Ω 0805 since 2026-11-15 (was a bridged solder jumper). Lift it to measure battery current, then refit it; that survives repeated sleep-current measurements better than cutting and re-bridging a jumper ([BRINGUP.md](BRINGUP.md), stage 7).

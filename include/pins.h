@@ -19,8 +19,8 @@ constexpr bool HAS_RADIO_B = false;  // no second nRF24 on the PCB
 constexpr uint8_t PIN_IR_RX = PIN_NONE;
 constexpr uint8_t PIN_IR_TX = 4;   // module pin 26; R301 470R -> Q301/Q302 bases (HIGH = LEDs on)
 
-// Keys: active-HIGH (switch to 3V3), 100k pull-down + 100nF at each switch
-// (tau ~10 ms on release). All on RTC GPIOs, so ext1 ANY_HIGH can wake from
+// Keys: active-HIGH (switch to 3V3), 100k pull-down + 100nF (C501-C508) at each
+// switch: ~10 ms release filter; the firmware still debounces. All on RTC GPIOs, so ext1 ANY_HIGH can wake from
 // deep sleep. GPIO 34/35/36 are input-only with no internal pulls; the
 // external pull-downs cover them.
 constexpr uint8_t PIN_BTN_UP    = 32;  // module pin 8,  SW501

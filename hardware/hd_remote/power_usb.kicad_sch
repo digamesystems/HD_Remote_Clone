@@ -9486,7 +9486,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -9502,7 +9502,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "I_BAT"
+		(property "Value" "0R"
 			(at 144.78 236.22 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9513,7 +9513,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 147.32 233.68 0)
 			(hide yes)
 			(show_name no)
@@ -9535,7 +9535,18 @@
 				)
 			)
 		)
-		(property "Description" "Solder Jumper, 2-pole, closed/bridged"
+		(property "Description" "0 ohm link in the battery path (I_BAT): lift it to measure battery current, then refit. Drawn with the solder-jumper symbol"
+			(at 147.32 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C17477"
 			(at 147.32 233.68 0)
 			(hide yes)
 			(show_name no)
