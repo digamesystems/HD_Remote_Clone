@@ -21,7 +21,7 @@ New to the project? Start here:
 1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate a release must pass.
 2. **Code layout:** hardware-independent logic belongs in `lib/hdcore/` with a host unit test. Hardware-touching code goes in `src/`. See [Firmware](#firmware) below.
 3. **Protocols:** [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) describes the decoded IR frame format and codes, plus the shade tests. [docs/RF_PROTOCOL.md](docs/RF_PROTOCOL.md) covers the 2.4 GHz side, including the RF wake the shade needs alongside IR.
-4. **Hardware:** the [pin map](#pin-map), [docs/WIRING.md](docs/WIRING.md) for connecting the nRF24 modules, and `include/hw_config.h`, which records what's actually wired on the breadboard.
+4. **Hardware:** the [pin map](#pin-map), [docs/WIRING.md](docs/WIRING.md) for connecting the nRF24 modules, and `include/hw_config.h`, which records what hardware is present on each board (breadboard, or the handheld PCB with `-e handheld`).
 
 ## Status
 
@@ -35,7 +35,9 @@ New to the project? Start here:
 | RF settings on our remotes | ✅ published settings confirmed by sniffing (2026-11-11) |
 | RF wake frame for IR (`ID 01 00 80`) | ✅ sniffed from both remotes, see [RF_PROTOCOL.md](docs/RF_PROTOCOL.md) |
 | RF transmit emulation | ✅ red-mode wake (`wake`, `send`) and group commands (`grp`): groups 1–4 and All, up and down (2026-11-11) |
-| Final remote: buttons, red/green indicator LED, deep sleep, enclosure | 🔲 next |
+| Handheld PCB (KiCad, [hardware/](hardware/README.md)) | ✅ schematic and layout complete, DRC/ERC clean (2026-11-14); fabrication outputs next |
+| Firmware pin profile for the PCB (`pio run -e handheld`) | ✅ builds (2026-11-14); untested on hardware |
+| Final remote: button UX, indicator LED, deep sleep, enclosure | 🔲 next |
 
 ## Technical approach
 
@@ -98,6 +100,8 @@ New to the project? Start here:
 | nRF24 CSN | 5 | |
 | nRF24 CE | 17 | |
 | nRF24 IRQ (optional) | 16 | |
+
+This is the breadboard (DevKitC). The handheld PCB uses a different map for the keys, slider, battery sense and LEDs: see [docs/HARDWARE.md, Pin map](docs/HARDWARE.md#pin-map-esp32-wroom-32e) and `include/pins.h` (`HD_BOARD_HANDHELD`, env `handheld`).
 | Radio B SCK / MISO / MOSI | 25 / 26 / 27 | optional second nRF24 for loopback checks, on HSPI |
 | Radio B CSN / CE | 13 / 21 | |
 
@@ -138,8 +142,8 @@ Type `help` in the monitor. Sending any line stops a running capture, scan or sn
 Source layout:
 
 ```
-include/pins.h        pin map
-include/hw_config.h   what's wired on the breadboard (gates hardware tests)
+include/pins.h        pin maps (breadboard default; handheld PCB with HD_BOARD_HANDHELD)
+include/hw_config.h   what's present on each board (gates hardware tests)
 src/main.cpp          serial menu / dispatch
 src/ir_tools.*        IR capture, dump, replay
 src/rf_tools.*        nRF24 self-test, scanner, sniffer, loopback beacon

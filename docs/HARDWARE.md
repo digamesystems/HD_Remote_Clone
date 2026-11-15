@@ -57,12 +57,13 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 | LED red / green | 22 / 16 | Via resistors, PWM (LEDC). GPIO 16 was the nRF24 IRQ, which the firmware doesn't use |
 | nRF24 SCK / MISO / MOSI | 18 / 19 / 23 | VSPI, same as the breadboard |
 | nRF24 CSN / CE | 5 / 17 | Same as the breadboard. GPIO 5 is a strapping pin; CSN idles high, which is its default |
-| nRF24 IRQ | not connected | Pad or 0 Ω option to GPIO 13 if ever needed |
-| (spare) | 14 | Was the optional IR receiver's OUT (removed 2026-11-13); now unconnected, no-connect flag in the schematic |
+| nRF24 IRQ | 13 | Through R401 (0 Ω, population option) at the socket; TP609 on the ESP32 side. The firmware doesn't use it yet |
 | UART TX0 / RX0 | 1 / 3 | To the CP2102N |
 | EN / IO0 | EN / 0 | Auto-reset from DTR/RTS (DevKitC circuit); also small EN (reset) and IO0 (BOOT) buttons. BOOT added 2026-11-12 as a fallback if auto-reset fails on an early board |
 
-Free afterwards: 13 (spare pad / debug strobe TP609), 21 (spare since 2026-11-14), 2, 12, 15 (strapping; leave alone or use carefully). Firmware: enable an internal pull on unused pins (Espressif checklist).
+Free afterwards: 21 (spare since 2026-11-14), 2, 12, 15 (strapping; leave alone or use carefully). Firmware: enable an internal pull on unused pins (Espressif checklist).
+
+**Firmware profile (2026-11-14):** this map is `include/pins.h` under `HD_BOARD_HANDHELD`, built with `pio run -e handheld` (Tier 2 tests: `handheld_test`). The default `esp32dev` environment keeps the breadboard map. The PCB has no IR receiver and no second radio, so IR capture and `beacon` report that instead of touching pins. Which A/B slider position reads high is to be confirmed at bring-up.
 
 **Key pins re-assigned (2026-11-13, PCB layout):** the RTC pins all sit in the module's left pin column, and their order up that column decides how the eight key lines fan out to the keys. The first assignment crossed itself 20 times there. A search over every valid assignment (key pins interchangeable; VBAT_SENSE on an ADC1 pin) found 3 crossings at best; the one used has 4 but keeps VBAT_SENSE on GPIO 39 and only one key (G4) on GPIO 36/39, the same as before. UP, DOWN and ALL are unchanged, so the breadboard firmware (UP 32, DOWN 33) still matches. Across the whole board the ratsnest crossings fell from 187 to 159.
 
@@ -228,10 +229,10 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 
 ## Layout notes
 
-- 2-layer board, ground pour on both sides, stitched.
+- 2-layer board. Ground pour on the bottom (B.Cu) only; top-side GND pads reach it through stitching vias (the ESP32's exposed pad through the 12 vias built into its footprint). No pour under either antenna area. As routed (2026-11-14) the pour is one piece plus a ~15 mm² patch near SW202 that the VSYS and IR_TX bottom tracks enclose; it is tied to the main plane through SW202's GND pad and a via at (68.0, 63.5).
 - **ESP32 orientation (2026-11-13):** antenna end at the right-hand (−Y) board edge, holding the remote pointing away. The key GPIOs must be RTC pins, which all sit in the module's left pin column (pins 4–12), so that column has to face the keys; the SPI and UART pins (right column) then face the nRF24 socket and CP2102N at the back. With the antenna at the other edge, 14 key and SPI lines crossed each other round the module.
 - Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines.
-- **Battery under the ESP32 antenna area (noted 2026-11-14):** the cell's keep-out (cell 30 mm wide + 0.5 mm margin, ±15.5 mm) overlaps the ESP32 antenna keep-out by a 1.5 mm strip along the −Y side (Y −15.5 to −14.0, X −47 to −16.5), so the cell's foil-laminated edge sits about 1 mm under the inner end of the antenna area. No effect in this design, since the ESP32's radio is unused (no Wi-Fi or Bluetooth; all RF is the nRF24). If the ESP32 radio is ever used, expect detuning and lost range: use a narrower cell (25 mm wide leaves ~4 mm clearance), shift the cell toward +Y in the case model, or accept the loss. The two keep-outs don't conflict in DRC: one forbids copper, the other THT pins and underside parts. The ESP32's radio isn't used, but this keeps the option open and is free.
+- **Battery under the ESP32 antenna area (noted 2026-11-14):** the cell's keep-out (±15.5 mm; the Adafruit #1578 cell chosen 2026-11-14 is 29 mm wide, so 1 mm margin each side) overlaps the ESP32 antenna keep-out by a 1.5 mm strip along the −Y side (Y −15.5 to −14.0, X −47 to −16.5), so the cell's foil-laminated edge sits about 1 mm under the inner end of the antenna area. No effect in this design, since the ESP32's radio is unused (no Wi-Fi or Bluetooth; all RF is the nRF24). If the ESP32 radio is ever used, expect detuning and lost range: use a narrower cell (25 mm wide leaves ~4 mm clearance), shift the cell toward +Y in the case model, or accept the loss. The two keep-outs don't conflict in DRC: one forbids copper, the other THT pins and underside parts. The ESP32's radio isn't used, but this keeps the option open and is free.
 - Keep the **nRF24 antenna overhang** free of ground fill (signal tracks may cross it; see [nRF24 socket](#nrf24-socket)), and keep the IR LEDs, charger and LDO away from it.
 - The IR LEDs sit at the front edge, aimed forward. Their current loop (VSYS bulk cap → LEDs → transistors → R_E → GND) should be short and wide.
 - Buttons laid out like the original: arrows large and central, group keys in a row, ALL separate, SETUP on the back.

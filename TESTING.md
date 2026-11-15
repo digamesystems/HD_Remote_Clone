@@ -27,7 +27,13 @@ pio test -e esp32dev_test --upload-port COM11 -f test_device_ir       # one suit
 
 These flash a **test firmware** to the board, run Unity on it and report over serial. Afterwards the board is left running the test firmware, so re-upload the app (`pio run -t upload`).
 
-[`include/hw_config.h`](include/hw_config.h) declares what's wired on the breadboard:
+On the **handheld PCB**, use the `handheld_test` environment (PCB pin map, `HD_BOARD_HANDHELD`), and restore the app with `pio run -e handheld -t upload`:
+
+```
+pio test -e handheld_test --upload-port COMx
+```
+
+[`include/hw_config.h`](include/hw_config.h) declares what's present on each board (the breadboard section, or the handheld section when built with `HD_BOARD_HANDHELD`). On the PCB the IR loopback and radio B tests are always ignored: it has no IR receiver and no second radio.
 
 - Hardware declared **absent**: the test is **IGNORED** and reported as *not verified*.
 - Hardware declared **present**: the test **must pass**. A failure blocks deploy.
