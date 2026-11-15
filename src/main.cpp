@@ -16,7 +16,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.0";
+constexpr const char* kFwVersion = "0.9.1";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -41,7 +41,9 @@ struct SeqConfig {
   bool on = true;
   uint32_t rfMs = 50;   // wake frames per channel step
   uint32_t gapMs = 0;   // pause between each RF step and the IR after it
-  uint32_t irMs = 170;  // IR per step (10 frames)
+  // IR per step: 50 ms (3 frames). Nov 15, hand-aimed: 1 frame unreliable,
+  // 2 good, 3 good (20/20), 10 (old default) worked with occasional doubles.
+  uint32_t irMs = 50;
 } seq;
 constexpr uint32_t kSeqMaxMs = 2000;
 
@@ -103,7 +105,8 @@ void help() {
       "                            up/down = channel A; max 5000 ms for OPEN, 10000 otherwise)\n"
       "  Up/Down arrow keys      send up/down (works at the prompt or during capture); see seq\n"
       "  seq [on|off|rf|gap|ir <ms>]  arrow keys: RF ch33, IR, RF ch52, IR, RF ch71, IR\n"
-      "                          (on, default) or wake + one 500 ms IR burst (off)\n"
+      "                          (on, default: rf 50, gap 0, ir 50) or wake + one 500 ms\n"
+      "                          IR burst (off)\n"
       "  wake [ms|on|off]        send the RF wake alone (default 450 ms), or turn the\n"
       "                          automatic wake before send / arrow keys on or off\n"
       "  id [hex|clear]          show or set the remote ID used by wake / grp (saved in flash)\n"
