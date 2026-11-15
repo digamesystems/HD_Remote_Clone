@@ -21,7 +21,7 @@ New to the project? Start here:
 1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate a release must pass.
 2. **Code layout:** hardware-independent logic belongs in `lib/hdcore/` with a host unit test. Hardware-touching code goes in `src/`. See [Firmware](#firmware) below.
 3. **Protocols:** [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) describes the decoded IR frame format and codes, plus the shade tests. [docs/RF_PROTOCOL.md](docs/RF_PROTOCOL.md) covers the 2.4 GHz side, including the RF wake the shade needs alongside IR.
-4. **Hardware:** the [pin map](#pin-map), [docs/WIRING.md](docs/WIRING.md) for connecting the nRF24 modules, and `include/hw_config.h`, which records what hardware is present on each board (breadboard, or the handheld PCB with `-e handheld`).
+4. **Hardware:** the [pin map](#pin-map), [docs/WIRING.md](docs/WIRING.md) for connecting the nRF24 modules, the handheld's parts list [docs/BOM.md](docs/BOM.md), and `include/hw_config.h`, which records what hardware is present on each board (breadboard, or the handheld PCB with `-e handheld`).
 
 ## Status
 

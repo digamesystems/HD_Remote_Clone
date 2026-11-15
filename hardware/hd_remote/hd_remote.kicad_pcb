@@ -210,9 +210,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "LED* LED_SMD:* LED_THT:*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/90d328be-69fa-5100-92b8-c48b734b34cb")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -345,6 +352,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/STAT")
+			(pinfunction "K_1")
+			(pintype "passive")
 			(thermal_bridge_angle 45)
 			(uuid "ee8bf62a-2313-42fc-8c58-e8aadc7d91bf")
 		)
@@ -354,6 +363,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/LED_CHG")
+			(pinfunction "A_2")
+			(pintype "passive")
 			(thermal_bridge_angle 45)
 			(uuid "ad08a3cc-529c-4b9d-9828-77aae612a68d")
 		)
@@ -446,9 +457,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/974c0f61-47a6-5aff-bbdc-a22797934ae5")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -510,6 +528,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT_SENSE")
+			(pintype "passive")
 			(uuid "03815bba-a4e9-4d69-9732-d8401e1997d0")
 		)
 		(pad "2" smd roundrect
@@ -518,6 +537,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "a09aa29b-6345-4f76-ac24-1b88d4d68b72")
 		)
 		(embedded_fonts no)
@@ -608,9 +628,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/4a0a3b52-3fcb-577f-a281-cbc0f36de4b7")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -672,6 +699,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "LED_GREEN")
+			(pintype "passive")
 			(uuid "04be9ff1-04ee-472d-ba45-0c5326c557db")
 		)
 		(pad "2" smd roundrect
@@ -680,6 +708,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Buttons and LEDs/LED_G_A")
+			(pintype "passive")
 			(uuid "2141f069-4989-4e5f-b8af-dd3c16b2fb2e")
 		)
 		(embedded_fonts no)
@@ -771,9 +800,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/1898c5cf-26cf-5083-8f01-271691470139")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -835,6 +871,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pintype "passive")
 			(uuid "28f55290-5ef6-4517-8522-a806e3e447c4")
 		)
 		(pad "2" smd roundrect
@@ -843,6 +880,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/LED_CHG")
+			(pintype "passive")
 			(uuid "d30d63d1-c629-474a-8e4c-18a9cf6a9836")
 		)
 		(embedded_fonts no)
@@ -934,9 +972,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/8c79fbb8-836c-45cf-b7b7-04b7e2fa527d")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -998,6 +1043,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pintype "passive")
 			(uuid "9802a274-ef9f-406f-880e-f5a3d9244463")
 		)
 		(pad "2" smd roundrect
@@ -1006,6 +1052,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "57d4a528-dc16-4442-975c-1d71e30e26aa")
 		)
 		(embedded_fonts no)
@@ -1097,9 +1144,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/c42da27b-1fb2-53b5-a4c5-aa546dfe4189")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1161,6 +1215,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/nRF24/NRF_IRQ")
+			(pintype "passive")
 			(uuid "9a801258-33f2-4ac2-9574-597ad6489fa0")
 		)
 		(pad "2" smd roundrect
@@ -1169,6 +1224,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "NRF_IRQ_OPT")
+			(pintype "passive")
 			(uuid "0cbe3a8d-8c08-40d5-836e-d36f312a8fec")
 		)
 		(embedded_fonts no)
@@ -1260,9 +1316,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/9a0d934f-8eb0-5c5e-ae39-1db8eb1ce1cc")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "5" "4" "2" "3" "1")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1536,6 +1599,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/STAT")
+			(pinfunction "STAT_1")
+			(pintype "tri_state")
 			(uuid "28883fdc-9e76-4b47-a660-884a45689814")
 		)
 		(pad "2" smd roundrect
@@ -1544,6 +1609,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "V_{SS}_2")
+			(pintype "power_in")
 			(uuid "301cb09a-1594-49a6-9101-cad76ecc88ae")
 		)
 		(pad "3" smd roundrect
@@ -1552,6 +1619,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT")
+			(pinfunction "V_{BAT}_3")
+			(pintype "power_out")
 			(uuid "911d02e1-a625-4796-9f4d-81ac5f9ec6a4")
 		)
 		(pad "4" smd roundrect
@@ -1560,6 +1629,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "V_{DD}_4")
+			(pintype "power_in")
 			(uuid "4c17f701-7874-4e1f-b7a4-e62ccd2dfcb7")
 		)
 		(pad "5" smd roundrect
@@ -1568,6 +1639,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/PROG")
+			(pinfunction "PROG_5")
+			(pintype "input")
 			(uuid "369701dd-bd7e-4f88-84a5-86524cbd5307")
 		)
 		(embedded_fonts no)
@@ -1659,9 +1732,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/49a2becb-bd10-5c44-a14a-bfc944ff83f4")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1723,6 +1803,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_DOWN")
+			(pintype "passive")
 			(uuid "3da3b12f-d6a6-417e-8a18-fcb1278872a0")
 		)
 		(pad "2" smd roundrect
@@ -1731,6 +1812,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "417757da-7e39-4b7d-9b50-3e3fd3542f14")
 		)
 		(embedded_fonts no)
@@ -1822,9 +1904,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/777bfe05-16fd-56a1-b869-f19a999846fe")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2098,6 +2187,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/Q2_B")
+			(pinfunction "B_1")
+			(pintype "input")
 			(uuid "69fe22da-85b3-4bc5-8e2d-482c79cfc594")
 		)
 		(pad "2" smd roundrect
@@ -2106,6 +2197,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/DTR")
+			(pinfunction "E_2")
+			(pintype "passive")
 			(uuid "c5e4ec04-0d73-411a-a443-a3f803952788")
 		)
 		(pad "3" smd roundrect
@@ -2114,6 +2207,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "IO0")
+			(pinfunction "C_3")
+			(pintype "passive")
 			(uuid "2e8746c0-ba72-4e73-9bc9-25800dcdea31")
 		)
 		(embedded_fonts no)
@@ -2205,9 +2300,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/edcbc569-1297-5f23-b774-c0e7cf3d9f9e")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2269,6 +2371,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT")
+			(pintype "passive")
 			(uuid "863d7073-a65a-498b-a5e0-7eb324810402")
 		)
 		(pad "2" smd roundrect
@@ -2277,6 +2380,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "7956a1ec-d89a-48a1-a858-5e86f8dfdd9b")
 		)
 		(embedded_fonts no)
@@ -2359,9 +2463,18 @@
 				)
 			)
 		)
+		(property ki_fp_filters "USB*C*Receptacle*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/6f766de8-23b5-510d-aebc-33f8421032a8")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "SH" "A1" "A12" "B1" "B12" "A4" "A9" "B4" "B9" "A5" "B5" "A7" "B7"
+					"A6" "B6" "A8" "B8"
+				)
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2525,6 +2638,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_A1")
+			(pintype "passive")
 			(uuid "563f3de5-753c-489f-8594-88a39ea2d0b1")
 		)
 		(pad "A4" smd roundrect
@@ -2533,6 +2648,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "VBUS_A4")
+			(pintype "passive")
 			(uuid "a5d89b82-8e67-4476-9c2c-6d8b9172e4bf")
 		)
 		(pad "A5" smd roundrect
@@ -2541,6 +2658,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CC1")
+			(pinfunction "CC1_A5")
+			(pintype "bidirectional")
 			(uuid "92578a74-8c9c-4b69-bb1c-d1414d9ef88f")
 		)
 		(pad "A6" smd roundrect
@@ -2549,6 +2668,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DP")
+			(pinfunction "D+_A6")
+			(pintype "bidirectional")
 			(uuid "b4b1af40-3fd4-463e-b697-a97b34458608")
 		)
 		(pad "A7" smd roundrect
@@ -2557,6 +2678,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DN")
+			(pinfunction "D-_A7")
+			(pintype "bidirectional")
 			(uuid "653f07e2-c885-4edf-90bf-322815b8e52c")
 		)
 		(pad "A8" smd roundrect
@@ -2565,6 +2688,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(J101-SBU1-PadA8)")
+			(pinfunction "SBU1_A8")
+			(pintype "bidirectional+no_connect")
 			(uuid "4529d33e-9091-4d2c-ac99-c4c4623edbe3")
 		)
 		(pad "A9" smd roundrect
@@ -2573,6 +2698,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "VBUS_A9")
+			(pintype "passive")
 			(uuid "d225c55d-322b-422b-a263-9e1125e2b164")
 		)
 		(pad "A12" smd roundrect
@@ -2581,6 +2708,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_A12")
+			(pintype "passive")
 			(uuid "729ae660-cd43-4cd3-a00a-dedd7bd5a2ed")
 		)
 		(pad "B1" smd roundrect
@@ -2589,6 +2718,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_B1")
+			(pintype "passive")
 			(uuid "19f7fd9b-7db1-4db1-96db-82dfe84d859c")
 		)
 		(pad "B4" smd roundrect
@@ -2597,6 +2728,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "VBUS_B4")
+			(pintype "passive")
 			(uuid "ff4585d5-757e-4570-9da0-3005141bd000")
 		)
 		(pad "B5" smd roundrect
@@ -2605,6 +2738,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CC2")
+			(pinfunction "CC2_B5")
+			(pintype "bidirectional")
 			(uuid "a1a5c27e-b069-4b96-828f-de58748227e6")
 		)
 		(pad "B6" smd roundrect
@@ -2613,6 +2748,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DP")
+			(pinfunction "D+_B6")
+			(pintype "bidirectional")
 			(uuid "e34ccc62-8b82-4d98-b216-f4e557d18366")
 		)
 		(pad "B7" smd roundrect
@@ -2621,6 +2758,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DN")
+			(pinfunction "D-_B7")
+			(pintype "bidirectional")
 			(uuid "d8b5000b-ee2b-41b0-bcd4-cbb2695c8346")
 		)
 		(pad "B8" smd roundrect
@@ -2629,6 +2768,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(J101-SBU2-PadB8)")
+			(pinfunction "SBU2_B8")
+			(pintype "bidirectional+no_connect")
 			(uuid "354a287a-6896-46e9-8738-31d7f9206558")
 		)
 		(pad "B9" smd roundrect
@@ -2637,6 +2778,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "VBUS_B9")
+			(pintype "passive")
 			(uuid "386bf3af-fbcd-44cf-bc13-ea31cf74e63b")
 		)
 		(pad "B12" smd roundrect
@@ -2645,6 +2788,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_B12")
+			(pintype "passive")
 			(uuid "f1217708-ba6c-41ce-9869-b632a254426a")
 		)
 		(pad "SH" thru_hole oval
@@ -2655,6 +2800,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "93ad1043-7607-4887-ab64-2a50f4aa3409")
 		)
 		(pad "SH" thru_hole oval
@@ -2665,6 +2812,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "6e98c114-adec-4756-8dc5-096a0cf4f15b")
 		)
 		(pad "SH" thru_hole oval
@@ -2675,6 +2824,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "a4efb605-3c6e-4955-8175-e2d4ada9ea8c")
 		)
 		(pad "SH" thru_hole oval
@@ -2685,6 +2836,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "SHIELD_SH")
+			(pintype "passive")
 			(uuid "f973869c-ea8d-4c95-b280-1dd48c49668c")
 		)
 		(embedded_fonts no)
@@ -2729,7 +2882,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.vishay.com/docs/81010/tsal6200.pdf"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -2763,9 +2916,42 @@
 				)
 			)
 		)
+		(property "Manufacturer" "Vishay"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "32d746f8-07df-4382-a950-887e97093028")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN" "TSAL6200"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "22ac3e66-26a7-48d4-b43b-2b0737fa7f63")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "LED* LED_SMD:* LED_THT:*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/197b308d-a8b0-59e5-9a3b-a7066df9724d")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2957,6 +3143,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/IR/IR_K1")
+			(pinfunction "K_1")
+			(pintype "passive")
 			(uuid "148571b4-7f59-4cf0-ab3a-2a4fc4f13b94")
 		)
 		(pad "2" thru_hole circle
@@ -2966,6 +3154,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "VSYS")
+			(pinfunction "A_2")
+			(pintype "passive")
 			(uuid "2ea7637a-676a-47b7-9dad-eb319c8d65c9")
 		)
 		(embedded_fonts no)
@@ -3044,9 +3234,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "LED* LED_SMD:* LED_THT:*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/2ae198ef-e627-5d0d-8fe0-824e45c57b87")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "2" "1" "3")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3180,6 +3377,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/Buttons and LEDs/LED_R_A")
+			(pinfunction "A1_1")
+			(pintype "passive")
 			(uuid "05b5e196-5800-4f1a-bae5-b59cf9eddf66")
 		)
 		(pad "2" thru_hole circle
@@ -3189,6 +3388,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "K_2")
+			(pintype "passive")
 			(uuid "2b8b9804-e165-4cba-9c44-7c549e1a499b")
 		)
 		(pad "3" thru_hole circle
@@ -3198,6 +3399,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/Buttons and LEDs/LED_G_A")
+			(pinfunction "A2_3")
+			(pintype "passive")
 			(uuid "8ac1850b-6540-4d93-b89f-0e25c5645f24")
 		)
 		(embedded_fonts no)
@@ -3289,9 +3492,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/82fec9b0-2a29-5f13-b674-791da2168172")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3353,6 +3563,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/nRF24/NRF_VCC")
+			(pintype "passive")
 			(uuid "a576b0e3-6365-47da-89e5-f634dbc9b3a9")
 		)
 		(pad "2" smd roundrect
@@ -3361,6 +3572,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "NRF_CSN")
+			(pintype "passive")
 			(uuid "25f90aa7-8973-464b-ba39-a7981dcf7be5")
 		)
 		(embedded_fonts no)
@@ -3452,9 +3664,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/a77952fa-9b96-5bcc-864a-c6d395e38dc8")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3516,6 +3735,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_BASE")
+			(pintype "passive")
 			(uuid "f188ba75-cb63-4e2d-b28c-07bc78aa12c6")
 		)
 		(pad "2" smd roundrect
@@ -3524,6 +3744,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "7da18552-d01e-4c7b-b4e0-8d0b746e9063")
 		)
 		(embedded_fonts no)
@@ -3619,8 +3840,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/93a9e3e6-5981-588c-982f-7ad7d1a5e4fe")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3862,6 +4089,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "1bfdefec-557e-402f-ba23-5f202b2d51c3")
 		)
 		(pad "1" thru_hole circle
@@ -3871,6 +4100,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "8b72c07c-4abf-4b20-9150-ebc246361273")
 		)
 		(pad "2" thru_hole circle
@@ -3880,6 +4111,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_DOWN")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "95e92669-89c8-455b-8a1a-d18b11d26241")
 		)
 		(pad "2" thru_hole circle
@@ -3889,6 +4122,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_DOWN")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "d7bceda7-45a6-4db7-a599-f5506ad3f258")
 		)
 		(embedded_fonts no)
@@ -3980,9 +4215,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/111d34e4-cf2c-5b2a-8775-8419a5225e9c")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4044,6 +4286,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G2")
+			(pintype "passive")
 			(uuid "27f925c6-2635-4451-895a-65a6abdd6d67")
 		)
 		(pad "2" smd roundrect
@@ -4052,6 +4295,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "abf309ca-a727-4f17-a1e0-5edffd27af37")
 		)
 		(embedded_fonts no)
@@ -4143,9 +4387,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/4223dc38-2df3-5e98-8f96-bf0db59a50fb")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4207,6 +4458,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CC1")
+			(pintype "passive")
 			(uuid "ad61d0e6-db52-47c4-8ccd-733ed2a4f045")
 		)
 		(pad "2" smd roundrect
@@ -4215,6 +4467,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "ef4c1d0f-0748-45db-8b72-f2fb631f949a")
 		)
 		(embedded_fonts no)
@@ -4306,9 +4559,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/6d52a475-f5d7-5984-be94-b4dbeefda4a7")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4370,6 +4630,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G1")
+			(pintype "passive")
 			(uuid "af629f09-5bb7-4199-85cd-564dc563f1a4")
 		)
 		(pad "2" smd roundrect
@@ -4378,6 +4639,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "cea7173d-51be-4d87-b8bf-4f7f37f9effb")
 		)
 		(embedded_fonts no)
@@ -4469,9 +4731,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/27f6232b-35f2-4e1d-8864-f432ed471e90")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4533,6 +4802,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/MCU/AB_SW_PIN")
+			(pintype "passive")
 			(uuid "de565204-6641-4c7e-b51a-ec78d14ce498")
 		)
 		(pad "2" smd roundrect
@@ -4541,6 +4811,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "AB_SW")
+			(pintype "passive")
 			(uuid "ea9223a4-41ff-41a5-9721-611c0dc3b40c")
 		)
 		(embedded_fonts no)
@@ -4632,9 +4903,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/1366cee5-8434-5b78-b46a-9e6f1a23baa6")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4696,6 +4974,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "IR_TX")
+			(pintype "passive")
 			(uuid "8f5919d5-59c1-4846-801d-0ef179c8711f")
 		)
 		(pad "2" smd roundrect
@@ -4704,6 +4983,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_BASE")
+			(pintype "passive")
 			(uuid "3c6f2cca-9f6c-4e60-86de-4159c02e8d32")
 		)
 		(embedded_fonts no)
@@ -4799,8 +5079,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/acb6e6ae-3ccf-5fc5-b508-a0250d834180")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5042,6 +5328,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "f1896e6e-f157-42ff-ad6e-be3754c4ecc5")
 		)
 		(pad "1" thru_hole circle
@@ -5051,6 +5339,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "2066b5a0-b135-44ff-842a-b162cacd42c7")
 		)
 		(pad "2" thru_hole circle
@@ -5060,6 +5350,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_ALL")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "c95cef29-3c5a-4cef-9465-f16bb82deb0d")
 		)
 		(pad "2" thru_hole circle
@@ -5069,6 +5361,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_ALL")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "92d4f1ff-8d22-4a38-937f-5069364674ae")
 		)
 		(embedded_fonts no)
@@ -5164,8 +5458,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/4365e7e8-0dbe-547b-a276-039177743d5a")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5407,6 +5707,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "49a8b447-ebf4-47e1-9183-07d921acb8d9")
 		)
 		(pad "1" thru_hole circle
@@ -5416,6 +5718,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "5f010b6d-058c-4ae1-a451-8468027826e9")
 		)
 		(pad "2" thru_hole circle
@@ -5425,6 +5729,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G2")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "114c46ac-b8c6-4aba-9f3e-bb55c06a1511")
 		)
 		(pad "2" thru_hole circle
@@ -5434,6 +5740,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G2")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "51b86766-fb6c-4c87-a3e5-8bc5efd08121")
 		)
 		(embedded_fonts no)
@@ -5525,9 +5833,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/c942eff9-0241-5117-adda-50376b2b48db")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5589,6 +5904,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "U0TXD")
+			(pintype "passive")
 			(uuid "e1ace17b-371b-457f-826e-8a34c7505978")
 		)
 		(pad "2" smd roundrect
@@ -5597,6 +5913,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_RXD")
+			(pintype "passive")
 			(uuid "d3611b3c-7d4f-4fc3-b229-34bc66bf5b2d")
 		)
 		(embedded_fonts no)
@@ -5688,9 +6005,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/17a77a24-fd78-5ae0-b844-a3d03ea9800d")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "5" "2" "6" "4")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5914,6 +6238,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DP")
+			(pinfunction "I/O1_1")
+			(pintype "passive")
 			(uuid "4ed8cf30-16c2-4146-802d-758c5d2e365d")
 		)
 		(pad "2" smd roundrect
@@ -5922,6 +6248,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_2")
+			(pintype "passive")
 			(uuid "cf963904-41d9-44d8-986f-bd04504121e2")
 		)
 		(pad "3" smd roundrect
@@ -5930,6 +6258,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DN")
+			(pinfunction "I/O2_3")
+			(pintype "passive")
 			(uuid "293e4ee5-3395-4ea0-bdae-e09cafa2b31c")
 		)
 		(pad "4" smd roundrect
@@ -5938,6 +6268,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DN")
+			(pinfunction "I/O2_4")
+			(pintype "passive")
 			(uuid "64292dc9-e528-47d2-b052-df548696f52f")
 		)
 		(pad "5" smd roundrect
@@ -5946,6 +6278,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "VBUS_5")
+			(pintype "passive")
 			(uuid "07971173-ae01-4a4d-b585-e5214be64588")
 		)
 		(pad "6" smd roundrect
@@ -5954,6 +6288,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DP")
+			(pinfunction "I/O1_6")
+			(pintype "passive")
 			(uuid "8ae51a7e-0b00-4594-b599-0510bf24e403")
 		)
 		(embedded_fonts no)
@@ -6023,9 +6359,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/8a42e03c-ec6f-54cc-9e58-564fa3291b76")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -6090,6 +6433,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "5ff7d069-9f63-4d54-88c9-3a2fcbd027a8")
 		)
 		(embedded_fonts no)
@@ -6181,9 +6526,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/f5d1ca52-33ae-59a4-9da8-bff1f32b7aad")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6245,6 +6597,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "a6e01188-584f-4cfb-ab04-5b7c7ca53331")
 		)
 		(pad "2" smd roundrect
@@ -6253,6 +6606,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "4625fcc5-7daa-4c83-9eaa-51a1a697dacf")
 		)
 		(embedded_fonts no)
@@ -6344,9 +6698,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/21ba36cb-fb7a-5d46-ad71-1635f35edf4f")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6408,6 +6769,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pintype "passive")
 			(uuid "e2af1cdd-b039-4fe2-bb7b-f005eb8dfc2f")
 		)
 		(pad "2" smd roundrect
@@ -6416,6 +6778,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "0e63a1e7-2bdf-457e-8742-3fd6a9727544")
 		)
 		(embedded_fonts no)
@@ -6507,9 +6870,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/f44e9532-26bf-59b6-a8be-65e540d4af13")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6571,6 +6941,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G4")
+			(pintype "passive")
 			(uuid "b98f0a4e-836b-4d41-b83a-edae8438efab")
 		)
 		(pad "2" smd roundrect
@@ -6579,6 +6950,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "678d7849-8147-4b75-8f17-db143672ed72")
 		)
 		(embedded_fonts no)
@@ -6670,9 +7042,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/cad72d48-c630-54a1-82cb-b6a255a12a70")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6734,6 +7113,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_UP")
+			(pintype "passive")
 			(uuid "4fb40d75-269f-4667-9973-b25e99612f58")
 		)
 		(pad "2" smd roundrect
@@ -6742,6 +7122,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "9692b4cf-edc0-4ece-8a07-31f3d75b39cb")
 		)
 		(embedded_fonts no)
@@ -6833,9 +7214,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/cedb49dd-c5f1-5609-800e-8b1fb80d6f98")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6897,6 +7285,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "8f2e482a-1a12-481e-a018-e4ff7aa770d3")
 		)
 		(pad "2" smd roundrect
@@ -6905,6 +7294,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "EN")
+			(pintype "passive")
 			(uuid "66c6077f-79ea-49ce-8fae-de1e39fed089")
 		)
 		(embedded_fonts no)
@@ -6974,9 +7364,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/5d927535-d220-557a-b169-27d4c69f5757")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -7041,6 +7438,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "d2167386-8e1b-47e1-9a3f-cee26cfbfda5")
 		)
 		(embedded_fonts no)
@@ -7136,8 +7535,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/1f9f9d14-b9ac-5d3e-8484-dd8da9a908df")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7379,6 +7784,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "128e91cc-308f-4961-9901-bce2b6c73d1d")
 		)
 		(pad "1" thru_hole circle
@@ -7388,6 +7795,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "3f8e1426-7ed8-4af7-a206-6b5d355423c5")
 		)
 		(pad "2" thru_hole circle
@@ -7397,6 +7806,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_UP")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "3f0f4fb7-b3fa-4928-8cd7-b5df0cacdd91")
 		)
 		(pad "2" thru_hole circle
@@ -7406,6 +7817,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_UP")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "14aaf738-120e-487c-9cff-33c67f45324f")
 		)
 		(embedded_fonts no)
@@ -7497,9 +7910,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/4f41198e-8f02-5e2b-8019-5ac8be53ed63")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7561,6 +7981,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_ALL")
+			(pintype "passive")
 			(uuid "a545bb73-bec1-41ea-b551-ce35d085c331")
 		)
 		(pad "2" smd roundrect
@@ -7569,6 +7990,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "5a825dd2-91f4-4cae-873f-f21fa3bf521e")
 		)
 		(embedded_fonts no)
@@ -7660,9 +8082,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/28adbd08-a4de-5d7b-affe-faa25d58f8f4")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7724,6 +8153,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_SETUP")
+			(pintype "passive")
 			(uuid "eb2c7064-a11b-4eaf-9890-2a64e919772d")
 		)
 		(pad "2" smd roundrect
@@ -7732,6 +8162,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "0a24f9ee-78e7-49a9-8a33-98b07f792014")
 		)
 		(embedded_fonts no)
@@ -7823,9 +8254,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/772817f9-44cb-50c3-98ee-de513563afbb")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7887,6 +8325,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pintype "passive")
 			(uuid "dcacae62-a280-4fad-b064-1b30883597ae")
 		)
 		(pad "2" smd roundrect
@@ -7895,6 +8334,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "0a383bb0-32c3-4b00-a9a1-fcac181f9177")
 		)
 		(embedded_fonts no)
@@ -7986,9 +8426,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/8ad4d5f0-2639-514e-b872-0dac31b57b49")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8262,6 +8709,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "G_1")
+			(pintype "input")
 			(uuid "1364466b-236f-4fc4-a80a-5f9436ad7864")
 		)
 		(pad "2" smd roundrect
@@ -8270,6 +8719,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT")
+			(pinfunction "S_2")
+			(pintype "passive")
 			(uuid "13376786-3dc8-418e-b4bc-a2d8e8a35b79")
 		)
 		(pad "3" smd roundrect
@@ -8278,6 +8729,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/VBAT_JP")
+			(pinfunction "D_3")
+			(pintype "passive")
 			(uuid "5d6cc30f-96c0-4320-a9bf-46b614120062")
 		)
 		(embedded_fonts no)
@@ -8369,9 +8822,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/6ed47999-f9be-5a3a-93b6-3015e824dffe")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8645,6 +9105,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/Q1_B")
+			(pinfunction "B_1")
+			(pintype "input")
 			(uuid "f40167ee-1d0c-4f12-adae-425836db2617")
 		)
 		(pad "2" smd roundrect
@@ -8653,6 +9115,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/RTS")
+			(pinfunction "E_2")
+			(pintype "passive")
 			(uuid "3708cddc-2119-4202-a3de-8b2e1efb738a")
 		)
 		(pad "3" smd roundrect
@@ -8661,6 +9125,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "EN")
+			(pinfunction "C_3")
+			(pintype "passive")
 			(uuid "9ea5bafe-56e9-47d1-8c8e-0ef5ec9bd074")
 		)
 		(embedded_fonts no)
@@ -8751,9 +9217,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/75c725f3-5b6d-5d43-a25e-c632915120fe")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8815,6 +9288,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "LED_RED")
+			(pintype "passive")
 			(uuid "2f33e60b-df64-48a1-baaf-43b8f6a65c69")
 		)
 		(pad "2" smd roundrect
@@ -8823,6 +9297,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Buttons and LEDs/LED_R_A")
+			(pintype "passive")
 			(uuid "d6ff35cf-d98c-46aa-b72f-67275af466ee")
 		)
 		(embedded_fonts no)
@@ -8914,9 +9389,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/f49a8e0b-7d43-5595-a5d2-5c19e208ab72")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8978,6 +9460,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/PROG")
+			(pintype "passive")
 			(uuid "704f7b32-89bf-41fd-a524-40736aa9383c")
 		)
 		(pad "2" smd roundrect
@@ -8986,6 +9469,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "e29ff149-8aae-4dc4-bd7d-0f9e6503629a")
 		)
 		(embedded_fonts no)
@@ -9077,9 +9561,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/c1e948b7-8c65-5fac-9779-e833d591b3ab")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9141,6 +9632,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_TXD")
+			(pintype "passive")
 			(uuid "6ec937d5-6481-4e2c-ad45-a5505a696828")
 		)
 		(pad "2" smd roundrect
@@ -9149,6 +9641,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "U0RXD")
+			(pintype "passive")
 			(uuid "d0b65b3b-af14-4297-aa4e-24bbd4b6900e")
 		)
 		(embedded_fonts no)
@@ -9239,9 +9732,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/4ab7f7d3-6ee7-55ac-aff0-c4b8fd11fc29")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9303,6 +9803,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VSYS")
+			(pintype "passive")
 			(uuid "7c0f89af-aeec-4c82-92ed-b90b6d78ba30")
 		)
 		(pad "2" smd roundrect
@@ -9311,6 +9812,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "9caac8bc-1983-4c8c-9d7b-8be2047449ae")
 		)
 		(embedded_fonts no)
@@ -9406,8 +9908,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/92f2646d-84f5-57b3-8ecd-addd9fbd83ad")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9649,6 +10157,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "690e0110-19e7-4974-a4c3-406645a91e5a")
 		)
 		(pad "1" thru_hole circle
@@ -9658,6 +10168,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "fbdfe045-8b79-4ecc-af12-e1922cde0743")
 		)
 		(pad "2" thru_hole circle
@@ -9667,6 +10179,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G1")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "38260767-1379-4b4b-a31a-68844b49eb32")
 		)
 		(pad "2" thru_hole circle
@@ -9676,6 +10190,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G1")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "1732d4e9-8bcb-47db-9b36-c7f5895f2d9b")
 		)
 		(embedded_fonts no)
@@ -9767,9 +10283,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/de3eff35-179d-54be-bef8-1f51b6a32bdf")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9831,6 +10354,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G4")
+			(pintype "passive")
 			(uuid "c14adb54-7dd5-49e0-b911-60857861f185")
 		)
 		(pad "2" smd roundrect
@@ -9839,6 +10363,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "6f3f8c89-03ac-4f40-b145-cdef399ff0cb")
 		)
 		(embedded_fonts no)
@@ -9922,10 +10447,16 @@
 			)
 		)
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/45936de9-1ff8-592a-ba43-a5b01c860542")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
+		(duplicate_pad_numbers_are_jumpers yes)
 		(fp_line
 			(start 2.2 0.05)
 			(end 2.2 -0.05)
@@ -10073,6 +10604,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "EN")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "812c7ac1-fc7b-4903-867e-1d73e9100c96")
 		)
 		(pad "1" smd rect
@@ -10080,6 +10613,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "EN")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "623e0602-1a6d-46d7-bef3-91a3c4c59c47")
 		)
 		(pad "2" smd rect
@@ -10087,6 +10622,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "92604494-5fd0-447c-9549-88c2686c6db7")
 		)
 		(pad "2" smd rect
@@ -10094,6 +10631,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "3fa7d7fe-69c4-4cf8-9219-cf79beec8c74")
 		)
 		(embedded_fonts no)
@@ -10184,9 +10723,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/2a99748c-7cda-5baf-b22e-7a74529abad8")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10248,6 +10794,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.243902)
 			(net "/IR/IR_E2")
+			(pintype "passive")
 			(uuid "60833f59-6b65-4b7a-af23-0998ba9ee50e")
 		)
 		(pad "2" smd roundrect
@@ -10256,6 +10803,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.243902)
 			(net "GND")
+			(pintype "passive")
 			(uuid "0916c3fc-ba5e-4649-9c7f-f4581084c0f8")
 		)
 		(embedded_fonts no)
@@ -10347,9 +10895,18 @@
 				)
 			)
 		)
+		(property ki_fp_filters "QFN*4x4mm*P0.5mm*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/71c7791d-8596-571e-a331-3a902e96befb")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "9" "8" "4" "3" "10" "7" "6" "2" "25" "5" "16" "21" "20" "19" "18"
+					"22" "23" "24" "1" "17" "15" "14" "13" "12" "11"
+				)
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10701,6 +11258,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{RI}{slash}CLK-Pad1)")
+			(pinfunction "~{RI}/CLK_1")
+			(pintype "bidirectional+no_connect")
 			(uuid "e0667bfe-5ebe-44a9-a850-7bf4f9b2dfc3")
 		)
 		(pad "2" smd roundrect
@@ -10709,6 +11268,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_2")
+			(pintype "power_in")
 			(uuid "8f33fe61-04a0-4380-b0f7-f397e87353db")
 		)
 		(pad "3" smd roundrect
@@ -10717,6 +11278,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DP")
+			(pinfunction "D+_3")
+			(pintype "bidirectional")
 			(uuid "70308da2-8560-4d6d-b68e-3e7449437c6f")
 		)
 		(pad "4" smd roundrect
@@ -10725,6 +11288,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/USB_DN")
+			(pinfunction "D-_4")
+			(pintype "bidirectional")
 			(uuid "f37b7336-3f00-48a2-8664-ed15b7582bbc")
 		)
 		(pad "5" smd roundrect
@@ -10733,6 +11298,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/VDD_USB")
+			(pinfunction "VIO_5")
+			(pintype "power_in")
 			(uuid "01b60059-9871-4b4a-b995-a1697fd0e7e1")
 		)
 		(pad "6" smd roundrect
@@ -10741,6 +11308,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/VDD_USB")
+			(pinfunction "VDD_6")
+			(pintype "power_in")
 			(uuid "f2426540-bde4-4dac-8144-2c2df9527272")
 		)
 		(pad "7" smd roundrect
@@ -10749,6 +11318,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "VREGIN_7")
+			(pintype "power_in")
 			(uuid "c575fbc4-22bf-4e1e-b363-23b679fccea2")
 		)
 		(pad "8" smd roundrect
@@ -10757,6 +11328,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_VBUS")
+			(pinfunction "VBUS_8")
+			(pintype "input")
 			(uuid "cf7bf55b-edee-43ef-a78b-f44c9c8d1206")
 		)
 		(pad "9" smd roundrect
@@ -10765,6 +11338,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_RST")
+			(pinfunction "~{RST}_9")
+			(pintype "input")
 			(uuid "f4f71df2-d8f8-48ad-afe9-76c0e647d8c7")
 		)
 		(pad "10" smd roundrect
@@ -10773,6 +11348,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-NC-Pad10)")
+			(pinfunction "NC_10")
+			(pintype "no_connect")
 			(uuid "d9c2d268-f63a-440a-92d6-80489463b87c")
 		)
 		(pad "11" smd roundrect
@@ -10781,6 +11358,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{WAKEUP}{slash}GPIO.3-Pad11)")
+			(pinfunction "~{WAKEUP}/GPIO.3_11")
+			(pintype "bidirectional+no_connect")
 			(uuid "90163b38-1d9d-4149-91a8-570e81c696b5")
 		)
 		(pad "12" smd roundrect
@@ -10789,6 +11368,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-RS485{slash}GPIO.2-Pad12)")
+			(pinfunction "RS485/GPIO.2_12")
+			(pintype "bidirectional+no_connect")
 			(uuid "32173206-f1ca-4a1a-bc22-e61c1b9291c4")
 		)
 		(pad "13" smd roundrect
@@ -10797,6 +11378,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{RXT}{slash}GPIO.1-Pad13)")
+			(pinfunction "~{RXT}/GPIO.1_13")
+			(pintype "bidirectional+no_connect")
 			(uuid "5e0c5f60-2af4-496c-ba5c-a6067e7d5d36")
 		)
 		(pad "14" smd roundrect
@@ -10805,6 +11388,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{TXT}{slash}GPIO.0-Pad14)")
+			(pinfunction "~{TXT}/GPIO.0_14")
+			(pintype "bidirectional+no_connect")
 			(uuid "528639c2-f1f5-46b6-823d-e356d4449846")
 		)
 		(pad "15" smd roundrect
@@ -10813,6 +11398,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{SUSPEND}-Pad15)")
+			(pinfunction "~{SUSPEND}_15")
+			(pintype "output+no_connect")
 			(uuid "3f069442-1892-413d-bc78-d608213516f4")
 		)
 		(pad "16" smd roundrect
@@ -10821,6 +11408,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-NC-Pad16)")
+			(pinfunction "NC_16")
+			(pintype "no_connect")
 			(uuid "57079013-8bba-4878-9d7e-cc9a9dfcfa06")
 		)
 		(pad "17" smd roundrect
@@ -10829,6 +11418,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-SUSPEND-Pad17)")
+			(pinfunction "SUSPEND_17")
+			(pintype "output+no_connect")
 			(uuid "2edd75df-927f-47ed-866d-d7d285b06503")
 		)
 		(pad "18" smd roundrect
@@ -10837,6 +11428,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{CTS}-Pad18)")
+			(pinfunction "~{CTS}_18")
+			(pintype "input+no_connect")
 			(uuid "82bf2c35-976d-42e2-8cea-8a6416c332c3")
 		)
 		(pad "19" smd roundrect
@@ -10845,6 +11438,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/RTS")
+			(pinfunction "~{RTS}_19")
+			(pintype "output")
 			(uuid "ef344c4d-1c4e-4487-9183-dbfe0cb0b83d")
 		)
 		(pad "20" smd roundrect
@@ -10853,6 +11448,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_RXD")
+			(pinfunction "RXD_20")
+			(pintype "input")
 			(uuid "459ab3e6-4cac-4052-a71a-b8ac1d58f472")
 		)
 		(pad "21" smd roundrect
@@ -10861,6 +11458,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_TXD")
+			(pinfunction "TXD_21")
+			(pintype "output")
 			(uuid "71c7e4ea-87c1-42dc-bc7a-252003ed688a")
 		)
 		(pad "22" smd roundrect
@@ -10869,6 +11468,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{DSR}-Pad22)")
+			(pinfunction "~{DSR}_22")
+			(pintype "input+no_connect")
 			(uuid "a0137c48-f02f-41a3-9f03-4a6c37e2e5ee")
 		)
 		(pad "23" smd roundrect
@@ -10877,6 +11478,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/DTR")
+			(pinfunction "~{DTR}_23")
+			(pintype "output")
 			(uuid "67997483-5fb2-45c9-b922-dfeb1f371233")
 		)
 		(pad "24" smd roundrect
@@ -10885,6 +11488,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U102-~{DCD}-Pad24)")
+			(pinfunction "~{DCD}_24")
+			(pintype "input+no_connect")
 			(uuid "8001269f-628c-4628-bce7-6a7a7a71275c")
 		)
 		(pad "25" smd rect
@@ -10893,6 +11498,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask")
 			(net "GND")
+			(pinfunction "GND_25")
+			(pintype "passive")
 			(zone_connect 2)
 			(uuid "cc72a105-dea0-4e76-803a-537f6f089170")
 		)
@@ -10977,8 +11584,14 @@
 			)
 		)
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/44f464e5-c4a0-5294-bf38-1badfd3d2d8b")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers yes)
 		(fp_line
@@ -11128,6 +11741,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "IO0")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "bbe60ccc-4909-4054-9b40-21c45ba3ebd6")
 		)
 		(pad "1" smd rect
@@ -11135,6 +11750,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "IO0")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "da079a0f-89ed-49a3-9108-ce60647e554d")
 		)
 		(pad "2" smd rect
@@ -11142,6 +11759,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "0eae2ea0-95f4-4db2-8f76-df50fed88ac3")
 		)
 		(pad "2" smd rect
@@ -11149,6 +11768,8 @@
 			(size 0.9 1)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "b2198456-7d45-48c8-9c74-ff2166b5ae5e")
 		)
 		(embedded_fonts no)
@@ -11227,10 +11848,17 @@
 				)
 			)
 		)
+		(property ki_fp_filters "MountingHole*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/765af78e-8aad-429e-9995-f5cf86780813")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins)
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -11303,7 +11931,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.vishay.com/docs/81010/tsal6200.pdf"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -11337,9 +11965,42 @@
 				)
 			)
 		)
+		(property "Manufacturer" "Vishay"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8d2629ba-b5e4-455a-ad9f-6539e27d311e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MPN" "TSAL6200"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fe37be4b-4e1f-4c59-9adc-c9db0f063c13")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "LED* LED_SMD:* LED_THT:*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/51db40fb-36b1-5a2c-94d7-6020e9f17487")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11531,6 +12192,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/IR/IR_K2")
+			(pinfunction "K_1")
+			(pintype "passive")
 			(uuid "29363e59-94be-4f27-a732-cfa1060e6ea4")
 		)
 		(pad "2" thru_hole circle
@@ -11540,6 +12203,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "VSYS")
+			(pinfunction "A_2")
+			(pintype "passive")
 			(uuid "f07ad14c-d757-4c0f-a3fe-a9c0acb01541")
 		)
 		(embedded_fonts no)
@@ -11631,9 +12296,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/aa2679e3-8ac5-5f19-8d37-0881a1c49fed")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11695,6 +12367,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "c1b9068d-0048-4b7f-a3f7-cf74a49d09a4")
 		)
 		(pad "2" smd roundrect
@@ -11703,6 +12376,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "9fb0a2f7-6a41-4fa3-80fa-55a2e3d16d3b")
 		)
 		(embedded_fonts no)
@@ -11794,9 +12468,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/51727795-260e-5d10-8e0f-dedf39d5aa22")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11858,6 +12539,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G3")
+			(pintype "passive")
 			(uuid "9655d6eb-3530-4882-af9f-fe022431722d")
 		)
 		(pad "2" smd roundrect
@@ -11866,6 +12548,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "ec656bb2-f17d-4992-baf8-57d632552629")
 		)
 		(embedded_fonts no)
@@ -11957,9 +12640,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/159a97c4-3003-5858-ab93-4879e966c167")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12021,6 +12711,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_DOWN")
+			(pintype "passive")
 			(uuid "36307fd5-911e-4595-bbcf-7ce9609b9cb1")
 		)
 		(pad "2" smd roundrect
@@ -12029,6 +12720,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "95afb84b-5001-4836-8572-50da8fb8125a")
 		)
 		(embedded_fonts no)
@@ -12074,7 +12766,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.diodes.com/assets/Datasheets/AP2112.pdf"
+		(property "Datasheet" "https://datasheet.lcsc.com/datasheet/pdf/2701e0c3a2b84b9965f7a61f2c14e970.pdf?productCode=C841192"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12085,7 +12777,7 @@
 				)
 			)
 		)
-		(property "Description" "600mA low dropout linear regulator, with enable pin, 3.8V-6V input voltage range, 3.3V fixed positive output, SOT-23-5"
+		(property "Description" "600 mA LDO, 3.3 V fixed, with enable, ~2 uA quiescent, SOT-23-5 (drawn with the AP2112K symbol; same pinout)"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12120,9 +12812,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23?5*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/10cc9434-13da-552e-8398-8ff1d018040c")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2" "4" "5")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12396,6 +13095,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VSYS")
+			(pinfunction "VIN_1")
+			(pintype "power_in")
 			(uuid "086531a7-2fbf-4107-92f6-96bcb3fd5b3b")
 		)
 		(pad "2" smd roundrect
@@ -12404,6 +13105,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "GND_2")
+			(pintype "power_in")
 			(uuid "dd711130-af59-49af-a659-c032263ea63f")
 		)
 		(pad "3" smd roundrect
@@ -12412,6 +13115,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VSYS")
+			(pinfunction "EN_3")
+			(pintype "input")
 			(uuid "3b8cc46f-b3ca-4a65-9ca8-f3dc0547d40e")
 		)
 		(pad "4" smd roundrect
@@ -12420,6 +13125,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "unconnected-(U104-NC-Pad4)")
+			(pinfunction "NC_4")
+			(pintype "no_connect")
 			(uuid "d062f66f-0986-46a8-8d3a-6f57ff3cc219")
 		)
 		(pad "5" smd roundrect
@@ -12428,6 +13135,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pinfunction "VOUT_5")
+			(pintype "power_out")
 			(uuid "6de502d8-63b4-4299-bc76-643c3f19d060")
 		)
 		(embedded_fonts no)
@@ -12519,9 +13228,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/5e69c987-8478-5ac3-9750-c2a15cd77993")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12583,6 +13299,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/nRF24/NRF_VCC")
+			(pintype "passive")
 			(uuid "ef27cd98-914b-48e0-b497-e8536c64d404")
 		)
 		(pad "2" smd roundrect
@@ -12591,6 +13308,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "8221c604-7e99-46f5-9d39-7c499e5dc8a4")
 		)
 		(embedded_fonts no)
@@ -12681,9 +13399,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/c3f665f3-05b5-510d-870f-44cdda4201a1")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13018,6 +13743,8 @@
 			(remove_unused_layers no)
 			(roundrect_rratio 0.208333)
 			(net "/Power and USB/VBAT_BATT")
+			(pinfunction "Pin_1_1")
+			(pintype "passive")
 			(uuid "c102e60b-d3e4-4adb-8741-d4a344b37d4f")
 		)
 		(pad "2" thru_hole oval
@@ -13027,6 +13754,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "Pin_2_2")
+			(pintype "passive")
 			(uuid "ef2295af-b58c-4fb3-b480-c1b105f54f90")
 		)
 		(embedded_fonts no)
@@ -13118,9 +13847,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/72da1362-468d-5029-a3c9-6e87ee42e188")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13182,6 +13918,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/RTS")
+			(pintype "passive")
 			(uuid "c1596afc-d3cd-4461-b2c7-bdc3dfd5f248")
 		)
 		(pad "2" smd roundrect
@@ -13190,6 +13927,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/Q2_B")
+			(pintype "passive")
 			(uuid "21860488-6e90-4265-b394-752330f7a49e")
 		)
 		(embedded_fonts no)
@@ -13281,9 +14019,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/c5bfaeb9-31a7-527e-a21e-3e1980cca0a6")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13345,6 +14090,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_ALL")
+			(pintype "passive")
 			(uuid "b43b2988-c8d2-4dc0-8266-7df66677797f")
 		)
 		(pad "2" smd roundrect
@@ -13353,6 +14099,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "bb6ffeff-9d8c-40fc-a673-f62e84ef76f9")
 		)
 		(embedded_fonts no)
@@ -13444,9 +14191,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/21d3ecb9-ad02-5ab2-9a4d-a21d4d069628")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13508,6 +14262,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/nRF24/NRF_VCC")
+			(pintype "passive")
 			(uuid "d8c1fb70-5136-4ea9-9cda-9ebd43ea0489")
 		)
 		(pad "2" smd roundrect
@@ -13516,6 +14271,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "a967c07b-13bf-4429-b371-278362a210f1")
 		)
 		(embedded_fonts no)
@@ -13611,8 +14367,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/b21ad5a9-8c9b-5db2-81e0-4c3666b2097c")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13854,6 +14616,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "46e1d22e-2053-4ea6-8817-5b17b8f3c95a")
 		)
 		(pad "1" thru_hole circle
@@ -13863,6 +14627,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "7f242d22-d853-4fc0-9cc5-ca592f719803")
 		)
 		(pad "2" thru_hole circle
@@ -13872,6 +14638,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G4")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "48e54a1b-1fdb-46f2-a620-65e1fcd1403e")
 		)
 		(pad "2" thru_hole circle
@@ -13881,6 +14649,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G4")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "6477e35b-9cd6-4375-91b8-5ac9f1cf15d3")
 		)
 		(embedded_fonts no)
@@ -13972,9 +14742,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/e66fc8fe-e51a-53cc-a3a2-617a74420311")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -14036,6 +14813,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G1")
+			(pintype "passive")
 			(uuid "7530da98-5006-473c-a52a-dea063d92b55")
 		)
 		(pad "2" smd roundrect
@@ -14044,6 +14822,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "73504852-f6ba-432b-aa8d-f703b621f3b4")
 		)
 		(embedded_fonts no)
@@ -14135,9 +14914,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/09fbd2ac-5c11-57ff-afcd-e26c1810708b")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -14199,6 +14985,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pintype "passive")
 			(uuid "e85afe42-fb96-4438-aa31-4abe64f1ffcc")
 		)
 		(pad "2" smd roundrect
@@ -14207,6 +14994,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "691300a0-efdf-4d7d-bd5b-c4201d901118")
 		)
 		(embedded_fonts no)
@@ -14298,9 +15086,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/b9849112-cb28-5fc6-8723-95142883d93f")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -14362,6 +15157,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.217391)
 			(net "/nRF24/NRF_VCC")
+			(pintype "passive")
 			(uuid "a287f821-f799-478c-afba-154f1e651bc9")
 		)
 		(pad "2" smd roundrect
@@ -14370,6 +15166,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.217391)
 			(net "GND")
+			(pintype "passive")
 			(uuid "e062f9f1-c018-4502-a95c-edce6991d667")
 		)
 		(embedded_fonts no)
@@ -14461,9 +15258,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/6d309715-0ae0-5c9d-b341-66de52fbc9a8")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -14525,6 +15329,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_UP")
+			(pintype "passive")
 			(uuid "4f3f5fab-f605-4962-a657-320b27c5de70")
 		)
 		(pad "2" smd roundrect
@@ -14533,6 +15338,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "f480e816-e774-4c5c-b015-0dab4901ae81")
 		)
 		(embedded_fonts no)
@@ -14624,9 +15430,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/f7fcb314-d99b-53a2-a81a-935c092f43f4")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -14688,6 +15501,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/VDD_USB")
+			(pintype "passive")
 			(uuid "549c1f70-7258-4755-bc6f-b941432b3a96")
 		)
 		(pad "2" smd roundrect
@@ -14696,6 +15510,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_RST")
+			(pintype "passive")
 			(uuid "56a71d57-44c1-4c17-86e0-4bda65bb77cb")
 		)
 		(embedded_fonts no)
@@ -14791,8 +15606,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/150c7313-ffd5-57de-8a57-8a6c62693227")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15034,6 +15855,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "48018748-a9aa-4fb6-b00a-033f78e00266")
 		)
 		(pad "1" thru_hole circle
@@ -15043,6 +15866,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "8b2428ea-5a6f-4dda-b0b9-d3f532756fa5")
 		)
 		(pad "2" thru_hole circle
@@ -15052,6 +15877,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G3")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "9fa6c5c8-74b3-4509-a667-edc95afca36d")
 		)
 		(pad "2" thru_hole circle
@@ -15061,6 +15888,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_G3")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "a82acffb-a68c-41b9-80ae-c3b0326155fd")
 		)
 		(embedded_fonts no)
@@ -15143,9 +15972,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "D*SOD?123*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/5afeb489-8013-5be4-96de-913b08924bd8")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15345,6 +16181,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pinfunction "K_1")
+			(pintype "passive")
 			(uuid "fbd68e2a-04c7-41e2-8f4f-8910d088afae")
 		)
 		(pad "2" smd roundrect
@@ -15353,6 +16191,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_CLAMP")
+			(pinfunction "A_2")
+			(pintype "passive")
 			(uuid "78dbc588-fd64-431a-9db1-23bd978257ad")
 		)
 		(embedded_fonts no)
@@ -15444,9 +16284,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "Inductor_* L_* *Ferrite*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/f64074cc-6acb-5d3b-83f0-d751bbd441da")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15508,6 +16355,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "c238de97-20d5-4ba5-8179-a0ea32561922")
 		)
 		(pad "2" smd roundrect
@@ -15516,6 +16364,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/nRF24/NRF_VCC")
+			(pintype "passive")
 			(uuid "748cd8e8-4224-43a2-9cfa-03848e6b5a29")
 		)
 		(embedded_fonts no)
@@ -15607,9 +16456,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/b50f90d5-02d2-517b-bfc1-9cb6dea66458")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15671,6 +16527,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "+3V3")
+			(pintype "passive")
 			(uuid "061f9bb1-504d-47f3-af32-434258c3194a")
 		)
 		(pad "2" smd roundrect
@@ -15679,6 +16536,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "d26bc49c-9b26-4b74-8e4c-6e43ddb9c1a5")
 		)
 		(embedded_fonts no)
@@ -15770,9 +16628,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/36da97ae-ca80-5625-a2fa-da610b6e9529")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15834,6 +16699,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/VDD_USB")
+			(pintype "passive")
 			(uuid "a9607b1f-5793-4a66-a645-1a290aa3cad9")
 		)
 		(pad "2" smd roundrect
@@ -15842,6 +16708,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "cd19b730-b165-45a7-84a4-a6108198e9f0")
 		)
 		(embedded_fonts no)
@@ -15933,9 +16800,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/e36a671d-57f7-5017-89a8-dfdb9e0dc428")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15997,6 +16871,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "NRF_CE")
+			(pintype "passive")
 			(uuid "2906ab8e-7f38-472a-9029-aba18ef91ce9")
 		)
 		(pad "2" smd roundrect
@@ -16005,6 +16880,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "fdf0c260-2253-4f57-a2f5-9b38050f3814")
 		)
 		(embedded_fonts no)
@@ -16096,9 +16972,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/d79c9c97-c542-5419-a1b5-abff188bb856")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16160,6 +17043,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT")
+			(pintype "passive")
 			(uuid "920a9278-dbf9-4e2a-ab4f-7629684655c3")
 		)
 		(pad "2" smd roundrect
@@ -16168,6 +17052,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT_SENSE")
+			(pintype "passive")
 			(uuid "e1ad69aa-aa5b-4a8f-8e66-b03d7015da2c")
 		)
 		(embedded_fonts no)
@@ -16263,9 +17148,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/2aa3ed6d-23b4-4606-8ca9-7a1c3a820c0e")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16455,6 +17347,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.1388888889)
 			(net "VSYS")
+			(pinfunction "K_1")
+			(pintype "passive")
 			(uuid "4b1ed194-1523-4f49-ba19-000627ce12fb")
 		)
 		(pad "2" smd roundrect
@@ -16463,6 +17357,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.1388888889)
 			(net "VBUS")
+			(pinfunction "A_2")
+			(pintype "passive")
 			(uuid "053bcd29-a2fa-489e-ba05-4c57dde89dbc")
 		)
 		(embedded_fonts no)
@@ -16554,9 +17450,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/0f041f94-e6d0-53fc-a33c-9830e9a08a02")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16618,6 +17521,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G3")
+			(pintype "passive")
 			(uuid "93d45a50-5046-44ff-9830-afa848ea1415")
 		)
 		(pad "2" smd roundrect
@@ -16626,6 +17530,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "dcfcae0b-bd55-4d3a-9653-1cdd74e384c6")
 		)
 		(embedded_fonts no)
@@ -16715,9 +17620,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/3aaae578-a58b-5858-9354-ef8de9c25945")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16991,6 +17903,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_BASE")
+			(pinfunction "B_1")
+			(pintype "input")
 			(uuid "6436add8-1561-463d-8a66-16092b294c4b")
 		)
 		(pad "2" smd roundrect
@@ -16999,6 +17913,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_E2")
+			(pinfunction "E_2")
+			(pintype "passive")
 			(uuid "0e4932ca-4c33-4726-b118-fc03b6712930")
 		)
 		(pad "3" smd roundrect
@@ -17007,6 +17923,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_K2")
+			(pinfunction "C_3")
+			(pintype "passive")
 			(uuid "874b561f-1f5f-4f76-9124-a5f8a9887fbd")
 		)
 		(embedded_fonts no)
@@ -17085,10 +18003,17 @@
 				)
 			)
 		)
+		(property ki_fp_filters "MountingHole*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/51969bb3-9674-42ea-a629-6a5d6a46a993")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins)
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -17208,9 +18133,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/9cd6039e-f990-5705-a554-2ceecc5ba8e0")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -17272,6 +18204,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pintype "passive")
 			(uuid "e6d1752e-ede5-4182-bef2-264f43e0a491")
 		)
 		(pad "2" smd roundrect
@@ -17280,6 +18213,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_VBUS")
+			(pintype "passive")
 			(uuid "419de947-0f4c-4b6c-977b-f7b9f480d48f")
 		)
 		(embedded_fonts no)
@@ -17362,9 +18296,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "D*SOD?123*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/16166aa5-cea6-5a07-baa5-5244dffc8c92")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -17564,6 +18505,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_CLAMP")
+			(pinfunction "K_1")
+			(pintype "passive")
 			(uuid "fdab4de5-d0a9-4fea-8aca-d44c3586d8e0")
 		)
 		(pad "2" smd roundrect
@@ -17572,6 +18515,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_BASE")
+			(pinfunction "A_2")
+			(pintype "passive")
 			(uuid "33237fe1-835c-4aa6-b4a9-fa38aa05a994")
 		)
 		(embedded_fonts no)
@@ -17663,9 +18608,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/ba1dedb4-55b6-53d0-baef-0ab5e8a1b2c4")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -17727,6 +18679,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_G2")
+			(pintype "passive")
 			(uuid "468790c6-4d03-4ec6-99c8-449fb44cabeb")
 		)
 		(pad "2" smd roundrect
@@ -17735,6 +18688,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "dc7a3732-6f0f-4cb9-9564-1c33e9cb48cf")
 		)
 		(embedded_fonts no)
@@ -17824,9 +18778,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/d6be8e30-e132-5720-948e-443fa81f0273")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -18100,6 +19061,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_BASE")
+			(pinfunction "B_1")
+			(pintype "input")
 			(uuid "63976e2f-6182-4d98-9d80-4bac9039410c")
 		)
 		(pad "2" smd roundrect
@@ -18108,6 +19071,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_E1")
+			(pinfunction "E_2")
+			(pintype "passive")
 			(uuid "a49fb338-cf2f-4e59-b29b-34eede54cfbb")
 		)
 		(pad "3" smd roundrect
@@ -18116,6 +19081,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/IR/IR_K1")
+			(pinfunction "C_3")
+			(pintype "passive")
 			(uuid "e5cde80b-bf8b-4f26-b052-06ad476197e4")
 		)
 		(embedded_fonts no)
@@ -18199,9 +19166,19 @@
 				)
 			)
 		)
+		(property ki_fp_filters "ESP32?WROOM?32E*")
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/982df959-8798-5a9a-a90a-470238127ed6")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "3" "4" "5" "21" "22" "17" "18" "20" "19" "32" "2" "1" "15" "38"
+					"39" "25" "35" "24" "34" "26" "29" "14" "16" "13" "23" "27" "28" "30"
+					"31" "33" "36" "37" "10" "11" "12" "8" "9" "6" "7"
+				)
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -18342,6 +19319,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_1")
+			(pintype "power_in")
 			(uuid "13289255-3598-4e78-9ff6-e8953517854e")
 		)
 		(pad "2" smd rect
@@ -18349,6 +19328,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "+3V3")
+			(pinfunction "VDD_2")
+			(pintype "power_in")
 			(uuid "65f36382-0da9-4377-8ae4-9f3ee6dca2bd")
 		)
 		(pad "3" smd rect
@@ -18356,6 +19337,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "EN")
+			(pinfunction "EN_3")
+			(pintype "input")
 			(uuid "9f06c5a9-9e46-40df-877d-07112aa8d20b")
 		)
 		(pad "4" smd rect
@@ -18363,6 +19346,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_G4")
+			(pinfunction "SENSOR_VP_4")
+			(pintype "input")
 			(uuid "0398d834-adf5-4606-a541-6d041fabc59a")
 		)
 		(pad "5" smd rect
@@ -18370,6 +19355,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "VBAT_SENSE")
+			(pinfunction "SENSOR_VN_5")
+			(pintype "input")
 			(uuid "5bd76823-3910-4fdf-b281-7c055f3c63d7")
 		)
 		(pad "6" smd rect
@@ -18377,6 +19364,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_G2")
+			(pinfunction "IO34_6")
+			(pintype "input")
 			(uuid "2860b68e-fcb4-4385-b74b-ffc3806d1b72")
 		)
 		(pad "7" smd rect
@@ -18384,6 +19373,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_SETUP")
+			(pinfunction "IO35_7")
+			(pintype "input")
 			(uuid "51980ef3-f152-46c4-8ea7-085e6213b37d")
 		)
 		(pad "8" smd rect
@@ -18391,6 +19382,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_UP")
+			(pinfunction "IO32_8")
+			(pintype "bidirectional")
 			(uuid "1dcaa46e-c300-4096-9098-802f84b3f6b3")
 		)
 		(pad "9" smd rect
@@ -18398,6 +19391,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_DOWN")
+			(pinfunction "IO33_9")
+			(pintype "bidirectional")
 			(uuid "f371d07f-bf62-4af7-a31c-85165e4974d0")
 		)
 		(pad "10" smd rect
@@ -18405,6 +19400,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_ALL")
+			(pinfunction "IO25_10")
+			(pintype "bidirectional")
 			(uuid "6e41215a-3741-42c3-be69-880a9e06c840")
 		)
 		(pad "11" smd rect
@@ -18412,6 +19409,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_G1")
+			(pinfunction "IO26_11")
+			(pintype "bidirectional")
 			(uuid "42c7a13e-f3f6-467a-99fc-250268ffb982")
 		)
 		(pad "12" smd rect
@@ -18419,6 +19418,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "BTN_G3")
+			(pinfunction "IO27_12")
+			(pintype "bidirectional")
 			(uuid "e0877aa9-ff96-43ec-8703-c41c7bd02322")
 		)
 		(pad "13" smd rect
@@ -18426,6 +19427,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "/MCU/AB_SW_PIN")
+			(pinfunction "IO14_13")
+			(pintype "bidirectional")
 			(uuid "b40b78db-d885-417a-8804-7ec86c85334b")
 		)
 		(pad "14" smd rect
@@ -18433,6 +19436,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-IO12-Pad14)")
+			(pinfunction "IO12_14")
+			(pintype "bidirectional+no_connect")
 			(uuid "c8b71d0f-8e02-46ec-a5a7-11f02e7dda65")
 		)
 		(pad "15" smd rect
@@ -18440,6 +19445,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_15")
+			(pintype "power_in")
 			(uuid "55d2508b-4812-4875-b1ae-c9fbd6ee7615")
 		)
 		(pad "16" smd rect
@@ -18447,6 +19454,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "NRF_IRQ_OPT")
+			(pinfunction "IO13_16")
+			(pintype "bidirectional")
 			(uuid "bfa909af-7d75-4948-b664-ee8267e85758")
 		)
 		(pad "17" smd rect
@@ -18454,6 +19463,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-NC-Pad17)")
+			(pinfunction "NC_17")
+			(pintype "no_connect")
 			(uuid "fbc38695-ba09-488e-953f-6988f065d2ab")
 		)
 		(pad "18" smd rect
@@ -18461,6 +19472,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-NC-Pad18)")
+			(pinfunction "NC_18")
+			(pintype "no_connect")
 			(uuid "e8f2fb2d-2d43-4feb-a078-bc863c80c22b")
 		)
 		(pad "19" smd rect
@@ -18468,6 +19481,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-NC-Pad19)")
+			(pinfunction "NC_19")
+			(pintype "no_connect")
 			(uuid "4abe7339-6208-4596-9862-89b0b282e895")
 		)
 		(pad "20" smd rect
@@ -18475,6 +19490,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-NC-Pad20)")
+			(pinfunction "NC_20")
+			(pintype "no_connect")
 			(uuid "d236c30d-bc35-4747-a640-674471e16c0a")
 		)
 		(pad "21" smd rect
@@ -18482,6 +19499,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-NC-Pad21)")
+			(pinfunction "NC_21")
+			(pintype "no_connect")
 			(uuid "86910d76-76fa-48c6-afab-08af1a477ed8")
 		)
 		(pad "22" smd rect
@@ -18489,6 +19508,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-NC-Pad22)")
+			(pinfunction "NC_22")
+			(pintype "no_connect")
 			(uuid "63919691-f685-4673-b45a-c6c34879e995")
 		)
 		(pad "23" smd rect
@@ -18496,6 +19517,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-IO15-Pad23)")
+			(pinfunction "IO15_23")
+			(pintype "bidirectional+no_connect")
 			(uuid "862b0902-7ded-48a5-a74a-1bfc4729c0d7")
 		)
 		(pad "24" smd rect
@@ -18503,6 +19526,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-IO2-Pad24)")
+			(pinfunction "IO2_24")
+			(pintype "bidirectional+no_connect")
 			(uuid "065d7592-d717-423f-b8b0-11cb8c79020e")
 		)
 		(pad "25" smd rect
@@ -18510,6 +19535,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "IO0")
+			(pinfunction "IO0_25")
+			(pintype "bidirectional")
 			(uuid "1586a04d-d08a-468e-9f01-f21f2b7d8a72")
 		)
 		(pad "26" smd rect
@@ -18517,6 +19544,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "IR_TX")
+			(pinfunction "IO4_26")
+			(pintype "bidirectional")
 			(uuid "27fcf787-0e42-4abf-b73b-38a2b362b182")
 		)
 		(pad "27" smd rect
@@ -18524,6 +19553,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "LED_GREEN")
+			(pinfunction "IO16_27")
+			(pintype "bidirectional")
 			(uuid "ff218310-e56c-40b6-8318-67389663ae18")
 		)
 		(pad "28" smd rect
@@ -18531,6 +19562,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "NRF_CE")
+			(pinfunction "IO17_28")
+			(pintype "bidirectional")
 			(uuid "32b1ca3e-b926-4186-9d5b-70b03b8b4126")
 		)
 		(pad "29" smd rect
@@ -18538,6 +19571,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "NRF_CSN")
+			(pinfunction "IO5_29")
+			(pintype "bidirectional")
 			(uuid "a5e156f3-2e2c-4b13-89f0-461a40def0a0")
 		)
 		(pad "30" smd rect
@@ -18545,6 +19580,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "NRF_SCK")
+			(pinfunction "IO18_30")
+			(pintype "bidirectional")
 			(uuid "0941e6e5-0117-4cb3-8c0f-1fe8c8016edd")
 		)
 		(pad "31" smd rect
@@ -18552,6 +19589,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "NRF_MISO")
+			(pinfunction "IO19_31")
+			(pintype "bidirectional")
 			(uuid "763dd4a1-a58a-45f7-a865-80d16f100878")
 		)
 		(pad "32" smd rect
@@ -18559,6 +19598,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-NC-Pad32)")
+			(pinfunction "NC_32")
+			(pintype "no_connect")
 			(uuid "dcbc2765-7676-4564-b852-6f987dfcaaea")
 		)
 		(pad "33" smd rect
@@ -18566,6 +19607,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "unconnected-(U201-IO21-Pad33)")
+			(pinfunction "IO21_33")
+			(pintype "bidirectional+no_connect")
 			(uuid "7f2c88e9-4df3-40da-b9b7-d85c841dcfb4")
 		)
 		(pad "34" smd rect
@@ -18573,6 +19616,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "U0RXD")
+			(pinfunction "RXD0/IO3_34")
+			(pintype "bidirectional")
 			(uuid "5faa1f4a-6076-4b9a-bd5c-4a43454601f2")
 		)
 		(pad "35" smd rect
@@ -18580,6 +19625,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "U0TXD")
+			(pinfunction "TXD0/IO1_35")
+			(pintype "bidirectional")
 			(uuid "97743830-b212-4135-affe-542f8ab4f9c3")
 		)
 		(pad "36" smd rect
@@ -18587,6 +19634,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "LED_RED")
+			(pinfunction "IO22_36")
+			(pintype "bidirectional")
 			(uuid "d0b1b815-687d-4bcc-88d1-20631b993a87")
 		)
 		(pad "37" smd rect
@@ -18594,6 +19643,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "NRF_MOSI")
+			(pinfunction "IO23_37")
+			(pintype "bidirectional")
 			(uuid "a49565f8-4ac1-463f-ba85-d069b5443911")
 		)
 		(pad "38" smd rect
@@ -18601,6 +19652,8 @@
 			(size 1.5 0.9)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_38")
+			(pintype "power_in")
 			(uuid "dd1aa8c4-0571-4eca-a680-0fb8d7d998c0")
 		)
 		(pad "39" smd rect
@@ -18609,6 +19662,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "5f2d7ae1-d159-4c7b-9647-1e3722aa0ca1")
 		)
@@ -18620,6 +19675,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "17fbdc52-de5f-4799-b613-3b8ccddd3a08")
 		)
@@ -18629,6 +19686,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "a29a8d3a-305c-4db7-bdbc-247e32464492")
 		)
@@ -18640,6 +19699,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "f2832915-19e8-45e4-bab3-2efc550e3a02")
 		)
@@ -18649,6 +19710,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "24652d50-4b5c-495f-bb78-cc487d8669e3")
 		)
@@ -18660,6 +19723,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "77b3d18b-d64d-4eb5-98ec-ba854b08e6e8")
 		)
@@ -18671,6 +19736,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "b41ea933-27b3-4a8d-897b-bfddc6b64eb8")
 		)
@@ -18682,6 +19749,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "077ee87b-f95f-497b-a537-fe838a094381")
 		)
@@ -18691,6 +19760,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "034fe69b-f672-48e5-ae45-22326fc79f8c")
 		)
@@ -18702,6 +19773,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "a564a4d6-74a5-4b67-9655-4f397cce05a1")
 		)
@@ -18711,6 +19784,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "6841d8fa-a606-4e61-8a0a-86cde4dfe844")
 		)
@@ -18722,6 +19797,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "f7a200f6-1646-411f-84af-91e2ee77d4f1")
 		)
@@ -18731,6 +19808,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "53de67b1-6fab-4cd0-9803-4783b2681302")
 		)
@@ -18742,6 +19821,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "a947f7df-211e-43e1-b2bd-d2b2f5f10a31")
 		)
@@ -18753,6 +19834,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "5fc918f3-e260-4a74-af0c-16e209323482")
 		)
@@ -18764,6 +19847,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "2e3767e0-c5f0-4df0-892c-dffb7c136d26")
 		)
@@ -18773,6 +19858,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "728afefd-828f-451e-9f7d-977532be7486")
 		)
@@ -18784,6 +19871,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "536f2a4c-3765-4373-8116-3fb68176099f")
 		)
@@ -18793,6 +19882,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "fffd2847-649a-45cd-a77e-7f822b3c34cf")
 		)
@@ -18804,6 +19895,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "7c609569-0cc9-4718-b1f3-25456957ab95")
 		)
@@ -18813,6 +19906,8 @@
 			(property pad_prop_heatsink)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "GND_39")
+			(pintype "power_in")
 			(zone_connect 2)
 			(uuid "ef49eb56-21b2-4811-978b-93a19d9dfe74")
 		)
@@ -18926,8 +20021,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/a50e365f-4174-5840-9fa1-2a2065f2eefa")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "2" "1" "3")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -19264,6 +20365,8 @@
 			(size 0.7 1.5)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "GND")
+			(pinfunction "A_1")
+			(pintype "passive")
 			(uuid "8deed406-7b66-4aa5-a221-baf91e3c18cb")
 		)
 		(pad "2" smd rect
@@ -19271,6 +20374,8 @@
 			(size 0.7 1.5)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "AB_SW")
+			(pinfunction "B_2")
+			(pintype "passive")
 			(uuid "43700999-f028-49bc-95fe-f94f5490468b")
 		)
 		(pad "3" smd rect
@@ -19278,6 +20383,8 @@
 			(size 0.7 1.5)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(net "+3V3")
+			(pinfunction "C_3")
+			(pintype "passive")
 			(uuid "443660fd-dd6f-45d9-afce-c1f93724276b")
 		)
 		(embedded_fonts no)
@@ -19369,9 +20476,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/e858733c-baf8-59c6-a7fd-7476bbb672d4")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -19433,6 +20547,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VSYS")
+			(pintype "passive")
 			(uuid "8011c7a8-5e71-4e4b-878f-0be6c10ae276")
 		)
 		(pad "2" smd roundrect
@@ -19441,6 +20556,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "fe47a77e-b2ad-41f1-a99f-ea2bdd6ddb44")
 		)
 		(embedded_fonts no)
@@ -19510,9 +20626,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/b7be2c39-2b50-5b0a-a3b8-6f8a72dcfe5d")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -19577,6 +20700,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "67a5944e-1b4b-46f6-913a-f2e4eac8b15e")
 		)
 		(embedded_fonts no)
@@ -19668,9 +20793,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/4c3e9b70-1f2a-4b8c-9d64-7a5e2f1c3b20/ce801c43-bd6f-5ddd-bc9f-ac35d89afb3e")
-		(sheetname "MCU")
+		(sheetname "/MCU/")
 		(sheetfile "mcu.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -19732,6 +20864,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "EN")
+			(pintype "passive")
 			(uuid "c1de6818-771c-499b-8847-bc61bc979897")
 		)
 		(pad "2" smd roundrect
@@ -19740,6 +20873,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "4e57c813-4767-4024-a15b-e8b375ec36c2")
 		)
 		(embedded_fonts no)
@@ -19830,9 +20964,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/fd146745-6574-5300-ba74-64bf7610ac74")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -19894,6 +21035,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.243902)
 			(net "/IR/IR_E1")
+			(pintype "passive")
 			(uuid "27f7af64-6780-4f1e-b845-e3613764f7e8")
 		)
 		(pad "2" smd roundrect
@@ -19902,6 +21044,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.243902)
 			(net "GND")
+			(pintype "passive")
 			(uuid "8aa2105e-7f6a-4333-9329-d75badf3056b")
 		)
 		(embedded_fonts no)
@@ -19993,9 +21136,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SOT?23*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/c762aef2-8675-452e-926c-e959e71131d5")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -20269,6 +21419,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBUS")
+			(pinfunction "G_1")
+			(pintype "input")
 			(uuid "514854ff-3c81-4795-acf0-096a7c5641ee")
 		)
 		(pad "2" smd roundrect
@@ -20277,6 +21429,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VSYS")
+			(pinfunction "S_2")
+			(pintype "passive")
 			(uuid "8c98f09a-c4a4-46a7-a14b-0276abe05fb6")
 		)
 		(pad "3" smd roundrect
@@ -20285,6 +21439,8 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT")
+			(pinfunction "D_3")
+			(pintype "passive")
 			(uuid "5667fe9c-2eb3-47da-9c74-8126ed3bf26c")
 		)
 		(embedded_fonts no)
@@ -20376,9 +21532,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/bbc060ed-6986-561c-8c58-593c98fc39b0")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -20440,6 +21603,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CP_VBUS")
+			(pintype "passive")
 			(uuid "127d834b-bd59-4174-91b1-4100175b8712")
 		)
 		(pad "2" smd roundrect
@@ -20448,6 +21612,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "7e8b937e-ba36-4381-8df5-53d66391b6d0")
 		)
 		(embedded_fonts no)
@@ -20538,9 +21703,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/0ef99e53-780d-5ee1-8dbe-50d33e707163")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -20602,6 +21774,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.217391)
 			(net "VSYS")
+			(pintype "passive")
 			(uuid "8736551e-6bad-4c09-b5d4-a6f16bff4764")
 		)
 		(pad "2" smd roundrect
@@ -20610,6 +21783,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.217391)
 			(net "GND")
+			(pintype "passive")
 			(uuid "afeca906-479c-4b1c-a145-55f02452078a")
 		)
 		(embedded_fonts no)
@@ -20701,9 +21875,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/52019733-8aff-5bd8-bc52-a54248859083")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -20765,6 +21946,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/DTR")
+			(pintype "passive")
 			(uuid "9a0ca02b-2767-471c-862c-3d9bc4298813")
 		)
 		(pad "2" smd roundrect
@@ -20773,6 +21955,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/Q1_B")
+			(pintype "passive")
 			(uuid "c8ca5e3f-09c2-4983-8c5b-c366870f25e9")
 		)
 		(embedded_fonts no)
@@ -20851,9 +22034,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "Connector*:*_2x??_*")
 		(path "/6e8b2d53-9f7c-4a4b-83da-2f5a7b9cad40/3a0c21cf-15af-5a84-b455-38dcbf0d7b1f")
-		(sheetname "nRF24")
+		(sheetname "/nRF24/")
 		(sheetfile "nrf24.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "3" "5" "7" "2" "4" "6" "8")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -21044,6 +22234,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
+			(pinfunction "Pin_1_1")
+			(pintype "passive")
 			(uuid "53062358-82ea-4851-a7d5-be704758411e")
 		)
 		(pad "2" thru_hole circle
@@ -21053,6 +22245,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/nRF24/NRF_VCC")
+			(pinfunction "Pin_2_2")
+			(pintype "passive")
 			(uuid "528c0b05-394e-48ea-bebb-1f8ba0fd3e4b")
 		)
 		(pad "3" thru_hole circle
@@ -21062,6 +22256,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "NRF_CE")
+			(pinfunction "Pin_3_3")
+			(pintype "passive")
 			(uuid "027a2de6-9689-4ebd-9a62-8d2e497a2bf5")
 		)
 		(pad "4" thru_hole circle
@@ -21071,6 +22267,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "NRF_CSN")
+			(pinfunction "Pin_4_4")
+			(pintype "passive")
 			(uuid "eaedc9b6-b7fd-4017-99e8-110e449fbaaf")
 		)
 		(pad "5" thru_hole circle
@@ -21080,6 +22278,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "NRF_SCK")
+			(pinfunction "Pin_5_5")
+			(pintype "passive")
 			(uuid "04b37329-e7ec-47bd-8117-f6900b33fcfa")
 		)
 		(pad "6" thru_hole circle
@@ -21089,6 +22289,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "NRF_MOSI")
+			(pinfunction "Pin_6_6")
+			(pintype "passive")
 			(uuid "c7424498-f5ff-48e2-b30d-d9fadcbe5e99")
 		)
 		(pad "7" thru_hole circle
@@ -21098,6 +22300,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "NRF_MISO")
+			(pinfunction "Pin_7_7")
+			(pintype "passive")
 			(uuid "04af83c3-59ca-46e2-9d40-22129630442d")
 		)
 		(pad "8" thru_hole circle
@@ -21107,6 +22311,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "/nRF24/NRF_IRQ")
+			(pinfunction "Pin_8_8")
+			(pintype "passive")
 			(uuid "6260cee3-6691-47b0-99e2-777df074735d")
 		)
 		(embedded_fonts no)
@@ -21177,11 +22383,18 @@
 				)
 			)
 		)
+		(property ki_fp_filters "SolderJumper*Bridged*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/690e0ab6-0f88-59f2-a0f3-6835fdb36733")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(zone_connect 1)
-		(attr exclude_from_pos_files exclude_from_bom allow_soldermask_bridges)
+		(attr exclude_from_bom allow_soldermask_bridges)
 		(net_tie_pad_groups "1, 2")
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_poly
@@ -21336,6 +22549,8 @@
 			(size 1 0.5)
 			(layers "F.Cu" "F.Mask")
 			(net "/Power and USB/VBAT_BATT")
+			(pinfunction "A_1")
+			(pintype "passive")
 			(zone_connect 2)
 			(thermal_bridge_angle 45)
 			(options
@@ -21370,6 +22585,8 @@
 			(size 1 0.5)
 			(layers "F.Cu" "F.Mask")
 			(net "/Power and USB/VBAT_JP")
+			(pinfunction "B_2")
+			(pintype "passive")
 			(zone_connect 2)
 			(thermal_bridge_angle 45)
 			(options
@@ -21477,9 +22694,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/13c867a7-7ada-5cd8-a30d-1907b691b0be")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -21541,6 +22765,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/CC2")
+			(pintype "passive")
 			(uuid "28d2b21c-768e-4ca2-83aa-7fa433c91f50")
 		)
 		(pad "2" smd roundrect
@@ -21549,6 +22774,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "e33211be-02bc-4f93-929b-2543eb141d8c")
 		)
 		(embedded_fonts no)
@@ -21640,9 +22866,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/61459ad5-4402-5f44-a9c7-2a3491767e7c")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -21704,6 +22937,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "/Power and USB/VDD_USB")
+			(pintype "passive")
 			(uuid "50ecd48e-f755-4c22-af2f-a58e432b9533")
 		)
 		(pad "2" smd roundrect
@@ -21712,6 +22946,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "3e4c7b9e-75c2-42d6-bf9d-a333d6939271")
 		)
 		(embedded_fonts no)
@@ -21803,9 +23038,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "R_*")
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/2854766f-159a-5d5d-a798-c4b3910c24d1")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -21867,6 +23109,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "BTN_SETUP")
+			(pintype "passive")
 			(uuid "b99adbf2-2177-4cf1-8b3a-0765bc04ddc4")
 		)
 		(pad "2" smd roundrect
@@ -21875,6 +23118,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "def8ec92-aadc-43b6-8df1-360f4485ef3e")
 		)
 		(embedded_fonts no)
@@ -21953,10 +23197,17 @@
 				)
 			)
 		)
+		(property ki_fp_filters "MountingHole*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/1c37f525-e758-4708-b7a9-42e0ac992309")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins)
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22063,10 +23314,17 @@
 				)
 			)
 		)
+		(property ki_fp_filters "MountingHole*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/f2c93c1c-f247-43f6-819a-fa547ba8882d")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins)
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22186,9 +23444,16 @@
 				)
 			)
 		)
+		(property ki_fp_filters "C_*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/8eae9873-c00d-57fd-b854-de143c827f9d")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -22250,6 +23515,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "VBAT_SENSE")
+			(pintype "passive")
 			(uuid "f7194eeb-a2d7-48ca-97b4-ab13c60df578")
 		)
 		(pad "2" smd roundrect
@@ -22258,6 +23524,7 @@
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
 			(net "GND")
+			(pintype "passive")
 			(uuid "35da4509-1cb5-4dea-9054-46280fbed5fd")
 		)
 		(embedded_fonts no)
@@ -22331,10 +23598,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/61457f78-49f8-5e0f-a0b6-cd709062d456")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22375,6 +23649,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "/IR/IR_BASE")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "21459a27-0830-444b-8cd2-7259106bad2b")
 		)
 		(embedded_fonts no)
@@ -22437,10 +23713,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/9079bdc8-ea27-5867-81ab-16401c8cf3dd")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22481,6 +23764,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "/IR/IR_E1")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "889c498d-0bfc-407f-8e45-8405166a14b6")
 		)
 		(embedded_fonts no)
@@ -22544,10 +23829,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/8b2d4f6d-c547-5ece-9e65-bfbaca3da707")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22588,6 +23880,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "VBAT_SENSE")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "fa889d80-b91b-4332-ba83-63491e798f2b")
 		)
 		(embedded_fonts no)
@@ -22650,10 +23944,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/65278042-e06b-4440-be8a-45360d026b72")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22694,6 +23995,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "U0RXD")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "efbf03e7-af06-4498-9eeb-99253fc08d99")
 		)
 		(embedded_fonts no)
@@ -22756,10 +24059,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/806b3b7a-082d-5bba-b445-553171614f22")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22800,6 +24110,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "VBUS")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "70209e3f-cd51-4f31-9328-7e3f2ba1d344")
 		)
 		(embedded_fonts no)
@@ -22862,10 +24174,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/3a5a1273-7b7a-5f06-bd6e-846cf4cd2c50")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22906,6 +24225,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "VBAT")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "9353f047-6fd3-4b63-b202-49b146c6f5cd")
 		)
 		(embedded_fonts no)
@@ -22968,10 +24289,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/9070993f-a3af-5895-a4fe-67379546559b")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -23012,6 +24340,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "NRF_IRQ_OPT")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "bc5b3a43-6d4b-4049-94ad-868b3435d6e4")
 		)
 		(embedded_fonts no)
@@ -23075,10 +24405,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/1e297b77-29e4-5fba-a235-7ce5978ad539")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -23119,6 +24456,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "/Power and USB/PROG")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "ce2db961-f16b-4700-aa85-c8f37908b4f5")
 		)
 		(embedded_fonts no)
@@ -23181,10 +24520,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/e9b02316-ce28-5d4e-9d2c-1cd27aa64967")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -23225,6 +24571,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "571ba267-da84-4634-8795-c5e2d6b8a4cd")
 		)
 		(embedded_fonts no)
@@ -23287,10 +24635,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/df0d07eb-3aa9-4c71-8377-62e601e8758b")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -23331,6 +24686,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "IO0")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "6da95d99-ce74-49f9-af6b-f13582de3ebd")
 		)
 		(embedded_fonts no)
@@ -23393,10 +24750,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/bc0a917d-75cb-4977-9b2c-d6ac165f5706")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -23437,6 +24801,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "EN")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "e5196b1c-c37b-4daa-81af-8c977f32fdb9")
 		)
 		(embedded_fonts no)
@@ -23499,10 +24865,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/453b8eae-1a55-4e38-a767-44862981d421")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -23543,6 +24916,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "U0TXD")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "fa2993d2-edd7-445c-b9d6-28e10149eb97")
 		)
 		(embedded_fonts no)
@@ -23633,8 +25008,14 @@
 			)
 		)
 		(path "/7f9c3e64-a08d-4b5c-94eb-3a6b8cadbe50/c62e5f66-5b35-552c-928a-82b0b2530e0b")
-		(sheetname "Buttons and LEDs")
+		(sheetname "/Buttons and LEDs/")
 		(sheetfile "ui.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -23877,6 +25258,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "575c90d8-a8ab-4726-b51a-ab9910a9adfa")
 		)
 		(pad "1" thru_hole circle
@@ -23886,6 +25269,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "+3V3")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "665c316b-2581-458e-bb1a-728ba5dcd1a2")
 		)
 		(pad "2" thru_hole circle
@@ -23895,6 +25280,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_SETUP")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "a2867136-66f2-4920-9026-6ba75d72d00d")
 		)
 		(pad "2" thru_hole circle
@@ -23904,6 +25291,8 @@
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "BTN_SETUP")
+			(pinfunction "2_2")
+			(pintype "passive")
 			(uuid "6f71848d-5656-4666-8bf0-874bcc8803e5")
 		)
 		(embedded_fonts no)
@@ -23977,10 +25366,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/80ad4f75-b19e-4c6d-a5fc-4b7c9dbecf60/32888738-7796-5f5b-9792-3bfb17924483")
-		(sheetname "Test and debug")
+		(sheetname "/Test and debug/")
 		(sheetfile "test.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -24021,6 +25417,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "IR_TX")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "76ab45ac-805f-4292-915e-787df9d10e2d")
 		)
 		(embedded_fonts no)
@@ -24083,10 +25481,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/5d7a1c42-8e6b-4f3a-b2c9-1e4f6a8b9c30/a109dc7f-a85c-5763-87eb-7907732a7b2e")
-		(sheetname "IR")
+		(sheetname "/IR/")
 		(sheetfile "ir.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -24127,6 +25532,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "/IR/IR_E2")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "f75436a5-e93a-43e5-9ef1-31cf152eae9a")
 		)
 		(embedded_fonts no)
@@ -24189,10 +25596,17 @@
 				(justify mirror)
 			)
 		)
+		(property ki_fp_filters "Pin* Test*")
 		(path "/2b0f6c1e-5d3a-4f7e-8a21-6c9d0e3f4a10/443c9cb1-e679-4513-979c-5c6296d7dc5f")
-		(sheetname "Power and USB")
+		(sheetname "/Power and USB/")
 		(sheetfile "power_usb.kicad_sch")
-		(attr exclude_from_pos_files exclude_from_bom)
+		(units
+			(unit
+				(name "A")
+				(pins "1")
+			)
+		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -24233,6 +25647,8 @@
 			(size 1.5 1.5)
 			(layers "B.Cu" "B.Mask")
 			(net "VSYS")
+			(pinfunction "1_1")
+			(pintype "passive")
 			(uuid "4d6d0cf7-4cfe-4d35-bb9c-1dda58fc4d82")
 		)
 		(embedded_fonts no)

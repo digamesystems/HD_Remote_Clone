@@ -6836,7 +6836,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.diodes.com/assets/Datasheets/AP2112.pdf"
+		(property "Datasheet" "https://datasheet.lcsc.com/datasheet/pdf/2701e0c3a2b84b9965f7a61f2c14e970.pdf?productCode=C841192"
 			(at 203.2 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -6847,7 +6847,7 @@
 				)
 			)
 		)
-		(property "Description" "600mA low dropout linear regulator, with enable pin, 3.8V-6V input voltage range, 3.3V fixed positive output, SOT-23-5"
+		(property "Description" "600 mA LDO, 3.3 V fixed, with enable, ~2 uA quiescent, SOT-23-5 (drawn with the AP2112K symbol; same pinout)"
 			(at 203.2 198.12 0)
 			(hide yes)
 			(show_name no)

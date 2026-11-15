@@ -1,0 +1,274 @@
+{
+ "C7519": {
+  "mpn": "USBLC6-2SC6",
+  "category": "TVS Diodes",
+  "manufacturer": "ST",
+  "description": "17VC Clamp 5A Ipp ESD DIODE SOT-23-6L",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0d3a2ab954b34651a0695e7ccf534db0.pdf?productCode=C7519",
+  "url": "https://www.lcsc.com/product-detail/C7519.html"
+ },
+ "C14663": {
+  "mpn": "CC0603KRX7R9BB104",
+  "category": "Ceramic Capacitors",
+  "manufacturer": "YAGEO",
+  "description": "100nF ±10% 50V Ceramic Capacitor X7R 0603",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/23ccee80ee542e7cf156a772bb589942.pdf?productCode=C14663",
+  "url": "https://www.lcsc.com/product-detail/C14663.html"
+ },
+ "C15008": {
+  "mpn": "CL31A107MQHNNNE",
+  "category": "Ceramic Capacitors",
+  "manufacturer": "Samsung Electro-Mechanics",
+  "description": "100uF ±20% 6.3V Ceramic Capacitor X5R 1206",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15008",
+  "url": "https://www.lcsc.com/product-detail/C15008.html"
+ },
+ "C15127": {
+  "mpn": "AO3401A",
+  "category": "Single FETs, MOSFETs",
+  "manufacturer": "AOS",
+  "description": "30V 4A Surface Mount SOT-23",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/fee353dd1e9e0bc90b295f14f381aa4c.pdf?productCode=C15127",
+  "url": "https://www.lcsc.com/product-detail/C15127.html"
+ },
+ "C15849": {
+  "mpn": "CL10A105KB8NNNC",
+  "category": "Ceramic Capacitors",
+  "manufacturer": "Samsung Electro-Mechanics",
+  "description": "1uF ±10% 50V Ceramic Capacitor X5R 0603",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15849",
+  "url": "https://www.lcsc.com/product-detail/C15849.html"
+ },
+ "C15850": {
+  "mpn": "CL21A106KAYNNNE",
+  "category": "Ceramic Capacitors",
+  "manufacturer": "Samsung Electro-Mechanics",
+  "description": "10uF ±10% 25V Ceramic Capacitor X5R 0805",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C15850",
+  "url": "https://www.lcsc.com/product-detail/C15850.html"
+ },
+ "C19666": {
+  "mpn": "CL10A475KO8NNNC",
+  "category": "Ceramic Capacitors",
+  "manufacturer": "Samsung Electro-Mechanics",
+  "description": "4.7uF ±10% 16V Ceramic Capacitor X5R 0603",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C19666",
+  "url": "https://www.lcsc.com/product-detail/C19666.html"
+ },
+ "C20526": {
+  "mpn": "MMBT3904(RANGE:100-300)",
+  "category": "Single Bipolar Transistors",
+  "manufacturer": "JSCJ",
+  "description": "Bipolar (BJT) Transistor NPN 40V 200mA 300MHz 200mW Surface Mount SOT-23",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/9335632bcfa83df8351353eab379720e.pdf?productCode=C20526",
+  "url": "https://www.lcsc.com/product-detail/C20526.html"
+ },
+ "C21189": {
+  "mpn": "0603WAF0000T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "0Ω ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/f42da6c80a0747bae77c2f98f4e46d1d.pdf?productCode=C21189",
+  "url": "https://www.lcsc.com/product-detail/C21189.html"
+ },
+ "C21190": {
+  "mpn": "0603WAF1001T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "1kΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C21190",
+  "url": "https://www.lcsc.com/product-detail/C21190.html"
+ },
+ "C22935": {
+  "mpn": "0603WAF1004T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "1MΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C22935",
+  "url": "https://www.lcsc.com/product-detail/C22935.html"
+ },
+ "C22966": {
+  "mpn": "0603WAF2700T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "270Ω ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C22966",
+  "url": "https://www.lcsc.com/product-detail/C22966.html"
+ },
+ "C23018": {
+  "mpn": "0603WAF3901T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "3.9kΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23018",
+  "url": "https://www.lcsc.com/product-detail/C23018.html"
+ },
+ "C23138": {
+  "mpn": "0603WAF3300T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "330Ω ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23138",
+  "url": "https://www.lcsc.com/product-detail/C23138.html"
+ },
+ "C23179": {
+  "mpn": "0603WAF4700T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "470Ω ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23179",
+  "url": "https://www.lcsc.com/product-detail/C23179.html"
+ },
+ "C23186": {
+  "mpn": "0603WAF5101T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "5.1kΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C23186",
+  "url": "https://www.lcsc.com/product-detail/C23186.html"
+ },
+ "C25803": {
+  "mpn": "0603WAF1003T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "100kΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25803",
+  "url": "https://www.lcsc.com/product-detail/C25803.html"
+ },
+ "C25804": {
+  "mpn": "0603WAF1002T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "10kΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25804",
+  "url": "https://www.lcsc.com/product-detail/C25804.html"
+ },
+ "C25819": {
+  "mpn": "0603WAF4702T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "47kΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C25819",
+  "url": "https://www.lcsc.com/product-detail/C25819.html"
+ },
+ "C31850": {
+  "mpn": "0603WAF2202T5E",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "UNI-ROYAL",
+  "description": "22kΩ ±1% 100mW 0603 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C31850",
+  "url": "https://www.lcsc.com/product-detail/C31850.html"
+ },
+ "C45783": {
+  "mpn": "CL21A226MAQNNNE",
+  "category": "Ceramic Capacitors",
+  "manufacturer": "Samsung Electro-Mechanics",
+  "description": "22uF ±20% 25V Ceramic Capacitor X5R 0805",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/02336ea48ea44ca18c72517dd3cb7b47.pdf?productCode=C45783",
+  "url": "https://www.lcsc.com/product-detail/C45783.html"
+ },
+ "C52801": {
+  "mpn": "BC817-40,215",
+  "category": "Single Bipolar Transistors",
+  "manufacturer": "Nexperia",
+  "description": "Bipolar (BJT) Transistor NPN 45V 500mA 100MHz 345mW Surface Mount SOT-23",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/82b42ce666a535f4f2a2391d7fd3bc11.pdf?productCode=C52801",
+  "url": "https://www.lcsc.com/product-detail/C52801.html"
+ },
+ "C81598": {
+  "mpn": "1N4148W",
+  "category": "Single Diodes",
+  "manufacturer": "ST(Semtech)",
+  "description": "Diode Independent 75V 150mA Surface Mount SOD-123",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/8abd7fc00ebe41ffb03ad1383c10753b.pdf?productCode=C81598",
+  "url": "https://www.lcsc.com/product-detail/C81598.html"
+ },
+ "C165948": {
+  "mpn": "TYPE-C-31-M-12",
+  "category": "USB, DVI, HDMI Connector Assemblies",
+  "manufacturer": "Korean Hroparts Elec",
+  "description": "USB-C (USB TYPE-C) Receptacle Connector 16 Position Surface Mount",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/9e56b777c022540fcce7c7f67825f55e.pdf?productCode=C165948",
+  "url": "https://www.lcsc.com/product-detail/C165948.html"
+ },
+ "C173752": {
+  "mpn": "S2B-PH-K-S(LF)(SN)",
+  "category": "Headers, Male Pins",
+  "manufacturer": "JST",
+  "description": "Connector Header 2 position 2mm Pitch 2A Right Angle -25℃~+85℃",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/6c6fce4367275d84ec6a99bf09f1250f.pdf?productCode=C173752",
+  "url": "https://www.lcsc.com/product-detail/C173752.html"
+ },
+ "C181833": {
+  "mpn": "STPS1H100AY",
+  "category": "Single Diodes",
+  "manufacturer": "ST",
+  "description": "Diode 100V 1A Surface Mount SMA(DO-214AC)",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/e36c8d0b90ddefa44b5149020fd5d96a.pdf?productCode=C181833",
+  "url": "https://www.lcsc.com/product-detail/C181833.html"
+ },
+ "C221841": {
+  "mpn": "PCM12SMTR",
+  "category": "Slide Switches",
+  "manufacturer": "C&K",
+  "description": "Slide Switch SPDT @ 6V Surface Mount Rectangular Columnar",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/677f227074f0d201058521a10a93c772.pdf?productCode=C221841",
+  "url": "https://www.lcsc.com/product-detail/C221841.html"
+ },
+ "C269272": {
+  "mpn": "KMR221NGLFS",
+  "category": "Tactile Switches",
+  "manufacturer": "C&K",
+  "description": "Tactile Switch SPST 200gf 0.5mm Gull Wing 4.2mm x 2.8mm Surface Mount",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/1daa78c4b09299d7c6fc0a1267a41ee9.pdf?productCode=C269272",
+  "url": "https://www.lcsc.com/product-detail/C269272.html"
+ },
+ "C424093": {
+  "mpn": "MCP73831T-2ACI/OT",
+  "category": "Battery Chargers",
+  "manufacturer": "MICROCHIP",
+  "description": "3.75V~6V 1 Lithium Battery 550mA SOT-23-5 Battery Chargers RoHS",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/c7ec00710e742b7fb9393e620ae1332b.pdf?productCode=C424093",
+  "url": "https://www.lcsc.com/product-detail/C424093.html"
+ },
+ "C701341": {
+  "mpn": "ESP32-WROOM-32E-N4",
+  "category": "RF Transceiver Modules and Modems",
+  "manufacturer": "ESPRESSIF",
+  "description": "2.4GHz On-board PCB Antenna -98dBm SMD,25.5x18mm RF Transceiver Modules and Modems RoHS",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/d5deb62e2fbb5c62d76522c63d752c06.pdf?productCode=C701341",
+  "url": "https://www.lcsc.com/product-detail/C701341.html"
+ },
+ "C841192": {
+  "mpn": "RT9080-33GJ5",
+  "category": "Voltage Regulators - Linear, Low Drop Out (LDO) Regulators",
+  "manufacturer": "RICHTEK",
+  "description": "3.3V Positive Fixed TSOT-23-5 Voltage Regulators - Linear, Low Drop Out (LDO) Regulators RoHS",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/2701e0c3a2b84b9965f7a61f2c14e970.pdf?productCode=C841192",
+  "url": "https://www.lcsc.com/product-detail/C841192.html"
+ },
+ "C969151": {
+  "mpn": "CP2102N-A02-GQFN24R",
+  "category": "Controllers",
+  "manufacturer": "SILICON LABS",
+  "description": "USB to UART QFN-24-EP(4x4) Controllers RoHS",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/11ab89ca3026e9cb7cc85ffe9557abff.pdf?productCode=C969151",
+  "url": "https://www.lcsc.com/product-detail/C969151.html"
+ },
+ "C2907250": {
+  "mpn": "FRC0805F3R30TS",
+  "category": "Chip Resistor - Surface Mount",
+  "manufacturer": "FOJAN",
+  "description": "3.3Ω ±1% 125mW 0805 Thick Film Resistor",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/106fb934f95f063b695dad1b31b1eab8.pdf?productCode=C2907250",
+  "url": "https://www.lcsc.com/product-detail/C2907250.html"
+ },
+ "C3034753": {
+  "mpn": "APA1606SURCK",
+  "category": "LED Indication - Discrete",
+  "manufacturer": "Kingbright",
+  "description": "Red 645nm LED Indication - Discrete 1.95V 0603",
+  "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/122e2364290b5f1df75f9b7478d32ba1.pdf?productCode=C3034753",
+  "url": "https://www.lcsc.com/product-detail/C3034753.html"
+ }
+}
