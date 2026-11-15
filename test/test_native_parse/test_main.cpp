@@ -144,7 +144,7 @@ void test_hold_repeats_extend_then_release() {
   for (uint32_t t = 1533; t <= 2490; t += 33) h.repeat(t);
   TEST_ASSERT_FALSE(h.released(2600));  // within the repeat gap
   TEST_ASSERT_TRUE(h.released(2700));
-  TEST_ASSERT_EQUAL_UINT32(1488, h.heldMs());  // last repeat at 2488
+  TEST_ASSERT_EQUAL_UINT32(1490, h.heldMs());  // last repeat at 2490
 }
 
 void test_hold_press_resets() {
