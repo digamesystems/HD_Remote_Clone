@@ -17,7 +17,7 @@ python -I hardware/tools/make_bom.py
 
 <!-- BEGIN GENERATED: hardware/tools/make_bom.py -->
 
-43 lines, 93 fitted parts: 77 SMD parts JLC assembles, 16 through-hole or hand-fitted; plus 2 footprints left empty (DNP, population options). Generated 2026-11-15 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** D501; J401; TP604–TP606.
+43 lines, 93 fitted parts: 77 SMD parts JLC assembles, 16 through-hole or hand-fitted; plus 2 footprints left empty (DNP, population options). Generated 2026-11-15 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** J401; TP604–TP606.
 
 | Ref | Qty | Value | Manufacturer | MPN | LCSC | Fit | Datasheet | Description |
 |---|---|---|---|---|---|---|---|---|
@@ -32,7 +32,7 @@ python -I hardware/tools/make_bom.py
 | D102 | 1 | STPS1H100AY | ST | STPS1H100AY | [C181833](https://www.lcsc.com/product-detail/C181833.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/e36c8d0b90ddefa44b5149020fd5d96a.pdf?productCode=C181833) | Schottky diode, 100 V 1 A, low leakage (power path) |
 | D301, D302 | 2 | 1N4148W | ST(Semtech) | 1N4148W | [C81598](https://www.lcsc.com/product-detail/C81598.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/8abd7fc00ebe41ffb03ad1383c10753b.pdf?productCode=C81598) | 75V 0.15A Fast Switching Diode, SOD-123 |
 | D303, D304 | 2 | TSAL6200 | Vishay | TSAL6200 | — | hand | [PDF](https://www.vishay.com/docs/81010/tsal6200.pdf) | 940 nm IR LED, +-17 deg (or a wider-angle part in one position) |
-| D501 | 1 | Red/Green CC | — | **to choose** | — | hand | — | A1 = red, A2 = green (check the part) |
+| D501 | 1 | Red/Green CC | Kingbright | WP59EGW | — | hand | [PDF](https://www.kingbrightusa.com/images/catalog/SPEC/WP59EGW.pdf) | 5 mm bi-color LED, red/green, common cathode, white diffused (1 = red anode, 2 = cathode, 3 = green anode). Seated flush on the board, under a Bivar PLP2-250 light pipe |
 | FB401 | 1 | 0R (or bead) | UNI-ROYAL | 0603WAF0000T5E | [C21189](https://www.lcsc.com/product-detail/C21189.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/f42da6c80a0747bae77c2f98f4e46d1d.pdf?productCode=C21189) | 0 ohm link by default; ferrite bead option for the nRF24 supply |
 | J101 | 1 | USB_C_Receptacle | Korean Hroparts Elec | TYPE-C-31-M-12 | [C165948](https://www.lcsc.com/product-detail/C165948.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/9e56b777c022540fcce7c7f67825f55e.pdf?productCode=C165948) | USB 2.0-only 16P Type-C Receptacle connector |
 | J102 | 1 | Battery | JST | S2B-PH-K-S(LF)(SN) | [C173752](https://www.lcsc.com/product-detail/C173752.html) | JLC (THT) or hand | [PDF](https://datasheet.lcsc.com/datasheet/pdf/6c6fce4367275d84ec6a99bf09f1250f.pdf?productCode=C173752) | Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/) |
@@ -78,13 +78,14 @@ Not listed (no part to buy): test pads TP101–TP303, TP601–TP603 and TP607–
 | Battery | 1 | 500 mAh 3.7 V LiPo with JST-PH plug, PKCELL LP-503035 ([datasheet](https://cdn-shop.adafruit.com/product-files/1578/Datasheet.pdf)) | [Adafruit #1578](https://www.adafruit.com/product/1578) | Built-in protection (S-8261AAJMD). See appendix: polarity, width |
 | nRF24L01+ module | 1 | 2×4-header module with PCB antenna | hiBCTR 10-pack (on hand) | Plugs into J401, antenna toward the IR end. Possibly Si24R1 clones: screen with `test` first |
 | Board screws | 4 | M2 self-tapping, ~6 mm | any | Into the case standoffs |
+| Indicator light pipe | 1 | Bivar PLP2-250: clear polycarbonate, 3 mm round, 6.35 mm below its 3.3 × 0.8 mm head ([drawing](https://www.bivar.com/parts_content/Datasheets/PLP2-XXX.pdf)) | [DigiKey 586461](https://www.digikey.com/en/products/detail/bivar-inc/PLP2-250/586461) | Presses into a 2.92 mm hole in the key face (panel 1.2–2.4 mm; ours is 2.0). Ends ~0.95 mm above the LED dome. Glue it if the printed hole is loose |
 | Case | 1 set | Bottom and top shells, 7 keycaps, A/B slider | 3D print (JLC3DP MJF PA12 used for the test piece) | From `hardware/enclosure/` |
 
 ## Appendix: notes and open items
 
 **Open: choose before ordering**
 
-1. **D501, bicolor indicator LED:** no part chosen. Needs a 5 mm diffused red/green, **common cathode**, 3 leads, and its lead order must match the footprint: pad 1 = red anode (square pad), pad 2 = common cathode, pad 3 = green anode. Lead order varies between makers, so check the datasheet. R509 (330 Ω, red) and R510 (270 Ω, green) assume a ~2 V green; a ~3 V InGaN green needs ~100 Ω for R510 ([HARDWARE.md, Indicator LED](HARDWARE.md#indicator-led)).
+1. **D501, bicolor indicator LED: chosen 2026-11-15, Kingbright WP59EGW** (DigiKey 1747631). Its datasheet (rev V.14A, 2025) confirms common cathode and the footprint's lead order: 1 = red anode (square pad), 2 = common cathode, 3 = green anode, 2.54 mm pitch. Red 2.0 V / green 2.2 V (GaP, 568 nm) typical, so R509/R510 stay as they are (~4–5 mA each). Seat it **flush on the board** (keep soldering to 2–3 s per lead: the joint is ~1.6 mm below the lens, the datasheet rates 2 mm) and diode-test the leads before fitting. The light reaches the face through a light pipe (below). Not the W59EGW-CA, which is common anode.
 2. **J401, nRF24 socket:** no part chosen. 2×4 female, 2.54 mm, **low-profile** (body ≤ ~5 mm): a standard 8.5 mm socket leaves only 0.7 mm under the key face ([HARDWARE.md, nRF24 socket](HARDWARE.md#nrf24-socket)). Check pin 1 against a real module.
 3. **TP604–TP606, ground test loops:** Keystone 5000-series miniature loops; pick a colour (5001 is black). Optional.
 

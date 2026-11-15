@@ -229,11 +229,18 @@ def build_parts(m):
     p["SETUP switch"] = Pos(fx(m["SETUP_FROM_FRONT"]), m["SETUP_Y"], bot) * Box(
         6, 6, 5, align=(Align.CENTER, Align.CENTER, Align.MAX))
 
-    # indicator: 5 mm LED standing on the board, dome 2 mm proud of the face
-    tip = m["Z_TOP"] + 2.0
-    c = Pos(fx(m["IND_FROM_FRONT"]), 0, tip - m["IND_D"] / 2)
-    p["indicator"] = c * Sphere(m["IND_D"] / 2) + c * Cylinder(
-        m["IND_D"] / 2, tip - m["IND_D"] / 2 - top, align=(Align.CENTER, Align.CENTER, Align.MAX))
+    # indicator: 5 mm LED seated flush on the board, light pipe pressed into the key face above it
+    ix, led_r = fx(m["IND_FROM_FRONT"]), m["IND_LED_D"] / 2
+    led_tip = top + m["IND_LED_H"]
+    p["indicator LED"] = (Pos(ix, 0, top) * Cylinder(led_r, m["IND_LED_H"] - led_r,
+                                                      align=(Align.CENTER, Align.CENTER, Align.MIN))
+                          + Pos(ix, 0, led_tip - led_r) * Sphere(led_r))
+    face_top = m["Z_TOP"]
+    p["light pipe"] = (Pos(ix, 0, face_top) * Cylinder(m["PIPE_D"] / 2, m["PIPE_L"],
+                                                       align=(Align.CENTER, Align.CENTER, Align.MAX))
+                       + Pos(ix, 0, face_top) * Cylinder(m["PIPE_HEAD_D"] / 2, m["PIPE_HEAD_H"],
+                                                         align=(Align.CENTER, Align.CENTER, Align.MIN)))
+    pipe_bottom = face_top - m["PIPE_L"]
 
     caps_all = None
     for cap in m["caps"].values():
@@ -242,13 +249,14 @@ def build_parts(m):
 
     info = {"usb_rear_d": L / 2 - usb_rear, "usb_sh_front_x": usb_sh_front,
             "board_back_x": -L / 2 + WALL + PCB_GAP, "hdr_d": hdr_d, "nrf_top": nrf_top,
-            "led_pad_d": led_pad_d, "sw_x": sw_x, "body": (bx, by, bh)}
+            "led_pad_d": led_pad_d, "sw_x": sw_x, "body": (bx, by, bh),
+            "ind_led_tip": led_tip, "pipe_bottom": pipe_bottom}
     return p, info
 
 
 # parts that touch or pass through each other by design
 ALLOWED = [{"key switches", "PCB"}, {"A/B switch", "PCB"}, {"SETUP switch", "PCB"},
-           {"indicator", "PCB"}, {"keycaps", "key switches"},
+           {"indicator LED", "PCB"}, {"keycaps", "key switches"},
            {"battery leads", "battery plug"}, {"battery leads", "battery"}]
 
 
@@ -273,14 +281,27 @@ def check(m, p, info):
     ok(not bad, f"parts clear each other {bad or ''}")
 
     # key face
-    def stadium(d, y, lx, wy, grow=0.0):
+    def stadium(d, y, lx, wy, grow=0.0, r=None):
         lx, wy = lx + 2 * grow, wy + 2 * grow
-        return Pos(fx(d), y) * RectangleRounded(lx, wy, min(lx, wy) / 2 - 0.01)
-    holes = {n: stadium(*v, grow=m["CAP_CLEAR"]) for n, v in m["KEY_HOLES"].items()}
+        rad = min(lx, wy) / 2 - 0.01 if r is None else min(r + grow, min(lx, wy) / 2 - 0.01)
+        return Pos(fx(d), y) * RectangleRounded(lx, wy, rad)
+    holes = {n: stadium(*v, grow=m["CAP_CLEAR"], r=m["KEY_CORNER_R"].get(n)) for n, v in m["KEY_HOLES"].items()}
+    # a key whose outline is a circle can turn in its hole (and its legend with it)
+    round_keys = [n for n, (d, y, lx, wy) in m["KEY_HOLES"].items()
+                  if abs(lx - wy) < 0.01 and m["KEY_CORNER_R"].get(n, 99) >= min(lx, wy) / 2 - 0.5]
+    ok(not round_keys, f"no keycap is round, so none can turn in its hole {round_keys or ''}")
     holes["A/B"] = stadium(*m["AB_SLOT"])
-    holes["indicator"] = Pos(fx(m["IND_FROM_FRONT"]), 0) * Circle(m["IND_D"] / 2 + 0.1)
+    holes["indicator"] = Pos(fx(m["IND_FROM_FRONT"]), 0) * Circle(m["PIPE_HOLE_D"] / 2)
     web, a, b = min((holes[a].distance_to(holes[b]), a, b) for a, b in combinations(holes, 2))
     ok(web >= MIN_WEB, f"key face web >= {MIN_WEB} mm (thinnest {web:.1f}, {a}-{b})")
+
+    # indicator light pipe (Bivar PLP2-250) over the flush-mounted LED
+    gap = info["pipe_bottom"] - info["ind_led_tip"]
+    ok(m["PIPE_GAP_MIN"] <= gap <= m["PIPE_GAP_MAX"],
+       f"light pipe clears the indicator LED (gap {gap:.2f} mm; want {m['PIPE_GAP_MIN']}-{m['PIPE_GAP_MAX']})")
+    ok(m["PIPE_PANEL_MIN"] <= m["TOP_T"] <= m["PIPE_PANEL_MAX"],
+       f"key face thickness {m['TOP_T']} mm within the light pipe's panel range "
+       f"{m['PIPE_PANEL_MIN']}-{m['PIPE_PANEL_MAX']} mm")
 
     # keycaps
     caps = m["caps"]
@@ -369,7 +390,7 @@ def check(m, p, info):
 # Placeholders that the real board's STEP replaces in the view. The rest stay: they have no model on
 # the board (USB-C J101's model is missing from KiCad's library), or aren't on the board at all.
 BOARD_REPLACES = {"PCB", "key switches", "IR LEDs", "ESP32", "A/B switch", "SETUP switch",
-                  "indicator", "nRF socket", "battery JST"}
+                  "indicator LED", "nRF socket", "battery JST"}
 
 
 def load_board(path, m):
@@ -386,7 +407,7 @@ def check_board(m, p, board):
     """Clash check: every solid in the real board against the case, keycaps, slider and battery.
     Returns (fails, lines)."""
     others = {"bottom shell": m["bottom"], "top shell": m["top"], "keycaps": p["keycaps"],
-              "A/B slider": p["A/B slider"], "battery": p["battery"]}
+              "A/B slider": p["A/B slider"], "battery": p["battery"], "light pipe": p["light pipe"]}
     obb = {n: o.bounding_box() for n, o in others.items()}
     fails, out = [], []
     solids = list(board.children) if board.children else list(board.solids())
@@ -426,7 +447,7 @@ def check_board(m, p, board):
                 fails.append(msg)
             out.append(("ok    " if ok else "FAIL  ") + msg)
     out.append(f"{'ok  ' if not fails else 'FAIL'}  real board: {len(solids)} parts checked against "
-               f"the shells, keycaps, A/B slider and battery")
+               f"the shells, keycaps, A/B slider, battery and light pipe")
     return fails, out
 
 
@@ -437,7 +458,7 @@ def _camera(reset):
 
 def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=False, board=None):
     up = Location((0, 0, explode))
-    lifted = {"keycaps", "A/B slider"}
+    lifted = {"keycaps", "A/B slider", "light pipe"}
     objs = [m["bottom"], m["top"].moved(up)]
     names = ["bottom shell", "top shell"]
     if board is not None:
@@ -451,7 +472,7 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=F
         for f in m["legend_fill"].values():
             if f is not None:
                 fill = f if fill is None else fill + f
-        extra = {"keycaps": FINISH["key"], "A/B slider": FINISH["key"], "indicator": FINISH["indicator"],
+        extra = {"keycaps": FINISH["key"], "A/B slider": FINISH["key"], "light pipe": FINISH["indicator"],
                  "IR LEDs": FINISH["ir"], "USB-C": FINISH["metal"]}
         for n, col in extra.items():
             if n not in p:
@@ -465,7 +486,7 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=F
     palette = {"PCB": "darkgreen", "key switches": "black", "board screws": "silver", "battery": "royalblue",
                "USB-C": "silver", "IR LEDs": "lightskyblue", "nRF socket": "dimgray", "nRF module": "purple",
                "ESP32": "darkorange", "A/B switch": "orange", "A/B slider": "orange", "SETUP switch": "red",
-               "indicator": "limegreen", "keycaps": "dimgray", "battery JST": "white",
+               "indicator LED": "limegreen", "light pipe": "white", "keycaps": "dimgray", "battery JST": "white",
                "battery plug": "beige", "battery leads": "red"}
     colors, alphas = ["lightgray", "lightblue"], [bottom_alpha, top_alpha]
     if board is not None:

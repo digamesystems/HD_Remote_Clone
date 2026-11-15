@@ -70,6 +70,10 @@ KEY_XY = [(L / 2 - d, y) for d, y in SWITCHES.values()]
 # Openings in the key face, all fully rounded: name -> (from front, y, length along X, width along Y)
 KEY_HOLES = {"ARROWS": (50, 0, 34, 14), "1": (42, 14, 8, 8), "2": (42, -14, 8, 8),
              "3": (58, 14, 8, 8), "4": (58, -14, 8, 8), "ALL": (74, 0, 8, 16)}
+# Corner radius per key (cap outline; the hole adds CAP_CLEAR). Keys not listed are fully rounded
+# (stadium). Keys 1-4 are rounded squares, not circles (2026-11-15): a round cap in a round hole
+# can turn, and its number with it; the corners stop it (a few degrees of play at CAP_CLEAR).
+KEY_CORNER_R = {"1": 2.0, "2": 2.0, "3": 2.0, "4": 2.0}
 CAP_CLEAR = 0.3        # gap around each keycap in its hole (placeholder; test print)
 SW_H = 13.0            # key switches: 6 mm tactile, plunger top 13 mm above the board
 CAP_PROUD = 1.5        # cap tops this far above the key face
@@ -83,7 +87,16 @@ LEGEND_DEPTH = 0.8     # legends recessed into the cap tops; 0.8 so MJF's grain 
                        # and the white paint has a clean channel (review 2026-11-13; was 0.4)
 LEGEND_SIZE_DIGIT, LEGEND_SIZE_WORD = 4.5, 4.0   # font sizes for 1-4 and ALL (were 4.0, 3.2)
 LEGENDS = {"1": "1", "2": "2", "3": "3", "4": "4", "ALL": "ALL"}
-IND_FROM_FRONT, IND_D = 14.0, 5.0   # bicolor indicator, 5 mm LED standing 2 mm proud
+IND_FROM_FRONT = 14.0   # bicolor indicator centre, mm from the front
+# Indicator (2026-11-15): Kingbright WP59EGW (5 mm red/green) seated flush on the board, seen
+# through a Bivar PLP2-250 press-fit light pipe in the key face. The board sets the LED height and
+# the face sets the pipe height, so nothing needs adjusting at assembly.
+IND_LED_D, IND_LED_H = 5.0, 8.6    # LED lens diameter; flange base to dome tip (WP59EGW datasheet)
+PIPE_HOLE_D = 2.92                 # Bivar PLP2 recommended hole: 0.115" +0.003/-0.002 (MJF: test-fit)
+PIPE_PANEL_MIN, PIPE_PANEL_MAX = 1.19, 2.36   # PLP2 panel thickness range (0.047"-0.093")
+PIPE_D, PIPE_L = 2.8, 6.35         # PLP2 pipe diameter (crush ribs to 3.1) and length under the head (-250)
+PIPE_HEAD_D, PIPE_HEAD_H = 3.3, 0.8   # domed head standing on the face
+PIPE_GAP_MIN, PIPE_GAP_MAX = 0.5, 1.5   # pipe end to LED dome: clear of tolerances, little light lost
 # CHANNEL A/B: a printed slider in a slot across the width. A fork on its stem straddles the
 # actuator of a side-actuated SMD slide switch on the board: Shouhan MSK12C02 (LCSC C431540) or
 # C&K PCM12, same footprint class (body 6.7 x 2.8 mm, actuator 1.3 wide, sticking out 1.45 mm,
@@ -230,14 +243,14 @@ with BuildPart() as body:
 
     # key, A/B slider and indicator openings in the key face
     with BuildSketch(Plane.XY.offset(Z_TOP - TOP_T - 0.1)):
-        for d, y, kl, kw in KEY_HOLES.values():
+        for name, (d, y, kl, kw) in KEY_HOLES.items():
             with Locations((L / 2 - d, y)):
-                _rounded_rect(kl + 2 * CAP_CLEAR, kw + 2 * CAP_CLEAR, 99)
+                _rounded_rect(kl + 2 * CAP_CLEAR, kw + 2 * CAP_CLEAR, KEY_CORNER_R.get(name, 99) + CAP_CLEAR)
         d, y, kl, kw = AB_SLOT
         with Locations((L / 2 - d, y)):
             _rounded_rect(kl, kw, 99)
         with Locations((L / 2 - IND_FROM_FRONT, 0)):
-            Circle(IND_D / 2 + 0.1)
+            Circle(PIPE_HOLE_D / 2)       # light pipe press-fit hole
     extrude(amount=TOP_T + 0.2, mode=Mode.SUBTRACT)
 
     # SETUP pinhole through the floor
@@ -288,9 +301,11 @@ RELIEF_D = 3.5 + 1.0   # plunger 3.5 mm + clearance
 assert FLANGE_T + NUB_H >= 0.5, f"flange over the plunger would be {FLANGE_T + NUB_H:.2f} mm thick"
 
 
-def _outline(d, y, lx, wy, grow=0.0):
+def _outline(d, y, lx, wy, grow=0.0, r=None):
+    """Key outline grown by `grow`; corner radius `r` (also grown), or fully rounded if None."""
     lx, wy = lx + 2 * grow, wy + 2 * grow
-    return Pos(L / 2 - d, y) * RectangleRounded(lx, wy, min(lx, wy) / 2 - 0.01)
+    rad = min(lx, wy) / 2 - 0.01 if r is None else min(r + grow, min(lx, wy) / 2 - 0.01)
+    return Pos(L / 2 - d, y) * RectangleRounded(lx, wy, rad)
 
 
 def _cap(sk_body, sk_flange, at, legend=None, arrow=None):
@@ -340,7 +355,8 @@ for name, sign in (("UP", 1), ("DOWN", -1)):
 for name in ("1", "2", "3", "4", "ALL"):
     d, y, lx, wy = KEY_HOLES[name]
     caps[name], legend_fill[name] = _cap(
-        _outline(d, y, lx, wy), _outline(d, y, lx, wy, FLANGE_W + CAP_CLEAR),
+        _outline(d, y, lx, wy, r=KEY_CORNER_R.get(name)),
+        _outline(d, y, lx, wy, FLANGE_W + CAP_CLEAR, r=KEY_CORNER_R.get(name)),
         (L / 2 - SWITCHES[name][0], SWITCHES[name][1]), legend=LEGENDS[name])
 
 if __name__ == "__main__":

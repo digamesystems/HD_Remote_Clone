@@ -7,7 +7,8 @@ Background: [HARDWARE.md](HARDWARE.md) (spec, power path, sleep budget), [hardwa
 ## Before the boards arrive
 
 - [ ] **Datasheet pinout review** of the small parts, done by someone (or a fresh Claude Code session) who hasn't seen the design: AO3401A (Q103, Q104), BC817-40 (Q301, Q302), MMBT3904 (Q101, Q102), RT9080-33GJ5 (U104, drawn with the AP2112K symbol), MCP73831 (U103), USBLC6-2SC6 (U101), STPS1H100AY (D102) and 1N4148W (D301, D302) direction, CP2102N QFN-24 (U102).
-- [ ] **D501 (bicolor indicator):** choose the part, then check its datasheet's lead order against the footprint: pad 1 = red anode (square pad), pad 2 = common cathode, pad 3 = green anode.
+- [x] **D501 (bicolor indicator):** Kingbright WP59EGW; its datasheet's lead order matches the footprint (pad 1 = red anode, square pad; 2 = common cathode; 3 = green anode). When fitting: diode-test the leads first, seat it flush, 2–3 s per joint.
+- [ ] **Light pipe:** test-fit a Bivar PLP2-250 in a printed 2.92 mm hole (try 2.85 / 2.95 / 3.05 mm on the next print); glue it if loose.
 - [ ] **J401 pin 1** against a real nRF24 module: the module must plug in with its antenna toward the front (IR) end, over the antenna rule area.
 - [ ] `python -I hardware/tools/check_pins.py` passes (pins.h matches the schematic).
 - [ ] `pio run -e handheld` builds.

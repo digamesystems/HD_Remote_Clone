@@ -3778,7 +3778,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.kingbrightusa.com/images/catalog/SPEC/WP59EGW.pdf"
 			(at 142.24 243.84 0)
 			(hide yes)
 			(show_name no)
@@ -3789,7 +3789,29 @@
 				)
 			)
 		)
-		(property "Description" "A1 = red, A2 = green (check the part)"
+		(property "Description" "5 mm bi-color LED, red/green, common cathode, white diffused (1 = red anode, 2 = cathode, 3 = green anode). Seated flush on the board, under a Bivar PLP2-250 light pipe"
+			(at 142.24 243.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Kingbright"
+			(at 142.24 243.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "WP59EGW"
 			(at 142.24 243.84 0)
 			(hide yes)
 			(show_name no)
