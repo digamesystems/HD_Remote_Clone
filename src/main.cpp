@@ -122,7 +122,8 @@ void help() {
       "  ch <0-125> | rate <250k|1m|2m> | aw <2-5> | addr <hex, on-air order>\n"
       "  crc <0|1|2> | pl <1-32> | filter <on|off> | cfg\n"
       " Misc\n"
-      "  btn                     show UP/DOWN button state\n"
+      "  btn                     show button state (PCB: all keys, A/B, VBAT)\n"
+      "  led <r|g|both|off>      indicator LED (handheld PCB only)\n"
       "  pin <gpio> [ms]         logic probe: level, edges, % low (default 3000 ms)\n"
       "  # <note>                comment for the log; works during capture\n"
       "  help\n"));
@@ -307,6 +308,21 @@ void handle(String cmdline) {
                   (unsigned)(analogReadMilliVolts(PIN_VBAT_SENSE) * 2));  // 1M/1M divider
 #else
     Serial.printf("UP=%d DOWN=%d\n", digitalRead(PIN_BTN_UP), digitalRead(PIN_BTN_DN));
+#endif
+  }
+  else if (c == "led") {
+#if defined(HD_BOARD_HANDHELD)
+    tok[1].toLowerCase();
+    bool r = tok[1] == "r" || tok[1] == "red" || tok[1] == "both";
+    bool g = tok[1] == "g" || tok[1] == "green" || tok[1] == "both";
+    if (!r && !g && tok[1] != "off") ok = false;
+    else {
+      digitalWrite(PIN_LED_RED, r ? HIGH : LOW);
+      digitalWrite(PIN_LED_GREEN, g ? HIGH : LOW);
+      Serial.printf("LED red=%d green=%d\n", r, g);
+    }
+#else
+    Serial.println("No indicator LED on this board.");
 #endif
   }
   else { Serial.printf("Unknown command '%s'. Type help.\n", c.c_str()); return; }

@@ -19,6 +19,10 @@ KiCad project for the handheld replacement remote: [`hd_remote/hd_remote.kicad_p
 
 Synced with the enclosure (2026-11-13): mounting holes H601–H604 (M2), key switch MPNs (Same Sky TS02), low-profile nRF24 socket noted on J401.
 
+**Firmware pin map check:** `python -I hardware/tools/check_pins.py` (from the repo root) exports the schematic netlist and confirms every `PIN_` constant in the handheld block of `include/pins.h` is on the right ESP32 net, and that no ESP32 signal net is missing from it. Run it after any change to the MCU sheet or `pins.h`; it exits 1 on a mismatch.
+
+**Bring-up:** the staged plan for the first boards is [docs/BRINGUP.md](../docs/BRINGUP.md).
+
 ERC (2026-11-13): **0 errors, 0 warnings** on the whole design. References are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR, 4xx nRF24, 5xx Buttons and LEDs, 6xx Test and debug.
 
 ## Generator scripts

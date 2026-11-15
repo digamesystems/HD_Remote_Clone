@@ -148,7 +148,7 @@ Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_
 Selected by `-DHD_BOARD_HANDHELD` (envs `handheld` / `handheld_test`); source of truth is `include/pins.h`, taken from the PCB netlist (WROOM-32E). Same as the breadboard: IR TX 4 (HIGH = LEDs on, R301 470 Ω → two BC817), nRF24 CSN 5 / CE 17 / SPI 18-19-23. Different:
 - Keys (active-HIGH, 100 k pull-down + 100 nF at each switch, all RTC GPIOs for ext1 wake): UP 32, DOWN 33, ALL 25, G1 26, G2 34, G3 27, G4 36, SETUP 35 (34/35/36 input-only).
 - A/B slider 14 (via 10 k; driven to 3V3 or GND; which position is A is to be confirmed at bring-up). Battery sense 39 (1 M/1 M, reads VBAT/2). LED red 22, green 16 (common cathode, HIGH = on). nRF IRQ 13 (via 0 Ω R401, unused).
-- No IR receiver and no radio B: `HAS_IR_RX` / `HAS_RADIO_B` are false, so `ir` capture and `beacon` say so instead of touching pins. `btn` prints all keys, A/B and VBAT.
+- No IR receiver and no radio B: `HAS_IR_RX` / `HAS_RADIO_B` are false, so `ir` capture and `beacon` say so instead of touching pins. `btn` prints all keys, A/B and VBAT; `led r|g|both|off` drives the indicator (plain on/off for bring-up; LEDC PWM comes with the handheld UX).
 
 ### Netlist (sheet 1: IR + buttons)
 - TSOP38238 (pinout facing dome: OUT, GND, VS): VS ← 100 Ω ← 3V3; 100 nF VS→GND at the TSOP; GND→GND; OUT→GPIO 14.
