@@ -2,6 +2,7 @@
 // Tier 1 (host): command-line and value parsing.
 #include <unity.h>
 
+#include "hold_tracker.h"
 #include "key_parser.h"
 #include "parse.h"
 
@@ -127,8 +128,39 @@ void test_key_parser_newline_aborts_sequence() {
   TEST_ASSERT_TRUE(p.feed('A') == KeyEvent::Pass);
 }
 
+void test_hold_tap_waits_for_repeat_delay() {
+  HoldTracker h(700, 200);
+  h.press(1000);
+  TEST_ASSERT_FALSE(h.released(1600));  // keyboard repeat delay not over yet
+  TEST_ASSERT_TRUE(h.released(1701));
+  TEST_ASSERT_EQUAL_UINT32(0, h.heldMs());
+  TEST_ASSERT_EQUAL_UINT32(0, h.repeats());
+}
+
+void test_hold_repeats_extend_then_release() {
+  HoldTracker h(700, 200);
+  h.press(1000);
+  h.repeat(1500);
+  for (uint32_t t = 1533; t <= 2490; t += 33) h.repeat(t);
+  TEST_ASSERT_FALSE(h.released(2600));  // within the repeat gap
+  TEST_ASSERT_TRUE(h.released(2700));
+  TEST_ASSERT_EQUAL_UINT32(1488, h.heldMs());  // last repeat at 2488
+}
+
+void test_hold_press_resets() {
+  HoldTracker h(700, 200);
+  h.press(0);
+  h.repeat(500);
+  h.press(5000);
+  TEST_ASSERT_EQUAL_UINT32(0, h.repeats());
+  TEST_ASSERT_FALSE(h.released(5300));  // back to the first-gap rule
+}
+
 int main() {
   UNITY_BEGIN();
+  RUN_TEST(test_hold_tap_waits_for_repeat_delay);
+  RUN_TEST(test_hold_repeats_extend_then_release);
+  RUN_TEST(test_hold_press_resets);
   RUN_TEST(test_is_comment);
   RUN_TEST(test_key_parser_arrows);
   RUN_TEST(test_key_parser_passes_plain_text);

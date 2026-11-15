@@ -6,6 +6,7 @@
 
 #include "hd_ir.h"
 #include "hd_rf.h"
+#include "hold_tracker.h"
 #include "ir_tools.h"
 #include "key_parser.h"
 #include "parse.h"
@@ -16,7 +17,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.2";
+constexpr const char* kFwVersion = "0.9.3";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -108,7 +109,10 @@ void help() {
       "  seq [on|off|rf|gap|ir <ms>]  arrow keys: RF ch33, IR, RF ch52, IR, RF ch71, IR\n"
       "                          (on, default: rf 50, gap 0, ir 50) or wake + one 500 ms\n"
       "                          IR burst (off)\n"
-      "  wake [ms|on|off]        send the RF wake alone (default 450 ms), or turn the\n"
+      "  hold [on|off|first <ms>]  arrow keys send seq steps while held and print the\n"
+      "                          hold time (first: release timeout before the keyboard's\n"
+      "                          first repeat, default 700). Up arrow stops at 5000 ms\n"
+      "  wake [ms|on|off]       send the RF wake alone (default 450 ms), or turn the\n"
       "                          automatic wake before send / arrow keys on or off\n"
       "  id [hex|clear]          show or set the remote ID used by wake / grp (saved in flash)\n"
       "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
@@ -200,12 +204,67 @@ void runSend(uint8_t code, uint32_t ms) {
                 packets, (unsigned long)(millis() - t0));
 }
 
+// Hold mode: an arrow key sends seq steps for as long as it's held, like the
+// real remote, and reports the hold time. For timing how long the shade takes
+// to respond: hold until the blind does what you want, then let go.
+bool holdMode = false;
+uint32_t holdFirstGapMs = 700;          // > keyboard repeat delay (Windows default ~500 ms)
+constexpr uint32_t kHoldRepeatGapMs = 200;  // > one step (~100 ms) + repeat interval (~33 ms)
+
+void runHold(uint8_t code) {
+  hd::HoldTracker hold(holdFirstGapMs, kHoldRepeatGapMs);
+  const hd::KeyEvent mine =code == hd::ir::kCodeUp ? hd::KeyEvent::Up : hd::KeyEvent::Down;
+  const uint32_t stepMs = (autoWake ? seq.rfMs + seq.gapMs : 0) + seq.irMs;
+  const uint32_t capMs = hd::ir::maxSendMs(code);
+  uint32_t t0 = millis();
+  hold.press(t0);
+  int steps = 0;
+  long packets = 0;
+  bool otherKey = false, capped = false;
+  // Key repeats queue up while a step blocks; check between RF and IR as well
+  // as after each step, so a repeat is timed to within ~50 ms.
+  auto drain = [&] {
+    while (Serial.available()) {
+      hd::KeyEvent k = keys.feed(Serial.read());
+      if (k == mine) hold.repeat(millis());
+      else if (k != hd::KeyEvent::Consumed) otherKey = true;
+    }
+  };
+  for (;;) {
+    if (autoWake) {
+      long n = rf::sendWakeOn(hd::rf::kChannels[steps % 3], seq.rfMs);
+      if (n < 0) return;  // no ID or no radio; reason already printed
+      packets += n;
+      if (seq.gapMs) delay(seq.gapMs);
+      drain();
+    }
+    ir::sendCode(code, seq.irMs, true);
+    steps++;
+    drain();
+    uint32_t now = millis();
+    if (otherKey || hold.released(now)) break;
+    if (now - t0 + stepMs > capMs) { capped = true; break; }
+  }
+  uint32_t total = millis() - t0;
+  Serial.printf("Hold %s %s: ", code == hd::ir::kCodeUp ? "UP" : "DOWN",
+                hd::ir::codeToBits(code).c_str());
+  if (hold.repeats())
+    Serial.printf("held %lu ms (%lu key repeats)", (unsigned long)hold.heldMs(),
+                  (unsigned long)hold.repeats());
+  else
+    Serial.printf("tap (no key repeats: released within %lu ms)", (unsigned long)holdFirstGapMs);
+  Serial.printf(", sent %d steps in %lu ms, %ld wake packets%s%s\n", steps, (unsigned long)total,
+                packets, capped ? ", STOPPED at the send limit" : "",
+                otherKey ? ", ended by another key" : "");
+}
+
 // One burst per key press. A held key repeats, and those repeats pile up during
 // the blocking send, so discard input until it goes quiet. That also drops any
 // partial escape sequence, which would otherwise land in the command line.
 void sendArrow(uint8_t code) {
   Serial.println();
-  if (seq.on) runSeq(code);
+  if (holdMode) runHold(code);
+  else if (seq.on) runSeq(code);
   else sendIr(code, kArrowBurstMs);
   uint32_t lastInput = millis();
   while (millis() - lastInput < kArrowQuietMs) {
@@ -290,6 +349,18 @@ void handle(String cmdline) {
     else if (tok[1] == "ir" && inRange && v > 0) seq.irMs = v;
     else if (tok[1].length()) ok = false;
     if (ok) printSeq();
+  }
+  else if (c == "hold") {
+    tok[1].toLowerCase();
+    long v = tok[2].toInt();
+    if (tok[1] == "on" || tok[1] == "off") holdMode = tok[1] == "on";
+    else if (tok[1] == "first" && v >= 100 && v <= 2000) holdFirstGapMs = v;
+    else if (tok[1].length()) ok = false;
+    if (ok)
+      Serial.printf("Hold mode %s: arrow keys send seq steps while held (release = no key "
+                    "repeat for %lu ms before the first repeat, %lu ms after)\n",
+                    holdMode ? "on" : "off", (unsigned long)holdFirstGapMs,
+                    (unsigned long)kHoldRepeatGapMs);
   }
   else if (c == "id") {
     tok[1].toLowerCase();
