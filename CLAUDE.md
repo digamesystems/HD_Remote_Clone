@@ -11,6 +11,7 @@ Context for Claude Code. Summarized from a planning conversation in Claude chat 
   - **"t2"**: Tier 2 board tests, `pio test -e esp32dev_test --upload-port COM11` (all device suites). Leaves **test firmware** on the board; say so, and that "d" restores the app.
   - **"cpdt"**: the full gated release: `pio run`, t1, then t2 for test_device_board plus each changed area (`-f test_device_<area>`), then c, p, d. If any step fails, **halt**: no commit, push, or deploy; report the errors. Tier 2 tests IGNORED for absent hardware (per `include/hw_config.h`) don't block, but say plainly which areas were not verified.
   - Typical times (incremental): build 13 s, t1 15 s, t2 ~20 s per suite, d ~25 s.
+- **Firmware version:** `kFwVersion` in `src/main.cpp` (printed at boot and in `help`), started at 0.9.0 on Nov 15. Bump the last digit with each improvement to the bring-up firmware.
 - Serial/upload must run **outside the Bash sandbox**; sandboxed reads of COM11 return nothing.
   - A monitor window holding COM11 blocks upload/t2. Ask the user to close it (Ctrl+C) first, or close it if they say to.
   - If upload can't connect, have the user hold BOOT and tap EN.

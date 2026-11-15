@@ -14,6 +14,10 @@
 
 namespace {
 
+// Bring-up firmware version, shown at boot and in `help`. Bump the last digit
+// with each improvement.
+constexpr const char* kFwVersion = "0.9.0";
+
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
 hd::KeyParser keys;
@@ -90,8 +94,9 @@ void runPair(uint8_t group, bool add) {
 }
 
 void help() {
+  Serial.printf("\nHD Platinum remote bring-up firmware v%s\n", kFwVersion);
   Serial.println(F(
-      "\nCommands (any line except a # comment stops a running mode):\n"
+      "Commands (any line except a # comment stops a running mode):\n"
       " IR\n"
       "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
       "  send <up|down|bbbb> [ms]  RF wake, then HD frames at 40 kHz (default 1000 ms;\n"
@@ -350,7 +355,7 @@ void setup() {
 #endif
   randomSeed(esp_random());
   ir::begin();
-  Serial.println(F("\nHD Platinum remote bring-up firmware"));
+  Serial.printf("\nHD Platinum remote bring-up firmware v%s\n", kFwVersion);
   rf::begin();  // non-fatal if no module yet
   help();
   Serial.print("> ");
