@@ -10,6 +10,14 @@ result in OCP CAD Viewer. Exits non-zero if any check fails.
   python assembly.py --finish            assembled, in the chosen finish colours
   python assembly.py --no-show           checks only
   python assembly.py --sweep CORNER_R 8 10 12 14      rebuild and check at each value
+  python assembly.py --board out/hd_remote_board.step  real board (KiCad STEP) in place of the
+                                         placeholders it covers, plus a clash check of every part
+
+Export the board STEP with (from this folder):
+  kicad-cli pcb export step --force --user-origin 100x80mm --subst-models
+            -o out/hd_remote_board.step ../hd_remote/hd_remote.kicad_pcb
+The user origin (100, 80) mm makes KiCad's coordinates match the case model's (X = x - 100,
+Y = 80 - y); the board's underside is at z = 0 in the STEP.
 
 The internal parts are placeholders for clearance checking, not a board layout. Their positions
 follow the layout explored on 2026-11-13 (see README.md) and should be replaced by the board's
@@ -358,19 +366,87 @@ def check(m, p, info):
     return fails, out
 
 
+# Placeholders that the real board's STEP replaces in the view. The rest stay: they have no model on
+# the board (USB-C J101's model is missing from KiCad's library), or aren't on the board at all.
+BOARD_REPLACES = {"PCB", "key switches", "IR LEDs", "ESP32", "A/B switch", "SETUP switch",
+                  "indicator", "nRF socket", "battery JST"}
+
+
+def load_board(path, m):
+    """The board STEP, moved so its underside sits where the case puts the board."""
+    board = import_step(str(path))
+    loc = Location((0, 0, m["Z0"] + m["PCB_BOT_Z"]))
+    # Move each part, not just the compound: the compound's children keep their own locations, and
+    # the clash check walks the children.
+    parts = [c.moved(loc) for c in (board.children or board.solids())]
+    return Compound(children=parts)
+
+
+def check_board(m, p, board):
+    """Clash check: every solid in the real board against the case, keycaps, slider and battery.
+    Returns (fails, lines)."""
+    others = {"bottom shell": m["bottom"], "top shell": m["top"], "keycaps": p["keycaps"],
+              "A/B slider": p["A/B slider"], "battery": p["battery"]}
+    obb = {n: o.bounding_box() for n, o in others.items()}
+    fails, out = [], []
+    solids = list(board.children) if board.children else list(board.solids())
+    ab_sw = next((s for s in solids if "PCM12" in (getattr(s, "label", "") or "")), None)
+    for s in solids:
+        sb = s.bounding_box()
+        for n, o in others.items():
+            if s is ab_sw and n == "A/B slider":
+                continue   # checked below, at the model's actuator position
+            b = obb[n]
+            if (sb.max.X < b.min.X or sb.min.X > b.max.X or sb.max.Y < b.min.Y or sb.min.Y > b.max.Y
+                    or sb.max.Z < b.min.Z or sb.min.Z > b.max.Z):
+                continue
+            v = ov(s, o)
+            if v > 0.01:
+                label = getattr(s, "label", "") or "?"
+                c = sb.center()
+                msg = (f"board part {label} at ({c.X:.1f}, {c.Y:.1f}) overlaps {n} "
+                       f"by {v:.2f} mm^3")
+                fails.append(msg)
+                out.append("FAIL  " + msg)
+    # A/B: KiCad's PCM12 model shows its actuator at one end of its travel, while the slider is
+    # modelled at position A. Move the slider to the model's actuator and check the notch holds it.
+    if ab_sw is not None:
+        sb = ab_sw.bounding_box()
+        act = ab_sw & Pos(sb.min.X, 0, 0) * Box(0.9, 40, 80, align=(Align.MIN, Align.CENTER, Align.CENTER))
+        if act is None:
+            msg = "A/B: couldn't find the actuator in the PCM12 model"
+            fails.append(msg); out.append("FAIL  " + msg)
+        else:
+            dy = act.bounding_box().center().Y - (-m["AB_TRAVEL"] / 2)
+            v = ov(ab_sw, p["A/B slider"].moved(Location((0, dy, 0))))
+            ok = v <= 0.01
+            msg = (f"A/B slider notch holds the real PCM12 actuator (slider moved {dy:+.2f} mm to the "
+                   f"model's actuator; overlap {v:.2f} mm^3)")
+            if not ok:
+                fails.append(msg)
+            out.append(("ok    " if ok else "FAIL  ") + msg)
+    out.append(f"{'ok  ' if not fails else 'FAIL'}  real board: {len(solids)} parts checked against "
+               f"the shells, keycaps, A/B slider and battery")
+    return fails, out
+
+
 def _camera(reset):
     """Viewer options: reset to the standard isometric view (for screenshots), else keep."""
     return {"reset_camera": ocp_vscode.Camera.RESET} if reset else {}
 
 
-def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=False):
+def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=False, board=None):
     up = Location((0, 0, explode))
     lifted = {"keycaps", "A/B slider"}
     objs = [m["bottom"], m["top"].moved(up)]
     names = ["bottom shell", "top shell"]
+    if board is not None:
+        p = {n: v for n, v in p.items() if n not in BOARD_REPLACES}
+        objs.append(board)
+        names.append("board (KiCad STEP)")
     if finish:
-        colors = [FINISH["shell"], FINISH["shell"]]
-        alphas = [1.0, 1.0]
+        colors = [FINISH["shell"], FINISH["shell"]] + ([None] if board is not None else [])
+        alphas = [1.0, 1.0] + ([1.0] if board is not None else [])
         fill = None
         for f in m["legend_fill"].values():
             if f is not None:
@@ -378,6 +454,8 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=F
         extra = {"keycaps": FINISH["key"], "A/B slider": FINISH["key"], "indicator": FINISH["indicator"],
                  "IR LEDs": FINISH["ir"], "USB-C": FINISH["metal"]}
         for n, col in extra.items():
+            if n not in p:
+                continue
             objs.append(p[n].moved(up) if n in lifted else p[n]); names.append(n); colors.append(col)
             alphas.append(1.0)
         objs.append(fill.moved(up)); names.append("legend fill"); colors.append(FINISH["legend"]); alphas.append(1.0)
@@ -390,6 +468,9 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=F
                "indicator": "limegreen", "keycaps": "dimgray", "battery JST": "white",
                "battery plug": "beige", "battery leads": "red"}
     colors, alphas = ["lightgray", "lightblue"], [bottom_alpha, top_alpha]
+    if board is not None:
+        colors.append(None)   # keep the STEP's own colours
+        alphas.append(1.0)
     for n, part in p.items():
         objs.append(part.moved(up) if n in lifted else part)
         names.append(n); colors.append(palette[n])
@@ -404,6 +485,8 @@ def main():
     ap.add_argument("--bottom-alpha", type=float, default=1.0)
     ap.add_argument("--finish", action="store_true", help="assembled, in the finish colours")
     ap.add_argument("--no-show", action="store_true")
+    ap.add_argument("--board", type=Path, metavar="STEP",
+                    help="KiCad board STEP (see above): show it and clash-check every part")
     ap.add_argument("--sweep", nargs="+", metavar=("NAME", "VALUE"),
                     help="rebuild and check with a model constant set to each value")
     args = ap.parse_args()
@@ -422,13 +505,18 @@ def main():
     m = load_model()
     p, info = build_parts(m)
     fails, out = check(m, p, info)
+    board = None
+    if args.board:
+        board = load_board(args.board, m)
+        bfails, bout = check_board(m, p, board)
+        fails, out = fails + bfails, out + bout
     print("\n".join(out))
     print(f"\n{len(out) - len(fails)} of {len(out)} checks pass")
     if not args.no_show:
         if args.finish:
-            show_assembly(m, p, 0.0, 1.0, 1.0, True)
+            show_assembly(m, p, 0.0, 1.0, 1.0, True, board=board)
         else:
-            show_assembly(m, p, args.explode, args.top_alpha, args.bottom_alpha, False)
+            show_assembly(m, p, args.explode, args.top_alpha, args.bottom_alpha, False, board=board)
     sys.exit(1 if fails else 0)
 
 
