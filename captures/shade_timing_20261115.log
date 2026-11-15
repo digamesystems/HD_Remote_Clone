@@ -1,0 +1,101 @@
+# Shade timing tests, 2026-11-15 (clone only, no original remote unless noted)
+#
+# Firmware v0.9.1 to v0.9.3 (bring-up firmware, src/main.cpp). One group-4
+# shade, switch A. Clone ID C1 0E (made up; not a real remote's ID).
+# IR: TSAL6200 on a long extension lead, taped to the shade beside its sensor
+# eye with the LED's tip pointing up (side light only). The tape failed once;
+# the runs it spoiled are left out (see the notes). Lines are copied from the
+# serial monitor; timestamps are the PC's. "# ..." lines are the tester's notes.
+#
+# Convention in runs without notes: a repeated command means the one before it
+# failed (the tester repeated until the shade responded).
+#
+# seq step = RF wake ID 01 00 80 on one channel (ch 33, 52, 71 in turn) for
+# `seq rf` ms, then IR for `seq ir` ms. Defaults from v0.9.1: rf 50, gap 0, ir 50.
+
+## 1. Baseline: arrow keys (seq, 3 steps, ~317 ms per press), ~1-1.5 s apart
+# 12 of 13; the only miss was the first press.
+
+13:59:54.790 > Seq 0110:  RF ch33 x183 @0 ms, IR @51 ms;  RF ch52 x185 @103 ms, IR @154 ms;  RF ch71 x181 @205 ms, IR @256 ms  (total 318 ms)
+13:59:56.237 > Seq 0110:  RF ch33 x184 @0 ms, IR @51 ms;  RF ch52 x182 @102 ms, IR @153 ms;  RF ch71 x183 @204 ms, IR @255 ms  (total 317 ms)
+13:59:58.318 > Seq 0101:  RF ch33 x183 @0 ms, IR @51 ms;  RF ch52 x181 @102 ms, IR @153 ms;  RF ch71 x182 @204 ms, IR @255 ms  (total 317 ms)
+# ... 10 more presses alternating UP / DOWN, all worked.
+
+## 2. Old `send` (v0.9.1): one 450 ms wake rotating ch 33/52/71, then IR, ~3-5 s apart
+# send up 50 / send down 50 (3 IR frames, same as one seq step): 2 of 11.
+# An earlier run (13:49) gave 3 of 14 but the tape may already have been
+# failing. Arrow checks in the same session: reliable.
+
+14:01:11.637 > RF wake: 1508 packets in 450 ms (ch 33/52/71).
+14:01:11.688 > Sent HD code 0101 (A UP): 3 frames, 52 ms, 40 kHz
+14:01:15.991 > RF wake: 1511 packets in 450 ms (ch 33/52/71).
+14:01:16.039 > Sent HD code 0101 (A UP): 3 frames, 51 ms, 40 kHz
+14:01:19.139 > RF wake: 1500 packets in 450 ms (ch 33/52/71).
+14:01:19.200 > Sent HD code 0101 (A UP): 3 frames, 51 ms, 40 kHz
+# (worked on the 3rd; then DOWN worked on the 4th try, UP failed 4 of 4)
+
+## 3. Pace: arrow keys (seq, ~317 ms), fast vs slow
+# Fast, ~1 s apart (14:11:51-14:12:12): first 3 DOWNs failed, then 11 of 11.
+# Slow, ~4-7 s apart (14:12:23-14:13:57): 8 of 18 (failure runs DOWN x4,
+# DOWN x5, UP x2, DOWN x3; some repeats may have been stop-then-go).
+
+14:12:12.147 > Seq 0101:  RF ch33 x183 @0 ms, IR @51 ms;  RF ch52 x181 @102 ms, IR @153 ms;  RF ch71 x182 @204 ms, IR @255 ms  (total 317 ms)
+14:12:15.556 > > #longer delay
+14:12:23.657 > Seq 0101:  RF ch33 x183 @0 ms, IR @51 ms;  RF ch52 x182 @102 ms, IR @153 ms;  RF ch71 x182 @204 ms, IR @255 ms  (total 317 ms)
+14:12:29.452 > Seq 0110:  RF ch33 x182 @0 ms, IR @51 ms;  RF ch52 x182 @102 ms, IR @153 ms;  RF ch71 x183 @204 ms, IR @255 ms  (total 317 ms)
+
+## 4. New `send` (v0.9.2): seq steps repeated for the duration, slow pace (~5-14 s apart)
+# send 500 (4 steps, 408 ms): 0 of 3.
+# send 1000 (9 steps, 918 ms): 9 of 12 with notes (9 of 11 at 14:33-14:35,
+# 0 of 1 at 14:37). An earlier run without notes (14:26) scores 6 of 8 by the
+# repeat convention.
+# send 2000 (19 steps, 1938 ms): 9 of 9.
+
+14:25:50.131 > Send 0101 (A UP): 4 steps of RF 50 ms + gap 0 ms + IR 50 ms, ch 33/52/71 in turn, 727 wake packets, total 408 ms
+14:33:42.527 > Send 0110 (A DOWN): 9 steps of RF 50 ms + gap 0 ms + IR 50 ms, ch 33/52/71 in turn, 1641 wake packets, total 918 ms
+14:33:42.537 > > #worked
+14:35:16.441 > Send 0101 (A UP): 9 steps of RF 50 ms + gap 0 ms + IR 50 ms, ch 33/52/71 in turn, 1646 wake packets, total 918 ms
+14:35:16.453 > > #failed
+14:37:06.842 > > # shade closed to start
+14:37:22.600 > Send 0110 (A DOWN): 9 steps of RF 50 ms + gap 0 ms + IR 50 ms, ch 33/52/71 in turn, 1644 wake packets, total 918 ms
+14:37:22.613 > > #failed
+14:37:36.913 > Send 0110 (A DOWN): 19 steps of RF 50 ms + gap 0 ms + IR 50 ms, ch 33/52/71 in turn, 3468 wake packets, total 1938 ms
+14:37:36.913 > > #worked.
+# ... 8 more send 2000, all worked.
+
+## 5. Stop a moving blind with a short press
+
+14:40:57.338 > Send 0101 (A UP): 29 steps of RF 50 ms + gap 0 ms + IR 50 ms, ch 33/52/71 in turn, 5295 wake packets, total 2958 ms
+14:41:01.634 > Send 0110 (A DOWN): 2 steps of RF 50 ms + gap 0 ms + IR 50 ms, ch 33/52/71 in turn, 366 wake packets, total 204 ms
+14:41:01.645 > > #both worked
+# Also (v0.9.3 hold mode, 15:01-15:03): ~40 taps of 714 ms or 306 ms,
+# including "move down, stop with up" pairs. No tap ever reversed the blind.
+
+## 6. Hold the opposite arrow until the blind reverses (v0.9.3 hold mode)
+# Each: blind moving, then the opposite arrow held; "held" = key press to last
+# key repeat. Reversal times scatter: 4.9, 7.2, 9.0 s, and one 10 s hold
+# that hit the send limit.
+
+15:07:25.020 > Hold DOWN 0110: held 4867 ms (135 key repeats), sent 50 steps in 5123 ms, 9146 wake packets
+15:09:49.880 > Hold DOWN 0110: held 7230 ms (203 key repeats), sent 73 steps in 7485 ms, 13376 wake packets
+15:10:20.116 > Hold DOWN 0110: held 9957 ms (283 key repeats), sent 97 steps in 9957 ms, 17806 wake packets, STOPPED at the send limit
+15:10:57.087 > Hold DOWN 0110: held 9027 ms (256 key repeats), sent 90 steps in 9231 ms, 16498 wake packets
+
+## 7. Pairing remove (completes the 2026-11-12 pairing test)
+# Morning (v0.9.0, 3 steps rf 50 / ir 170, ~0.68 s): pair 4 remove and
+# pair 4 add, LED 2-3 in from the eye: no jog; grp 4 under C1 0E still
+# worked. Control: the working remote's setup add / remove / add jogged both
+# group-4 shades every time. Afternoon (v0.9.3, shade awake from recent
+# commands, a retry where needed): pair 4 add jogged, pair 4 remove jogged,
+# then grp 4 up / down under C1 0E got no response. Safety check (15:25):
+# with the working remote's ID, grp 4 up and down both worked, so only the
+# clone's entry was removed:
+#   > id yyyy
+#   Remote ID: yy yy (saved in flash)
+#   RF group 4 UP: 998 x yy yy 20 08 A1 (300 ms), then 1100 x tail 21 (330 ms)
+#   RF group 4 DOWN: 998 x yy yy 20 08 A2 (300 ms), then 1100 x tail 22 (330 ms)
+#   # worked
+
+11:35:30.970 > > pair 4 remove
+11:36:00.188 > Pair remove group 4, IR 0110:  RF ch33 x183 @0 ms, IR @51 ms;  RF ch52 x183 @223 ms, IR @274 ms;  RF ch71 x183 @446 ms, IR @497 ms  (total 679 ms)
+11:38:40.614 > RF group 4 UP: 1006 x C1 0E 20 08 A1 (300 ms), then 1108 x tail 21 (330 ms)

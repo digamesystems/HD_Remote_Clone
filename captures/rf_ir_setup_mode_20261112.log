@@ -62,3 +62,5 @@
 #   pair 4 add, a few inches from eye .. shade jogged
 #   grp 4 up / down after pairing ...... 5/5 up, 5/5 down
 #   pair 4 remove ...................... not tested yet (C1 0E is still paired)
+#   (2026-11-15: remove jogged, then grp 4 got no response; see
+#   shade_timing_20261115.log, section 7)

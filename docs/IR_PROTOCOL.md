@@ -176,6 +176,52 @@ This is the first hands-on evidence we know of for the RF wake-up claim, which u
 
 **Clone only, 2026-11-11:** the clone's own RF wake followed by its IR moves the shade with no original remote involved.
 
+**Timing, 2026-11-15:** the shade seems to sleep more deeply after a few seconds idle. From there it needs RF and IR together for about 1–2 s before it responds. Once it's awake (moving, or just commanded), a short press of about 0.2–0.7 s works. Holding the opposite arrow doesn't reverse the blind at any consistent time.
+
+### 2026-11-15: wake from sleep, press length, stop and reverse
+
+**Setup.** Clone only, made-up ID `C1 0E`, one group-4 shade. The TSAL6200 is on a long extension lead, **taped to the shade beside the sensor eye with its tip pointing up**, so the shade gets side light only and the aim is fixed. The tape failed once; the runs it spoiled are left out. A **step** is the clone's basic unit: the wake `ID 01 00 80` on one channel for 50 ms, then 50 ms of IR (3 frames), with the channel moving 33 → 52 → 71 each step. Results are hand-counted: a repeated command means the previous one failed, unless the tester noted otherwise. Log: [`captures/shade_timing_20261115.log`](../captures/shade_timing_20261115.log).
+
+**IR per step** (earlier the same day, hand-aimed, `seq rf 50`, 3 steps per press):
+
+| IR per step | Result |
+|---|---|
+| 1 frame (17 ms) | works, but unreliably |
+| 2 frames (34 ms) | works well (no counts) |
+| 3 frames (50 ms) | 20 of 20 move/stop sequences; became the default |
+| 10 frames (170 ms) | works, occasional stop-then-go doubles |
+
+So **one frame is marginal**; send several.
+
+**Press length vs. time since the last command** (fixed LED):
+
+| Pattern | ~1 s since the last command | ~4–14 s since the last command |
+|---|---|---|
+| 3 steps (~0.32 s), the arrow keys | 11 of 11 after the first presses (the first 3 failed) | 8 of 18 |
+| One 450 ms wake on all channels, then 3 frames of IR (old `send`) | — | 2 of 11 |
+| 4 steps (0.41 s) | — | 0 of 3 |
+| 9 steps (0.92 s) | — | 9 of 12 |
+| 19 steps (1.94 s) | — | **9 of 9** |
+
+**Reading.**
+- **Battery-style sleep:** the first press after a pause fails much more often, and a longer press fixes it. Our shades are DC-powered battery models, so their power saving is still active. A plausible design: light sleep right after a command, deeper sleep after a few seconds, with the radio checked only now and then.
+- **RF needs to keep coming during the press.** The old `send` put all its RF first and its IR after; it did worse than three short steps. The real remote sends RF and IR for as long as the key is held.
+- **Untested idea:** our steps leave each channel quiet for 250 ms of every 300 ms, while the remote rotates channels on every packet. If a sleeping shade checks one channel briefly, rotating within each step could shorten the press it needs.
+
+**Stopping and reversing** (the shade is awake while moving):
+
+| Press | Result |
+|---|---|
+| 0.2 s (2 steps), about 4 s after starting the blind | stopped it |
+| About 40 taps of 0.7 s or 0.3 s, including move/stop pairs | stopped it every time; never reversed |
+| Opposite arrow held until the blind reversed | **4.9, 7.2 and 9.0 s; one 10 s hold hit the send limit** |
+
+The reversal times scatter too much for a designed timer. Two explanations fit. First, the shade may ignore the held key after stopping until it sees a release, and our IR, with a 50 ms break every 100 ms, sometimes looks like one. Second, there may be a hold-to-reverse timer that our breaks keep restarting. Timing the real remote's hold-to-reverse would tell them apart. The user describes it as "stops, and after a pause moves the other way"; not timed yet.
+
+**The earlier doubles.** At `rf 200` / `ir 400` (three 400 ms bursts with 200 ms breaks, 1.2 s in all), reversing presses always stopped the blind, then started it the other way. At `rf 200` / `ir 170` (the same breaks) they didn't. So the shade may read long bursts with breaks as separate presses, and may need a minimum burst to start after a stop. That's a hypothesis.
+
+**For the handheld:** send while the key is held, with no fixed length. To start a sleeping shade, the user holds until it moves (about 1–2 s). To stop or reverse a moving or just-stopped shade, a tap works. The user prefers this tap-once-awake style. An unintended reversal would need a multi-second hold.
+
 ### 2026-11-11: clone only (RF wake + IR)
 
 The clone sends the wake frame `ID 01 00 80`, using the working remote's ID (set with `id`), for 450 ms. It rotates through ch 33/52/71, about 1,500 packets at roughly 300 µs each. The IR command (30 frames, 516 ms) follows with no gap, driven from the PC arrow keys. Both original remotes were out of reach. RF: one hiBCTR nRF24 module (marked `NRF24L01+`), no 10 µF cap, PA set to RF24's "high" level (−6 dBm on a genuine part). IR: one TSAL6200 at ~97 mA peak.
@@ -293,7 +339,7 @@ The small-hole result agrees with the foil tube, but on its own it was weak: the
 ### Next
 
 1. **Clone alone:** ✅ works (2026-11-11, above). Still to run: controls with `wake off` (IR only) and an ID the shade doesn't know; then improve IR range (a second LED, a wider-angle LED, or a test of the off-axis aim).
-2. **Receptive window, and `seq` on vs off.** With the LED on a fixed mount at a marginal aim (missing about half the time): compare `seq off` with `seq on` over at least 10 presses each, logged `# y` / `# n`. Then sweep `seq gap` 0, 100, 200, 400 and 800 ms. A sharp drop past some gap gives the shade's listening window after the RF.
+2. **Receptive window.** Partly answered 2026-11-15: the time since the last command matters more than the RF-to-IR layout, and a 1–2 s press wakes a sleeping shade (see above). Still open: the `seq gap` sweep (its first attempt was spoiled by the tape), how long until the shade sleeps (sweep the pause between presses), whether rotating channels within each step shortens the wake, and the real remote's hold-to-reverse time.
 3. ~~**nRF24 sniff**~~ Done 2026-11-11: red-mode presses send `ID 01 00 80`, as predicted. See [RF_PROTOCOL.md](RF_PROTOCOL.md).
 4. **Measure the foil directly** with a module at the tube's mouth, remote bare vs. wrapped.
 5. **Probe the remote's own LED drive** for the true carrier frequency, duty cycle and timings.
@@ -308,6 +354,7 @@ The small-hole result agrees with the foil tube, but on its own it was weak: the
 | [`captures/la_ir_red_down_arrow_20261107.sr`](../captures/la_ir_red_down_arrow_20261107.sr) | PulseView, down arrow: 74 × `0110` |
 | [`captures/ir_ab_channel_20261108.log`](../captures/ir_ab_channel_20261108.log) | ESP32 capture: captures 1–4 switch on A, 5–8 on B |
 | [`captures/ir_shield_tests_20261109.log`](../captures/ir_shield_tests_20261109.log) | ESP32 captures for the foil-tube tests: hand over the remote (Part 1), tube aimed and off axis (Part 2), tube at 30 cm (Part 3) |
+| [`captures/shade_timing_20261115.log`](../captures/shade_timing_20261115.log) | Clone shade tests with a fixed LED: press length vs. time since the last command, stopping, holding to reverse, pairing remove |
 | [`docs/images/`](images/) | Photos of the foil tube, the remote's IR window and the clone LED; scope traces of the clone's LED drive (2026-11-08, and the calibrated 2026-11-12 set: `scope_clone_ir_carrier`, `_up_frame`, `_down_frame`) |
 
 The receiver OUT was on GPIO 32 for the Nov 7 ESP32 captures, GPIO 14 from Nov 8, and on analyzer D0 for the PulseView captures. The analyzer files open in PulseView, and the serial logs are plain text.
@@ -315,7 +362,8 @@ The receiver OUT was on GPIO 32 for the Nov 7 ESP32 captures, GPIO 14 from Nov 8
 ## Firmware support
 
 - `ir` / `ir quiet`: capture and print a decoded summary per burst, e.g. `HD: code=0101 (A UP) frames=147 other=0 duration=2.53 s`.
-- `send up|down|bbbb [ms]`: send the RF wake (if a remote ID is set with `id`; `wake off` disables it), then synthesize and transmit frames at 40 kHz for about `ms` (default 1000). `up` and `down` are channel A; use `1001` / `1010` for B. OPEN codes are limited to 5000 ms and others to 10000 ms. `play` replays raw captures and has no such limit.
-- PC Up/Down arrow keys in the serial monitor send the wake, then `up` / `down` for 500 ms per press.
+- `send up|down|bbbb [ms]`: repeat steps (RF wake on one channel, then IR, at the `seq` timings) for about `ms` (default 1000), whole steps only (from v0.9.2). The wake needs a remote ID set with `id`; with `wake off` it sends IR alone for `ms`. `up` and `down` are channel A; use `1001` / `1010` for B. OPEN codes are limited to 5000 ms and others to 10000 ms. `play` replays raw captures and has no such limit.
+- PC Up/Down arrow keys in the serial monitor: 3 steps per press (`seq`, about 0.32 s), or one wake then 500 ms of IR with `seq off`.
+- `hold on` (v0.9.3): the arrow keys send steps for as long as the key is held and print the hold time. Release is inferred from the terminal's key repeats; `hold first <ms>` sets how long to wait for the first repeat (default 700).
 - Lines starting with `#` are comments: echoed to the log, and they don't stop a running capture. Use them to annotate tests.
 - Codec: `hd::ir::encodeFrame`, `encodeBurst`, `decodeFrames`, `summarize` in [`hd_ir.h`](../lib/hdcore/src/hd_ir.h), tested in [`test/test_native_ir`](../test/test_native_ir/test_main.cpp) against real captured frames.

@@ -19,7 +19,7 @@ The air settings come from prior work by [spitcool/hd-platinum-rf](https://githu
 | Clone group commands move the shades (`grp`) | ✅ 2026-11-11: groups 1–4 independently and All, UP and DOWN, with the working remote's ID. RF only, no aiming. DOWN (`A2` / `22`) and groups 2–4 / All are confirmed by the shades' response; we haven't sniffed them from a remote |
 | Shade checks the ID | **Group commands: yes.** With a made-up ID (`12 34`), `grp 4` got 0 responses in 12 trials; with the working remote's ID, 12 of 12 (2026-11-12). **Red-mode wake: no.** A wake with `12 34` or `C1 0E`, then IR, moved a group-4 shade, as did both real IDs (2026-11-12). The 2026-11-11 result, where `12 34` also failed for wake + IR, is put down to hand-aimed IR (trials not counted) |
 | Group assignment (setup mode) frames | ✅ 2026-11-12, working remote: add (setup + group 4 + OPEN) = `ID 30 08 80`; remove (setup + group 4 + CLOSE) = `ID 31 08 80`, then a `00` tail. SETUP and the group key send nothing |
-| **Clone pairs under its own ID** | ✅ **2026-11-12:** `pair 4 add` with a made-up ID (`C1 0E`) at a group-4 shade: the shade jogged, then `grp 4` with that ID moved it 5 of 5 up and 5 of 5 down. Before pairing it got no response. `pair 4 remove` not tested yet |
+| **Clone pairs under its own ID** | ✅ **2026-11-12:** `pair 4 add` with a made-up ID (`C1 0E`) at a group-4 shade: the shade jogged, then `grp 4` with that ID moved it 5 of 5 up and 5 of 5 down. Before pairing it got no response. **2026-11-15:** `pair 4 remove` jogged the shade, and `grp 4` with that ID then got no response, while `grp 4` with the working remote's ID still worked. So removal drops only the clone's entry |
 | Channels 52 and 71 | not sniffed yet (taken from spitcool's notes) |
 
 ## Air settings
@@ -142,9 +142,13 @@ So the RF frame carries the ID, the group and add/remove (MODE bit 0), and the a
 | `grp 4 up` before pairing | no response |
 | `pair 4 add`, a few inches from the sensor eye | the shade jogged |
 | `grp 4` after pairing | 5 of 5 up, 5 of 5 down |
-| `pair 4 remove` | not tested yet |
+| `pair 4 remove` (2026-11-15) | the shade jogged |
+| `grp 4` after removal | no response, up or down |
+| `grp 4` with the working remote's ID, after removal | up and down both work: the remote's entry is untouched |
 
-So **a clone can pair under its own ID, with no original remote**. Anyone who has lost their remotes can do this. Pairing needs the IR from a few inches away, so it needs physical access to the shade, as with the original remote. The remote's save press (SETUP again) sent nothing we could see, and the clone didn't need it.
+**The shade has to be awake.** The first `pair 4 remove` and `pair 4 add` attempts on 2026-11-15 (about 0.68 s each, LED 2–3 inches from the eye) didn't jog. That fits the shade test the same day: after a few seconds idle, the shade needs about 1–2 s of RF and IR before it responds ([IR_PROTOCOL.md](IR_PROTOCOL.md#2026-11-15-wake-from-sleep-press-length-stop-and-reverse)). Later that day, with the shade awake from recent commands, both jogged, retried where needed. The working remote's setup add, remove and add again jogged both group-4 shades every time, **whether or not the entry already existed**. So a jog confirms the command was received, not that anything changed.
+
+So **a clone can pair and unpair under its own ID, with no original remote**. Anyone who has lost their remotes can do this. Pairing needs the IR from a few inches away, so it needs physical access to the shade, as with the original remote. The remote's save press (SETUP again) sent nothing we could see, and the clone didn't need it.
 
 **Duplicate remote (manual p. 7):** after a Master Reset, the new remote copies the original's identity from a few inches away. It doesn't create a new pairing, so two duplicated remotes share one ID. Not sniffed. Don't Master Reset a remote to try it.
 
@@ -157,12 +161,12 @@ The manual doesn't say how many remotes a shade can store. With `pair ... remove
 - `wake [ms]`: send the wake alone (default 450 ms, rotating ch 33/52/71).
 - `send` and the PC arrow keys: wake first, then IR (the arrow keys interleave them; see `seq`). `wake off` turns that off.
 - `grp <1-4|all> <up|down> [ms]`: a group command, held frames for `ms` (default 300, max 5000), then the release tail.
-- `pair <1-4|all> <add|remove>`: group assignment with the stored ID. Aim at one shade's sensor eye from a few inches.
+- `pair <1-4|all> <add|remove>`: group assignment with the stored ID, 3 steps (setup frames, then IR). Aim at one shade's sensor eye from a few inches. Wake the shade first (an arrow press) or repeat until it jogs.
 
 ## Open questions
 
 - ~~Does the shade check the ID?~~ For group commands, yes. For the red-mode wake, no: two made-up IDs both worked (2026-11-12).
-- ~~How does pairing work on air?~~ Sniffed, and the clone pairs itself (2026-11-12; see [Pairing](#pairing-group-assignment)). Still open: does `pair ... remove` work; the backup-remote copy (p. 7), which we won't try on our remotes.
+- ~~How does pairing work on air?~~ Sniffed, and the clone pairs itself (2026-11-12; see [Pairing](#pairing-group-assignment)). Remove works too (2026-11-15). Still open: the backup-remote copy (p. 7), which we won't try on our remotes.
 - How many remotes can a shade store? The manual doesn't say. Probe with test IDs added and removed by `pair`.
 - How long does the shade stay receptive after the wake, and does the original send IR during or after the RF? (Measure with the analyzer: IR receiver OUT plus our module's IRQ during `sniff`.)
 - The shortest wake that works (needs a setting for the automatic wake length).
@@ -175,3 +179,4 @@ The manual doesn't say how many remotes a shade can store. With `pair ... remove
 |---|---|
 | [`captures/rf_sniff_20261111.log`](../captures/rf_sniff_20261111.log) | Three sniffs: the weak remote (group 1 + UP; red-mode presses) and the working remote (red UP tap, red DOWN hold, group 1 + UP). IDs redacted |
 | [`captures/rf_ir_setup_mode_20261112.log`](../captures/rf_ir_setup_mode_20261112.log) | Setup-mode group assignment: RF for add and remove, IR summaries, and the clone pairing result. ID redacted |
+| [`captures/shade_timing_20261115.log`](../captures/shade_timing_20261115.log) | Clone shade timing tests, and the clone's pairing remove (section 7) |
