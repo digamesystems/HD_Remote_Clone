@@ -17,7 +17,8 @@ void stopCapture();
 void play(int slot, int repeats, int gapMs);
 bool save(int slot);
 // Transmit an HD Platinum frame burst (4-bit code) lasting ~durationMs.
-void sendCode(uint8_t code, uint32_t durationMs);
+// quiet = true skips the "Sent HD code" line (callers that print a summary).
+void sendCode(uint8_t code, uint32_t durationMs, bool quiet = false);
 void list();
 void dump(int slot);
 

@@ -113,7 +113,7 @@ void pollCapture() {
   irrecv.resume();
 }
 
-void sendCode(uint8_t code, uint32_t durationMs) {
+void sendCode(uint8_t code, uint32_t durationMs, bool quiet) {
   int frames = hd::ir::framesForDuration(durationMs);
   std::vector<uint16_t> burst = hd::ir::encodeBurst(code, frames);
   bool wasCapturing = capturing;
@@ -122,6 +122,7 @@ void sendCode(uint8_t code, uint32_t durationMs) {
   irsend.sendRaw(burst.data(), burst.size(), kCarrierKhz);
   uint32_t took = millis() - t0;
   if (wasCapturing) irrecv.enableIRIn();
+  if (quiet) return;
   Serial.printf("Sent HD code %s (%s): %d frames, %lu ms, %u kHz\n",
                 hd::ir::codeToBits(code).c_str(), hd::ir::codeName(code), frames,
                 (unsigned long)took, kCarrierKhz);

@@ -16,7 +16,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.1";
+constexpr const char* kFwVersion = "0.9.2";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -101,8 +101,9 @@ void help() {
       "Commands (any line except a # comment stops a running mode):\n"
       " IR\n"
       "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
-      "  send <up|down|bbbb> [ms]  RF wake, then HD frames at 40 kHz (default 1000 ms;\n"
-      "                            up/down = channel A; max 5000 ms for OPEN, 10000 otherwise)\n"
+      "  send <up|down|bbbb> [ms]  seq steps (RF wake, IR) repeated for ms (default 1000;\n"
+      "                            up/down = channel A; max 5000 ms for OPEN, 10000 otherwise);\n"
+      "                            with wake off, IR alone for ms\n"
       "  Up/Down arrow keys      send up/down (works at the prompt or during capture); see seq\n"
       "  seq [on|off|rf|gap|ir <ms>]  arrow keys: RF ch33, IR, RF ch52, IR, RF ch71, IR\n"
       "                          (on, default: rf 50, gap 0, ir 50) or wake + one 500 ms\n"
@@ -169,6 +170,36 @@ void sendIr(uint8_t code, uint32_t ms) {
   ir::sendCode(code, ms);
 }
 
+// `send`: repeats the seq step (RF wake on one channel, gap, IR; channels 33,
+// 52, 71 in turn) for about `ms`, so the RF keeps coming for the whole press,
+// as with the real remote. Only whole steps that fit in `ms` are sent (at
+// least one), so the OPEN cap holds. With `wake off`, IR alone for `ms`.
+// Nov 15: one 450 ms wake followed by the IR was unreliable, and failed more
+// after a few seconds idle (the shade seems to sleep deeper).
+void runSend(uint8_t code, uint32_t ms) {
+  if (!autoWake) {
+    ir::sendCode(code, ms);
+    return;
+  }
+  const uint32_t stepMs = seq.rfMs + seq.gapMs + seq.irMs;
+  uint32_t t0 = millis();
+  int steps = 0;
+  long packets = 0;
+  do {
+    long n = rf::sendWakeOn(hd::rf::kChannels[steps % 3], seq.rfMs);
+    if (n < 0) return;  // no ID or no radio; reason already printed
+    packets += n;
+    if (seq.gapMs) delay(seq.gapMs);
+    ir::sendCode(code, seq.irMs, true);
+    steps++;
+  } while (millis() - t0 + stepMs <= ms);
+  Serial.printf("Send %s (%s): %d steps of RF %lu ms + gap %lu ms + IR %lu ms, ch 33/52/71 "
+                "in turn, %ld wake packets, total %lu ms\n",
+                hd::ir::codeToBits(code).c_str(), hd::ir::codeName(code), steps,
+                (unsigned long)seq.rfMs, (unsigned long)seq.gapMs, (unsigned long)seq.irMs,
+                packets, (unsigned long)(millis() - t0));
+}
+
 // One burst per key press. A held key repeats, and those repeats pile up during
 // the blocking send, so discard input until it goes quiet. That also drops any
 // partial escape sequence, which would otherwise land in the command line.
@@ -221,7 +252,7 @@ void handle(String cmdline) {
     else if ((uint32_t)ms > hd::ir::maxSendMs(code))
       Serial.printf("Not sent: limit for %s is %lu ms (OPEN held 6 s can reset a shade).\n",
                     hd::ir::codeToBits(code).c_str(), (unsigned long)hd::ir::maxSendMs(code));
-    else sendIr(code, ms);
+    else runSend(code, ms);
   }
   else if (c == "wake") {
     tok[1].toLowerCase();
