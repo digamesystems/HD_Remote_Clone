@@ -298,7 +298,16 @@ void handle(String cmdline) {
     else probePin(p, ms);
   }
   else if (c == "btn") {
+#if defined(HD_BOARD_HANDHELD)
+    Serial.printf("UP=%d DOWN=%d ALL=%d G1=%d G2=%d G3=%d G4=%d SETUP=%d  A/B=%c  VBAT~%u mV\n",
+                  digitalRead(PIN_BTN_UP), digitalRead(PIN_BTN_DN), digitalRead(PIN_BTN_ALL),
+                  digitalRead(PIN_BTN_G1), digitalRead(PIN_BTN_G2), digitalRead(PIN_BTN_G3),
+                  digitalRead(PIN_BTN_G4), digitalRead(PIN_BTN_SETUP),
+                  digitalRead(PIN_AB_SW) ? 'B' : 'A',  // which rail = which channel: confirm at bring-up
+                  (unsigned)(analogReadMilliVolts(PIN_VBAT_SENSE) * 2));  // 1M/1M divider
+#else
     Serial.printf("UP=%d DOWN=%d\n", digitalRead(PIN_BTN_UP), digitalRead(PIN_BTN_DN));
+#endif
   }
   else { Serial.printf("Unknown command '%s'. Type help.\n", c.c_str()); return; }
 
@@ -314,6 +323,15 @@ void setup() {
   delay(300);
   pinMode(PIN_BTN_UP, INPUT);  // external pull-downs
   pinMode(PIN_BTN_DN, INPUT);
+#if defined(HD_BOARD_HANDHELD)
+  for (uint8_t p : {PIN_BTN_ALL, PIN_BTN_G1, PIN_BTN_G2, PIN_BTN_G3, PIN_BTN_G4, PIN_BTN_SETUP,
+                    PIN_AB_SW})
+    pinMode(p, INPUT);
+  pinMode(PIN_LED_RED, OUTPUT);
+  digitalWrite(PIN_LED_RED, LOW);
+  pinMode(PIN_LED_GREEN, OUTPUT);
+  digitalWrite(PIN_LED_GREEN, LOW);
+#endif
   randomSeed(esp_random());
   ir::begin();
   Serial.println(F("\nHD Platinum remote bring-up firmware"));

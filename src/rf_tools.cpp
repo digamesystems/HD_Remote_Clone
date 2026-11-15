@@ -84,6 +84,10 @@ bool ensureRadio() {
 
 bool ensureRadioB() {
   if (radioBOk) return true;
+  if (!HAS_RADIO_B) {
+    Serial.println("No radio B on this board.");
+    return false;
+  }
   hspi.begin(PIN_NRF_B_SCK, PIN_NRF_B_MISO, PIN_NRF_B_MOSI, PIN_NRF_B_CSN);
   radioBOk = radioB.begin(&hspi) && radioB.isChipConnected();
   if (!radioBOk) Serial.println("Radio B not responding (check its wiring on GPIO 25/26/27/13/21).");

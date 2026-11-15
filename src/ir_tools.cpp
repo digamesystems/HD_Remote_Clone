@@ -58,6 +58,10 @@ void begin() {
 }
 
 void startCapture(bool raw) {
+  if (!HAS_IR_RX) {
+    Serial.println("No IR receiver on this board.");
+    return;
+  }
   rawDump = raw;
   irrecv.enableIRIn();
   capturing = true;
