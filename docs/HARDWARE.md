@@ -4,7 +4,7 @@
 
 The goal is a battery handheld that replaces the original Platinum remote. It sends point-and-press IR with our RF wake, and RF group commands, using the firmware developed on the DevKitC breadboard.
 
-## Decisions (agreed 2026-11-11)
+## Decisions (agreed 2026-11-11, John)
 
 | Topic | Choice |
 |---|---|
@@ -17,7 +17,7 @@ The goal is a battery handheld that replaces the original Platinum remote. It se
 | IR LEDs | Two TSAL6200 positions |
 | Charge status | **Separate LED** on the charger's STAT pin (not the bicolor LED) |
 | USB | USB-C with the USB-serial bridge kept on the board, so early revisions can be flashed and debugged over USB |
-| Enclosure | **Custom 3D-printed clamshell** (decided 2026-11-13, replacing the OKW candidates): 150 × 45 × 27 mm, modelled in `hardware/enclosure/`, whose README holds the PCB constraints (outline, holes, keep-outs) |
+| Enclosure | **Custom 3D-printed clamshell** (decided 2026-11-13 (John), replacing the OKW candidates): 150 × 45 × 27 mm, modelled in `hardware/enclosure/`, whose README holds the PCB constraints (outline, holes, keep-outs) |
 
 ## Block diagram
 
@@ -71,7 +71,7 @@ Free afterwards: 21 (spare since 2026-11-14), 2, 12, 15 (strapping; leave alone 
 
 ## Power
 
-**Cell:** single Li-ion/LiPo **with a protection circuit**, on a JST-PH 2-pin connector. **Chosen 2026-11-14: [Adafruit #1578](https://www.adafruit.com/product/1578)**, 500 mAh, 3.7 V nominal, 29 × 36 × 4.75 mm, 10.5 g, 102 mm lead (JST-PH in Adafruit's documented polarity), protection cutting out at 3.0 V, charge rate ≤ 500 mA (ours is ~256 mA, ~0.5C). About $8 from Adafruit or DigiKey. Buy two: one for the remote, one for the bench.
+**Cell:** single Li-ion/LiPo **with a protection circuit**, on a JST-PH 2-pin connector. **Chosen 2026-11-14 (John): [Adafruit #1578](https://www.adafruit.com/product/1578)**, 500 mAh, 3.7 V nominal, 29 × 36 × 4.75 mm, 10.5 g, 102 mm lead (JST-PH in Adafruit's documented polarity), protection cutting out at 3.0 V, charge rate ≤ 500 mA (ours is ~256 mA, ~0.5C). About $8 from Adafruit or DigiKey. Buy two: one for the remote, one for the bench.
 - **Fit:** the case model uses 29 × 36 mm (rib pocket 30 × 37 mm) and keeps a 5.0 mm thickness allowance (plus 10 % swelling), so the board height didn't change. The board's battery keep-out and its underside outline grew 1 mm toward the back to match (now KiCad x 46.5–83.5); TP603 moved 0.4 mm to clear it. **Measure the cell on arrival** (calipers, including the bulge where the protection board sits) and set the ribs from the measured size.
 - **Polarity:** check the cell's plug against J102's + / − before connecting. Q103 protects against a reversed cell, but the remote then won't run.
 - **Life:** roughly 0.6–0.7 mAh/day (sleep ~15 µA plus ~20 presses), so the cell's self-discharge dominates: expect to recharge every 6–12 months.
@@ -132,12 +132,14 @@ The LEDs run from **VSYS** (VBAT when on battery, ~4.4–4.5 V from USB; changed
 
 - **USB-C receptacle** (USB 2.0, 16-pin), 5.1 kΩ on CC1 and CC2 to GND (sink role), USBLC6-2SC6 ESD protection on D+/D−.
 - **CP2102N** (QFN-24), the same family as the DevKitC's USB bridge, so the driver is already installed and COM11-style behaviour is unchanged. It's powered from VBUS through its own regulator, so it draws nothing from the battery.
-  - *Back-powering:* with USB unplugged, the ESP32's TX0 drives the CP2102N's unpowered RXD pin and could leak current through its protection diodes. Series resistors on TX0 and RX0 limit this; check the sleep current with USB unplugged. *verify* Datasheet check (2026-11-13, CP2102N rev 1.3, Table 3.10): with VIO below 3.3 V a UART pin's absolute maximum is VIO + 2.5 V, so 2.5 V when unpowered, against the ESP32's 3.3 V TX idle. The series resistor limits the diode current to about (3.3 − 0.6 V) / 1 kΩ ≈ 2.7 mA while the ESP32 is awake (in deep sleep TX0 isn't driven). That's the same current-limiting argument Silicon Labs uses for the VBUS divider, but 2.7 mA is a real drain during presses. **Decided 2026-11-13:** R107 (ESP32 TX0 → CP2102N RXD) is **10 kΩ** (~0.27 mA). With ~10 pF of pin capacitance that's a ~0.1 µs RC, fine at 921 600 baud (1.1 µs per bit); confirm uploads at full speed on the first board. R106 (CP2102N TXD → ESP32 RX0) stays 1 kΩ: the CP2102N doesn't drive it while unpowered.
+  - *Back-powering:* with USB unplugged, the ESP32's TX0 drives the CP2102N's unpowered RXD pin and could leak current through its protection diodes. Series resistors on TX0 and RX0 limit this; check the sleep current with USB unplugged. *verify* Datasheet check (2026-11-13, CP2102N rev 1.3, Table 3.10): with VIO below 3.3 V a UART pin's absolute maximum is VIO + 2.5 V, so 2.5 V when unpowered, against the ESP32's 3.3 V TX idle. The series resistor limits the diode current to about (3.3 − 0.6 V) / 1 kΩ ≈ 2.7 mA while the ESP32 is awake (in deep sleep TX0 isn't driven). That's the same current-limiting argument Silicon Labs uses for the VBUS divider, but 2.7 mA is a real drain during presses. **Decided 2026-11-13 (John):** R107 (ESP32 TX0 → CP2102N RXD) is **10 kΩ** (~0.27 mA). With ~10 pF of pin capacitance that's a ~0.1 µs RC, fine at 921 600 baud (1.1 µs per bit); confirm uploads at full speed on the first board. R106 (CP2102N TXD → ESP32 RX0) stays 1 kΩ: the CP2102N doesn't drive it while unpowered.
 - **Auto-reset:** the DevKitC's two-NPN DTR/RTS circuit on EN and IO0, so `pio run -t upload` works without buttons. EN gets 10 kΩ pull-up + 1 µF; a small tactile EN reset button is included.
 
-### Reset and recovery with the case closed (decided 2026-11-13)
+### Reset and recovery with the case closed
 
-The first prototype has **no reset reachable from outside the case**. The RESET (EN) and BOOT buttons are small SMD parts on top of the board, under the top shell. That's acceptable for a prototype, because a stuck board can still be recovered three ways:
+**Decided 2026-11-16 (John): no reset reachable from outside the case**, for the prototype and for the planned run of five assembled boards. Every intended user is a developer who knows the USB serial reset, so the risk is low. (First recorded 2026-11-13 for prototype 1 only.)
+
+The board has **no reset reachable from outside the case**. The RESET (EN) and BOOT buttons are small SMD parts on top of the board, under the top shell. That's acceptable for a prototype, because a stuck board can still be recovered three ways:
 
 1. **USB, case closed.** Plug in USB and open the serial port (or flash): the CP2102N's auto-reset pulls EN low. It's a hardware reset, so it works from deep sleep or a hang. It only works with USB connected, since the CP2102N is powered from VBUS.
 2. **Watchdogs.** The ESP32's task and RTC watchdogs reset a hung CPU. The handheld firmware must keep them enabled.
@@ -159,14 +161,14 @@ Apart from the parts the case model already covers (`hardware/enclosure/assembly
 ## nRF24 socket
 
 - 2×4 female header, 2.54 mm. The module plugs in lying flat over the board, antenna end toward the front. Its PCB antenna (the module's front 8 mm) sits over a rule area in the PCB ("nRF24 antenna: no ground fill", both layers). Corrected 2026-11-13: the first draft had the antenna overhanging the board edge, before the case design.
-- **Signal tracks may cross the antenna area (decided 2026-11-14).** The rule area first banned all copper (tracks, vias, fill). Its edge runs along the ends of the ESP32's left pad column, so that made ESP32 pins 25–31 and 34 unreachable (IO0, IR_TX, LED_GREEN, NRF_CE, NRF_CSN, NRF_SCK, NRF_MISO, U0RXD). Found during hand routing; the placement passes counted crossings but never checked that every pad could still be reached. Now it bans only ground fill and pads; tracks and vias are allowed. Reasoning:
+- **Signal tracks may cross the antenna area (decided 2026-11-14, John).** The rule area first banned all copper (tracks, vias, fill). Its edge runs along the ends of the ESP32's left pad column, so that made ESP32 pins 25–31 and 34 unreachable (IO0, IR_TX, LED_GREEN, NRF_CE, NRF_CSN, NRF_SCK, NRF_MISO, U0RXD). Found during hand routing; the placement passes counted crossings but never checked that every pad could still be reached. Now it bans only ground fill and pads; tracks and vias are allowed. Reasoning:
   - **Ground under the antenna is what really detunes it.** A few thin signal tracks are a much smaller effect, and the antenna sits a socket's height above the board.
   - **The link has large margin.** The original remote keeps working at household range with a hand wrapped right round it, a far worse disturbance.
   - **Little noise when it matters.** The crossing lines are mostly the nRF's own SPI. SPI is busy loading a payload before a transmission, not during it, and the handheld mostly transmits; receiver desense would only affect the bench `sniff` tool.
   - **Routing rules for the crossing lines:** bottom layer where possible (1.6 mm further away; a short top-layer stub and a via at each ESP32 pad), a tight straight bundle across the area, and the fastest edges (SCK) furthest from the antenna end. No pour on either layer.
   - **Verify on the first board:** compare the shades' response range with the nRF on our board against a loose module on the breadboard, and run a long `sniff` from the other remote. A small loss is acceptable given the margin.
 - **The cell sits under the whole antenna area (noted 2026-11-14).** The battery's footprint (KiCad x 47.5–83.5) contains the antenna area (x 59.5–67.5), so the cell's foil-laminated pouch lies under the antenna like a metal plate. That affects the antenna far more than the tracks above, so routing the crossing lines on the bottom layer rather than the top hardly matters; it isn't required.
-  - **Spacing (from the case model):** module about 8.5 mm above the board on its socket, 1.6 mm board, then ~2.5 mm air to the cell (2 mm if swollen): the foil is roughly **12 mm below the antenna**, about λ/10 at 2.4 GHz. Close enough to detune it and cost some range, not enough to short it out.
+  - **Spacing (from the case model):** antenna about 8.4 mm above the board (4.57 mm SLW socket + 3.0 mm header spacer + 0.8 mm module board; recomputed 2026-11-16 from measurements), 1.6 mm board, then ~2.5 mm air to the cell (2 mm if swollen): the foil is roughly **12.5 mm below the antenna**, about λ/10 at 2.4 GHz. Close enough to detune it and cost some range, not enough to short it out.
   - **Precedent:** the original remote has its cells directly under its radio section and antenna (FCC internal photos, see [Reference: the original Platinum remote's layout](#reference-the-original-platinum-remotes-layout-recorded-2026-11-13)), steel-cased and probably only a few mm away, and it works at household range through a wrapped hand.
   - **Accepted for prototype 1. Test on the first board:** compare the shades' response range (a) on USB power with no cell and (b) with the cell fitted, same position and press pattern. The difference is the cell's effect.
   - **If the loss matters:** move the cell back in the case (check `remote_box.py` for room first), use a narrower or shorter cell that stops short of the antenna end, or accept it given the margin.
@@ -210,7 +212,7 @@ Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid 
 | SETUP switch, 6 × 6 mm, 5 mm tall | 1 | mounted on the **underside** (plunger down, behind the floor pinhole), soldered on top |
 | IR LEDs (TSAL6200) | 2 | legs bent 90° so the axis is **3.0 mm above the board** (footprint `..._Horizontal_O1.27mm_Z3.0mm`); a small printed bending jig helps |
 | Indicator LED (5 mm, 3-lead) | 1 | its height sets how far the dome stands proud of the key face (2 mm): use a spacer or jig |
-| nRF24 socket (2×4) | 1 | low-profile type planned (a standard one leaves 0.7 mm under the key face) |
+| nRF24 socket (2×4) | 1 | Samtec SLW-104-01-G-D, low-profile (decided 2026-11-16, John; module pins trimmed to ~2.6 mm) |
 | Battery JST (S2B-PH-K) | 1 | |
 | Ground test loops (Keystone 5000) | 3 | optional |
 
@@ -222,7 +224,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 
 | Part | Force | Where | Notes |
 |---|---|---|---|
-| **Same Sky TS02-66-130-BK-160-SCR-D** (chosen; 100 ordered 2026-11-13) | 160 gf (1.6 N) | DigiKey 2223-TS02-66-130-BK-160-SCR-D-ND: 4,939 in stock, US$0.14 each (1), $0.114 (25) | Datasheet confirms the 13.0 mm height above the PCB and 0.25 mm travel. Same series: 100 gf (`-100-`, lighter) |
+| **Same Sky TS02-66-130-BK-160-SCR-D** (chosen by John; 100 ordered 2026-11-13) | 160 gf (1.6 N) | DigiKey 2223-TS02-66-130-BK-160-SCR-D-ND: 4,939 in stock, US$0.14 each (1), $0.114 (25) | Datasheet confirms the 13.0 mm height above the PCB and 0.25 mm travel. Same series: 100 gf (`-100-`, lighter) |
 | TE / Alcoswitch 2-1825910-6 (FSMJ series) | 100 gf | DigiKey: ~29,600 in stock, CA$0.38 (1) | 13.00 mm, 0.25 mm travel, 100k cycles |
 | Kinghelm KH-6X6X13H-TJ | 2.6 N (~260 gf) | LCSC / JLC C2837523 | Useful if JLC ever places the THT switches |
 
@@ -264,7 +266,7 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 - **SW201/SW202:** KMR221NGLFS (C269272), the 4.2 × 2.8 mm body without the ground tab, to fit KiCad's 4-pad `SW_Push_1P1T_NO_CK_KMR2`. Check the land pattern against C&K's drawing before layout.
 - **SW509:** PCM12SMTR (C221841), matching the footprint. The case model's slider also allows an MSK12C02; that needs a different footprint.
 - **U103:** MCP73831T-2ACI/OT (C424093), the 4.20 V `-2` variant.
-- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (low-profile part not chosen), ground loops TP604–606, test pads.
+- **No LCSC number (hand-soldered THT, or not a part):** the 8 key switches (Same Sky TS02, DigiKey), IR LEDs, indicator, nRF24 socket (Samtec SLW-104-01-G-D, DigiKey), ground loops TP604–606, test pads.
 
 ## Reference design review (2026-11-14)
 
@@ -319,7 +321,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 
 | Item | Value | Note |
 |---|---|---|
-| nRF24 socket | 2×4 female, 2.54 mm, vertical; pins numbered as on the module (odd row GND, CE, SCK, MISO; even row VCC, CSN, MOSI, IRQ) | **low-profile** part (body ≤ ~5 mm; added 2026-11-13): the module lies flat over it, and a standard 8.5 mm socket leaves only 0.7 mm under the key face. Same footprint. The module's pins (~6 mm below its spacer) may bottom out in a short socket: trim them, or pick a socket open at the bottom. Machined round-pin strips are low but don't take square header pins well. Part not chosen yet. Orientation and antenna overhang are layout tasks |
+| nRF24 socket | 2×4 female, 2.54 mm, vertical; pins numbered as on the module (odd row GND, CE, SCK, MISO; even row VCC, CSN, MOSI, IRQ) | **Decided 2026-11-16 (John): Samtec SLW-104-01-G-D** low-profile socket (2×4, 4.57 mm insulator, 20 µin gold; DigiKey 612-SLW-104-01-G-D-ND), with the header pins of each module used in a handheld **trimmed to ~2.6 mm** below the plastic spacer (they're 5.3–5.4 mm; the SLW takes 2.16–2.92 mm). Rejected: a standard 8.5 mm socket with a raised area on the top shell (looks awkward), and soldering the module directly (antenna ~8 mm above the cell; RF margin unknown). Measured module (2026-11-16, John): board 0.8 mm, header spacer 3.0 mm, crystal can 3.5 mm above the board, so a standard socket puts the crystal 1.9 mm into the key face; the SLW leaves 2.0 mm. Footprint `PinHeader_2x04` (pad 2 right of pad 1, see BRINGUP.md). **Open:** drop retention. 2.6 mm of pin grips less than a standard socket; the key face 2.0 mm above stops the module escaping but not lifting off its contacts. Options: a printed hold-down rib under the face (next case revision) or tape/foam on the module (John, 2026-11-16) |
 | nRF24 supply | 3V3 → FB401 (0603: 0 Ω fitted; ferrite-bead option) → `NRF_VCC` with 10 µF (0805) + 100 nF at the socket, and a DNP 100 µF (1206) for a PA/LNA module | see [nRF24 supply filtering](#nrf24-supply-filtering) |
 | nRF24 IRQ | to GPIO 13 through a 0 Ω, DNP | firmware doesn't use IRQ |
 | nRF24 pulls | R402 100 kΩ CSN to `NRF_VCC`, R403 100 kΩ CE to GND | added 2026-11-12, see [nRF24 socket](#nrf24-socket) |
@@ -419,7 +421,7 @@ This design uses 22 of the WROOM-32E's 26 usable GPIOs (free: 13, plus strapping
 - putting all 8 buttons on **one ADC pin through a resistor ladder**; the cost is no simultaneous presses, which the original never needs. **Wake needs care:** deep-sleep wake on a GPIO is digital, so a ladder tap that sits below the logic-high threshold won't wake the chip. Either design the ladder so every key clears the threshold (which squeezes the ADC spacing), or OR every key onto a separate wake pin through diodes (one more pin), or wake with the ULP reading the ADC (more current and firmware). Corrected 2026-11-12: the first draft said any press would wake it;
 - folding the A/B switch into the ladder (the IR receiver footprint is already gone).
 
-That's 11 pins: nRF24 5, IR 1, bicolor LED 2, ladder 1, battery sense 1, A/B 1. The XIAO's own USB-C and LiPo charger would replace the CP2102N, the MCP73831 and probably the LDO. The costs are no spare pins, single-press-only buttons and an ESP32-S3 firmware port. Agreed 2026-11-11: WROOM first, XIAO as a possible later revision.
+That's 11 pins: nRF24 5, IR 1, bicolor LED 2, ladder 1, battery sense 1, A/B 1. The XIAO's own USB-C and LiPo charger would replace the CP2102N, the MCP73831 and probably the LDO. The costs are no spare pins, single-press-only buttons and an ESP32-S3 firmware port. Agreed 2026-11-11 (John): WROOM first, XIAO as a possible later revision.
 
 ## Open questions
 

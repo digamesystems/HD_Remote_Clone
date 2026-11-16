@@ -1724,7 +1724,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x04_P2.54mm_Vertical"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical"
 			(at 60.96 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -1735,7 +1735,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://suddendocs.samtec.com/catalog_english/slw.pdf"
 			(at 60.96 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -1746,7 +1746,29 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "nRF24 module socket: low-profile 2x4 female, 2.54 mm, 4.57 mm tall (decided 2026-11-16, John). Trim the module's header pins to ~2.6 mm (insertion depth 2.16-2.92 mm)"
+			(at 60.96 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Samtec"
+			(at 60.96 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "SLW-104-01-G-D"
 			(at 60.96 91.44 0)
 			(hide yes)
 			(show_name no)

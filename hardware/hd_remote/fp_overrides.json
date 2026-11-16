@@ -251,7 +251,7 @@
   "attr": "through_hole"
  },
  "J401": {
-  "footprint": "Connector_PinSocket_2.54mm:PinSocket_2x04_P2.54mm_Vertical",
+  "footprint": "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical",
   "side": "F.Cu",
   "locked": "yes",
   "duplicate_pad_numbers_are_jumpers": "no",

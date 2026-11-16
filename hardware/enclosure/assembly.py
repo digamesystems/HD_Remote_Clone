@@ -9,6 +9,7 @@ result in OCP CAD Viewer. Exits non-zero if any check fails.
   python assembly.py --explode 0 --top-alpha 0.2      assembled, see-through top
   python assembly.py --finish            assembled, in the chosen finish colours
   python assembly.py --no-show           checks only
+  python assembly.py --nrf-socket-h 8.5  with a standard nRF24 socket instead of the SLW
   python assembly.py --sweep CORNER_R 8 10 12 14      rebuild and check at each value
   python assembly.py --board out/hd_remote_board.step  real board (KiCad STEP) in place of the
                                          placeholders it covers, plus a clash check of every part
@@ -37,7 +38,11 @@ MODEL = Path(__file__).parent / "parts" / "remote_box.py"
 # ---- placeholder board layout (mm from the front end unless noted) ----
 ESP_FRONT, ESP_L, ESP_W, ESP_H, ESP_ANT = 89.0, 25.5, 18.0, 3.1, 6.0   # WROOM-32E, antenna at -Y edge
 NRF_BACK = 136.5                       # nRF24 module's back end; antenna end points forward
-NRF_SOCKET_H, NRF_SPACER_H, NRF_PCB_T, NRF_PARTS_H = 8.5, 2.5, 1.0, 1.2
+NRF_SOCKET_H = 4.57                    # Samtec SLW-104-01-G-D (decided 2026-11-16, John); standard: 8.5
+# Module measured 2026-11-16 (John, hiBCTR module): board 0.8, board + header spacer 3.8,
+# board + crystal can 4.3 (the tallest part, HC-49S, ~11 x 4.65 mm footprint).
+NRF_SPACER_H, NRF_PCB_T, NRF_PARTS_H = 3.0, 0.8, 1.2
+NRF_XTAL_H, NRF_XTAL_L, NRF_XTAL_W, NRF_XTAL_FROM_END, NRF_XTAL_Y = 3.5, 11.0, 4.65, 11.5, 4.5
 NRF_L, NRF_W, NRF_HDR_FROM_END = 29.0, 15.3, 2.5
 PCB_GAP = 0.3                          # board edge to the inside of the walls
 POST_NOTCH_CLEAR = 1.0                 # board notch radius beyond the post radius
@@ -190,8 +195,11 @@ def build_parts(m):
                        + Pos(fx(NRF_BACK - NRF_L / 2), 0, z_mod) * Box(NRF_L, NRF_W, NRF_PCB_T,
                                                                       align=(Align.CENTER, Align.CENTER, Align.MIN))
                        + Pos(fx(NRF_BACK - 9), 0, z_mod + NRF_PCB_T) * Box(8, 10, NRF_PARTS_H,
-                                                                          align=(Align.CENTER, Align.CENTER, Align.MIN)))
-    nrf_top = z_mod + NRF_PCB_T + NRF_PARTS_H
+                                                                          align=(Align.CENTER, Align.CENTER, Align.MIN))
+                       # crystal can beside the chip; its side (+-Y) is approximate, the height is measured
+                       + Pos(fx(NRF_BACK - NRF_XTAL_FROM_END), NRF_XTAL_Y, z_mod + NRF_PCB_T)
+                       * Box(NRF_XTAL_L, NRF_XTAL_W, NRF_XTAL_H, align=(Align.CENTER, Align.CENTER, Align.MIN)))
+    nrf_top = z_mod + NRF_PCB_T + max(NRF_PARTS_H, NRF_XTAL_H)
 
     # ESP32 across the board, antenna end at the -Y board edge (rotated 2026-11-13: its RTC/key pins
     # then face the keys and its SPI/UART pins face the nRF24 socket and CP2102N)
@@ -500,6 +508,7 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=F
 
 
 def main():
+    global NRF_SOCKET_H
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--explode", type=float, default=20.0, help="lift the top shell by this many mm")
     ap.add_argument("--top-alpha", type=float, default=0.7)
@@ -508,9 +517,13 @@ def main():
     ap.add_argument("--no-show", action="store_true")
     ap.add_argument("--board", type=Path, metavar="STEP",
                     help="KiCad board STEP (see above): show it and clash-check every part")
+    ap.add_argument("--nrf-socket-h", type=float, metavar="MM",
+                    help=f"nRF24 socket body height (default {NRF_SOCKET_H}, Samtec SLW; standard header: 8.5)")
     ap.add_argument("--sweep", nargs="+", metavar=("NAME", "VALUE"),
                     help="rebuild and check with a model constant set to each value")
     args = ap.parse_args()
+    if args.nrf_socket_h is not None:
+        NRF_SOCKET_H = args.nrf_socket_h
 
     if args.sweep:
         name, values = args.sweep[0], args.sweep[1:]

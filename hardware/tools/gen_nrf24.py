@@ -33,7 +33,13 @@ def build():
     s.part("Connector_Generic:Conn_02x04_Odd_Even", "J", "nRF24_socket", 24, 36, {
         "1": "GND", "2": "NRF_VCC", "3": "NRF_CE", "4": "NRF_CSN",
         "5": "NRF_SCK", "6": "NRF_MOSI", "7": "NRF_MISO", "8": "NRF_IRQ",
-    }, {"Footprint": "Connector_PinSocket_2.54mm:PinSocket_2x04_P2.54mm_Vertical"}, GLOBAL)
+    # PinHeader, not PinSocket: KiCad's PinSocket footprints put pad 2 LEFT of pad 1 (for a
+    # board flipped face-down onto the socket). The module sits face-up, so its pin 2 is to
+    # the RIGHT of pin 1 seen from above; the socket footprint swapped every pair (found 2026-11-16).
+    }, {"Footprint": "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical",
+        "Datasheet": "https://suddendocs.samtec.com/catalog_english/slw.pdf",
+        "Description": "nRF24 module socket: low-profile 2x4 female, 2.54 mm, 4.57 mm tall (decided 2026-11-16, John). Trim the module's header pins to ~2.6 mm (insertion depth 2.16-2.92 mm)",
+        "Manufacturer": "Samtec", "MPN": "SLW-104-01-G-D"}, GLOBAL)
 
     s.text("Supply filter: 0 ohm fitted by default. If range or packet loss points to supply\n"
            "noise, fit a ferrite bead instead (e.g. 600 ohm at 100 MHz, low DCR, 0603), and\n"

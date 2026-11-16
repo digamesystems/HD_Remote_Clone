@@ -17,7 +17,7 @@ python -I hardware/tools/make_bom.py
 
 <!-- BEGIN GENERATED: hardware/tools/make_bom.py -->
 
-43 lines, 93 fitted parts: 77 SMD parts JLC assembles, 16 through-hole or hand-fitted; plus 2 footprints left empty (DNP, population options). Generated 2026-11-15 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** J401; TP604–TP606.
+43 lines, 93 fitted parts: 77 SMD parts JLC assembles, 16 through-hole or hand-fitted; plus 2 footprints left empty (DNP, population options). Generated 2026-11-16 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** TP604–TP606.
 
 | Ref | Qty | Value | Manufacturer | MPN | LCSC | Fit | Datasheet | Description |
 |---|---|---|---|---|---|---|---|---|
@@ -36,7 +36,7 @@ python -I hardware/tools/make_bom.py
 | FB401 | 1 | 0R (or bead) | UNI-ROYAL | 0603WAF0000T5E | [C21189](https://www.lcsc.com/product-detail/C21189.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/f42da6c80a0747bae77c2f98f4e46d1d.pdf?productCode=C21189) | 0 ohm link by default; ferrite bead option for the nRF24 supply |
 | J101 | 1 | USB_C_Receptacle | Korean Hroparts Elec | TYPE-C-31-M-12 | [C165948](https://www.lcsc.com/product-detail/C165948.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/9e56b777c022540fcce7c7f67825f55e.pdf?productCode=C165948) | USB 2.0-only 16P Type-C Receptacle connector |
 | J102 | 1 | Battery | JST | S2B-PH-K-S(LF)(SN) | [C173752](https://www.lcsc.com/product-detail/C173752.html) | JLC (THT) or hand | [PDF](https://datasheet.lcsc.com/datasheet/pdf/6c6fce4367275d84ec6a99bf09f1250f.pdf?productCode=C173752) | Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/) |
-| J401 | 1 | nRF24_socket | — | **to choose** | — | hand | — | Generic connector, double row, 02x04, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/) |
+| J401 | 1 | nRF24_socket | Samtec | SLW-104-01-G-D | — | hand | [PDF](https://suddendocs.samtec.com/catalog_english/slw.pdf) | nRF24 module socket: low-profile 2x4 female, 2.54 mm, 4.57 mm tall (decided 2026-11-16, John). Trim the module's header pins to ~2.6 mm (insertion depth 2.16-2.92 mm) |
 | JP101 | 1 | 0R | UNI-ROYAL | 0805W8F0000T5E | [C17477](https://www.lcsc.com/product-detail/C17477.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C17477) | 0 ohm link in the battery path (I_BAT): lift it to measure battery current, then refit. Drawn with the solder-jumper symbol |
 | Q101, Q102 | 2 | MMBT3904 | JSCJ | MMBT3904(RANGE:100-300) | [C20526](https://www.lcsc.com/product-detail/C20526.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/9335632bcfa83df8351353eab379720e.pdf?productCode=C20526) | 0.2A Ic, 40V Vce, Small Signal NPN Transistor, SOT-23 |
 | Q103, Q104 | 2 | AO3401A | AOS | AO3401A | [C15127](https://www.lcsc.com/product-detail/C15127.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/fee353dd1e9e0bc90b295f14f381aa4c.pdf?productCode=C15127) | Reverse-polarity protection; any SOT-23 P-FET with /Vgs(th)/ < ~1.5 V, Vgs max >= 8 V |
@@ -85,8 +85,8 @@ Not listed (no part to buy): test pads TP101–TP303, TP601–TP603 and TP607–
 
 **Open: choose before ordering**
 
-1. **D501, bicolor indicator LED: chosen 2026-11-15, Kingbright WP59EGW** (DigiKey 1747631). Its datasheet (rev V.14A, 2025) confirms common cathode and the footprint's lead order: 1 = red anode (square pad), 2 = common cathode, 3 = green anode, 2.54 mm pitch. Red 2.0 V / green 2.2 V (GaP, 568 nm) typical, so R509/R510 stay as they are (~4–5 mA each). Seat it **flush on the board** (keep soldering to 2–3 s per lead: the joint is ~1.6 mm below the lens, the datasheet rates 2 mm) and diode-test the leads before fitting. The light reaches the face through a light pipe (below). Not the W59EGW-CA, which is common anode.
-2. **J401, nRF24 socket:** no part chosen. 2×4 female, 2.54 mm, **low-profile** (body ≤ ~5 mm): a standard 8.5 mm socket leaves only 0.7 mm under the key face ([HARDWARE.md, nRF24 socket](HARDWARE.md#nrf24-socket)). Check pin 1 against a real module.
+1. **D501, bicolor indicator LED: chosen 2026-11-15 (John), Kingbright WP59EGW** (DigiKey 1747631). Its datasheet (rev V.14A, 2025) confirms common cathode and the footprint's lead order: 1 = red anode (square pad), 2 = common cathode, 3 = green anode, 2.54 mm pitch. Red 2.0 V / green 2.2 V (GaP, 568 nm) typical, so R509/R510 stay as they are (~4–5 mA each). Seat it **flush on the board** (keep soldering to 2–3 s per lead: the joint is ~1.6 mm below the lens, the datasheet rates 2 mm) and diode-test the leads before fitting. The light reaches the face through a light pipe (below). Not the W59EGW-CA, which is common anode.
+2. **J401, nRF24 socket:** **Decided 2026-11-16 (John): Samtec SLW-104-01-G-D** low-profile socket (2×4, 4.57 mm insulator, 20 µin gold; DigiKey 612-SLW-104-01-G-D-ND), with the header pins of each module used in a handheld **trimmed to ~2.6 mm** below the plastic spacer (they're 5.3–5.4 mm; the SLW takes 2.16–2.92 mm). Rejected: a standard 8.5 mm socket with a raised area on the top shell (looks awkward), and soldering the module directly (antenna ~8 mm above the cell; RF margin unknown). Details: [HARDWARE.md, nRF24 socket](HARDWARE.md#nrf24-socket). Pin 1 checked against a real module 2026-11-16.
 3. **TP604–TP606, ground test loops:** Keystone 5000-series miniature loops; pick a colour (5001 is black). Optional.
 
 **Check on arrival**
