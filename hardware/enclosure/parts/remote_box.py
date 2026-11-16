@@ -105,8 +105,8 @@ AB_FROM_FRONT = 26
 AB_TRAVEL = 1.5        # = the switch's travel (the slider moves 1:1)
 AB_KNOB_W, AB_KNOB_L = 8.0, 3.6   # knob in the slot: across the width, along the length
 AB_SLOT = (AB_FROM_FRONT, 0, AB_KNOB_L + 0.6, AB_KNOB_W + AB_TRAVEL + 0.6)  # from front, y, X, Y
-AB_SW_BODY = (2.8, 6.7, 1.5)      # along X, across Y, height (height: check the datasheet)
-AB_SW_ACT = (1.45, 1.3, 1.0)      # actuator: sticks out (X), width (Y), height
+AB_SW_BODY = (2.8, 6.7, 1.4)      # along X, across Y, height. C&K PCM12SMTR datasheet (I-44): 6.7 long, 1.4 tall
+AB_SW_ACT = (1.5, 1.3, 1.0)       # actuator: sticks out 1.5, 1.3 wide (datasheet); thickness 1.0 a guess
 # Slider drive (2026-11-14): a solid block with a notch for the actuator, not a two-prong fork.
 AB_BLOCK_T, AB_BLOCK_W = 2.4, 4.6  # along X (grows toward the back); across Y, inside the switch body
 # (6.7 mm) at both ends of travel, so it misses the switch's mounting legs at the body ends

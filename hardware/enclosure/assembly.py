@@ -56,8 +56,8 @@ USB_SMD = [(-3.25, .6), (-2.45, .6), (-1.75, .3), (-1.25, .3), (-0.75, .3), (-0.
            (0.25, .3), (0.75, .3), (1.25, .3), (1.75, .3), (2.45, .6), (3.25, .6)]
 USB_SH = [(-4.32, -3.13, 2.1), (4.32, -3.13, 2.1), (-4.32, 1.05, 1.6), (4.32, 1.05, 1.6)]
 # IR LED footprint LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm: pads at fy 0, dome tip at fy 9.87
-# Battery connector: JST PH S2B-PH-K side entry (footprint 5.9 x 7.6 mm; height ~6, check the
-# datasheet) on top of the board, mouth facing the front. The mating plug's envelope is approximate.
+# Battery connector: JST PH S2B-PH-K side entry (footprint 5.9 x 7.6 mm; 6.0 mm tall per JST's PH
+# catalogue p.3) on top of the board, mouth facing the front. The mating plug's envelope is a guess.
 JST_MOUTH_D, JST_Y = 140.0, -9.15          # mouth position (mm from the front), centre y
 JST_W, JST_DEPTH, JST_H = 5.9, 7.6, 6.0
 PLUG_L, PLUG_H = 6.0, 4.5                  # plug housing in front of the mouth
@@ -65,6 +65,44 @@ PLUG_L, PLUG_H = 6.0, 4.5                  # plug housing in front of the mouth
 # it and under the board to the cell's back end. Keep-out bundle 2 mm wide x 2 mm tall.
 NOTCH_FROM, NOTCH_TO, NOTCH_DEPTH = 128.0, 133.0, 3.0   # board-edge notch, mm from the front
 LEAD_W, LEAD_H = 2.0, 2.0
+
+# Where each real-part dimension comes from (2026-11-16). A passing check is only as good as its
+# inputs: "guess" values print a warning so a pass on guesses isn't read as verified. Firm them up
+# by measuring (on-hand parts) or from a datasheet, then relabel. Model constants live in
+# remote_box.py; "test print" ones are set from the MJF test piece.
+INPUT_SOURCES = {
+    # nRF24 module (hiBCTR) and socket
+    "NRF_SPACER_H": ("measured", "John 2026-11-16"), "NRF_PCB_T": ("measured", "John 2026-11-16"),
+    "NRF_XTAL_H": ("measured", "John 2026-11-16"), "NRF_SOCKET_H": ("datasheet", "Samtec SLW"),
+    "NRF_L": ("guess", "module length 29: measure"), "NRF_W": ("guess", "module width 15.3: measure"),
+    "NRF_HDR_FROM_END": ("guess", "header centre to the module's back end: measure"),
+    "NRF_XTAL_L": ("guess", "crystal footprint 11 x 4.65 (typical HC-49S): measure"),
+    "NRF_XTAL_FROM_END": ("guess", "crystal position, estimated from a photo: measure"),
+    "NRF_PARTS_H": ("guess", "chip-area parts; the crystal is taller and measured"),
+    # other parts
+    "ESP_L": ("datasheet", "WROOM-32E 18 x 25.5 x 3.1"), "ESP_ANT": ("guess", "antenna zone length"),
+    "HEAD_D": ("guess", "M2 pan head 3.8 x 1.3: measure the screws"),
+    "SW_PIN_X": ("datasheet", "Same Sky TS02, 6.5 x 4.5 pitch"),
+    "JST_H": ("datasheet", "JST PH catalogue p.3"),
+    "PLUG_L": ("guess", "battery plug envelope 6.0 x 4.5: measure the cell's plug"),
+    "SW_H": ("datasheet", "TS02-66-130, 13.0 mm"), "IND_LED_H": ("datasheet", "Kingbright WP59EGW"),
+    "PIPE_L": ("datasheet", "Bivar PLP2-250"), "USB_W": ("datasheet", "HRO TYPE-C-31-M-12 shell"),
+    "BATT_W": ("datasheet", "cell drawing 30 x 35 x 5; measure on arrival"),
+    "AB_SW_BODY": ("datasheet", "C&K PCM12SMTR"), "AB_SW_ACT": ("guess", "actuator thickness 1.0"),
+    "PIN_PROTRUDE": ("guess", "THT pin tips below the board (design allowance)"),
+    "SO_HOLE_D": ("test print", ""), "PILOT_D": ("test print", ""), "LED_HOLE_D": ("test print", ""),
+    "CAP_CLEAR": ("test print", ""), "CAP_PLAY": ("test print", ""), "PIPE_HOLE_D": ("test print", ""),
+}
+
+
+def input_warnings():
+    """Lines listing the inputs that are still guesses or wait for the test print."""
+    out = []
+    for kind in ("guess", "test print"):
+        items = [f"{k} ({n})" if n else k for k, (s, n) in INPUT_SOURCES.items() if s == kind]
+        if items:
+            out.append(f"WARNING: {len(items)} input(s) are '{kind}':\n  " + "\n  ".join(items))
+    return out
 
 FINISH = {"shell": "#8a8a88", "key": "#2a2a2a", "legend": "#f4f4f0", "indicator": "#d8e8d0",
           "ir": "#9fb4d8", "metal": "#c0c0c0"}
@@ -546,6 +584,7 @@ def main():
         fails, out = fails + bfails, out + bout
     print("\n".join(out))
     print(f"\n{len(out) - len(fails)} of {len(out)} checks pass")
+    print("\n" + "\n".join(input_warnings()))
     if not args.no_show:
         if args.finish:
             show_assembly(m, p, 0.0, 1.0, 1.0, True, board=board)
