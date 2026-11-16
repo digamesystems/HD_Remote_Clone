@@ -37,13 +37,16 @@ MODEL = Path(__file__).parent / "parts" / "remote_box.py"
 
 # ---- placeholder board layout (mm from the front end unless noted) ----
 ESP_FRONT, ESP_L, ESP_W, ESP_H, ESP_ANT = 89.0, 25.5, 18.0, 3.1, 6.0   # WROOM-32E, antenna at -Y edge
-NRF_BACK = 136.5                       # nRF24 module's back end; antenna end points forward
+NRF_HDR_D = 134.0                      # J401 header centre, mm from the front (fixed by the board)
 NRF_SOCKET_H = 4.57                    # Samtec SLW-104-01-G-D (decided 2026-11-16, John); standard: 8.5
 # Module measured 2026-11-16 (John, hiBCTR module): board 0.8, board + header spacer 3.8,
 # board + crystal can 4.3 (the tallest part, HC-49S, ~11 x 4.65 mm footprint).
 NRF_SPACER_H, NRF_PCB_T, NRF_PARTS_H = 3.0, 0.8, 1.2
-NRF_XTAL_H, NRF_XTAL_L, NRF_XTAL_W, NRF_XTAL_FROM_END, NRF_XTAL_Y = 3.5, 11.0, 4.65, 11.5, 4.5
-NRF_L, NRF_W, NRF_HDR_FROM_END = 29.0, 15.3, 2.5
+# Measured 2026-11-16 (John): 28.8 x 14.9, header centre ~2.5 from the back edge, crystal 9.7 long
+# starting ~7 from the back edge (centre 11.85).
+NRF_XTAL_H, NRF_XTAL_L, NRF_XTAL_W, NRF_XTAL_FROM_END, NRF_XTAL_Y = 3.5, 9.7, 4.65, 11.85, 4.5
+NRF_L, NRF_W, NRF_HDR_FROM_END = 28.8, 14.9, 2.5
+NRF_BACK = NRF_HDR_D + NRF_HDR_FROM_END   # module's back end; antenna end points forward
 PCB_GAP = 0.3                          # board edge to the inside of the walls
 POST_NOTCH_CLEAR = 1.0                 # board notch radius beyond the post radius
 PCB_HOLE_D, HEAD_D, HEAD_H, SCREW_L = 2.2, 3.8, 1.3, 6.0   # M2 board screws
@@ -74,10 +77,10 @@ INPUT_SOURCES = {
     # nRF24 module (hiBCTR) and socket
     "NRF_SPACER_H": ("measured", "John 2026-11-16"), "NRF_PCB_T": ("measured", "John 2026-11-16"),
     "NRF_XTAL_H": ("measured", "John 2026-11-16"), "NRF_SOCKET_H": ("datasheet", "Samtec SLW"),
-    "NRF_L": ("guess", "module length 29: measure"), "NRF_W": ("guess", "module width 15.3: measure"),
-    "NRF_HDR_FROM_END": ("guess", "header centre to the module's back end: measure"),
-    "NRF_XTAL_L": ("guess", "crystal footprint 11 x 4.65 (typical HC-49S): measure"),
-    "NRF_XTAL_FROM_END": ("guess", "crystal position, estimated from a photo: measure"),
+    "NRF_L": ("measured", "John 2026-11-16"), "NRF_W": ("measured", "John 2026-11-16"),
+    "NRF_HDR_FROM_END": ("measured", "John 2026-11-16, ~2.5"),
+    "NRF_XTAL_L": ("measured", "John 2026-11-16; width 4.65 still typical"),
+    "NRF_XTAL_FROM_END": ("measured", "John 2026-11-16, ~7 to its end; side (Y) from a photo"),
     "NRF_PARTS_H": ("guess", "chip-area parts; the crystal is taller and measured"),
     # other parts
     "ESP_L": ("datasheet", "WROOM-32E 18 x 25.5 x 3.1"), "ESP_ANT": ("guess", "antenna zone length"),
