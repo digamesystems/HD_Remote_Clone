@@ -1,6 +1,6 @@
-# Handheld board: design spec (draft)
+# Handheld board: design spec
 
-**Status:** draft for review (2026-11-11). Nothing here has been built. Part numbers are proposals to check for availability (LCSC/JLC) before the schematic is final. Items marked *verify* need a breadboard test or a datasheet check.
+**Status (2026-11-16):** the schematic and layout are complete (DRC and ERC clean; see [hardware/README.md](../hardware/README.md)) and the parts list is in [BOM.md](BOM.md). The board hasn't been ordered or built yet, so items marked *verify* still need a breadboard test, a datasheet check or the first board ([BRINGUP.md](BRINGUP.md)).
 
 The goal is a battery handheld that replaces the original Platinum remote. It sends point-and-press IR with our RF wake, and RF group commands, using the firmware developed on the DevKitC breadboard.
 
@@ -211,7 +211,8 @@ Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid 
 | Key switches, 6 × 6 mm, 13 mm tall | 7 | flat on the board, soldered from underneath |
 | SETUP switch, 6 × 6 mm, 5 mm tall | 1 | mounted on the **underside** (plunger down, behind the floor pinhole), soldered on top |
 | IR LEDs (TSAL6200) | 2 | legs bent 90° so the axis is **3.0 mm above the board** (footprint `..._Horizontal_O1.27mm_Z3.0mm`); a small printed bending jig helps |
-| Indicator LED (5 mm, 3-lead) | 1 | its height sets how far the dome stands proud of the key face (2 mm): use a spacer or jig |
+| Indicator LED (5 mm, 3-lead, Kingbright WP59EGW) | 1 | seated **flush on the board**; a light pipe in the key face carries the light, so its height needs no adjusting. Diode-test the leads first and keep each joint to 2–3 s |
+| Light pipe (Bivar PLP2-250) | 1 | presses into the key face (not soldered); test-fit it and glue it if the printed hole is loose |
 | nRF24 socket (2×4) | 1 | Samtec SLW-104-01-G-D, low-profile (decided 2026-11-16, John; module pins trimmed to ~2.6 mm) |
 | Battery JST (S2B-PH-K) | 1 | |
 | Ground test loops (Keystone 5000) | 3 | optional |

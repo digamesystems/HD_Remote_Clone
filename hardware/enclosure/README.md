@@ -2,7 +2,7 @@
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
-Status (2026-11-13), preliminary: `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes, and a lip. Keycaps and battery ribs are modelled; the A/B slider is a placeholder in `assembly.py`. Internal parts (board, LEDs, USB, ESP32, nRF24, battery) exist only as placeholder previews used for clearance checks.
+Status (2026-11-16): `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes (the indicator through a light pipe), a lip, battery ribs and the A/B slider drive. `assembly.py` checks the case against the real board's STEP export (`--board`; 61 checks pass) and against placeholder models of the parts the board has no model for. The dimensions those checks depend on are labelled measured, datasheet, guess or test print (`INPUT_SOURCES` in `assembly.py`), and every run lists the guesses. The first test print (JLC3DP, ordered 2026-11-13) hasn't arrived yet.
 
 ## Decisions
 
@@ -32,6 +32,7 @@ Status (2026-11-13), preliminary: `parts/remote_box.py` models the case as a two
 | 2026-11-15 | **Indicator through a light pipe** (John): the WP59EGW LED sits flush on the board and a Bivar PLP2-250 (3 mm, 6.35 mm long, 3.3 × 0.8 mm head) presses into a `PIPE_HOLE_D` 2.92 mm hole in the key face; the old 5.2 mm hole for a 5 mm LED standing 2 mm proud is gone. `assembly.py` checks the pipe-to-LED gap (0.95 mm; 0.5–1.5 wanted) and the face thickness against the pipe's panel range | A free-standing LED needed ~9 mm of bare lead and a spacer to hit its height, and stuck out of the face. Flush LED + pipe: each part has one fixed position, nothing to adjust, a low head that suits drops. MJF hole size varies more than the pipe's +0.08/−0.05 mm fit window: test-fit on the next print, glue if loose |
 | 2026-11-15 | **Battery pocket 31 mm** (`BATT_W` 30): the cell datasheet says 30 ± 0.1 mm wide, not Adafruit's 29 | 0.5 mm play per side for a 30 mm cell, 1.0 for 29; never a press fit. Board keep-out was already 31 mm. Measure the real cell, including the protection-board bulge |
 | 2026-11-14 | **A/B slider drive: a solid block with a notch** (`AB_BLOCK_T, AB_BLOCK_W = 2.4, 4.6`, `AB_NOTCH_PLAY = 0.15`), replacing the thin stem with two 1.2 × 1.6 mm prongs | The prongs were fragile in MJF PA12, most at risk in blind assembly (the fork must land round a 1.3 mm actuator you can't see) and in drops. The notch walls are now 1.5 mm wide and the block's full 2.4 mm thick; the block stays inside the switch body's width at both ends of travel, clear of its mounting legs. New check: the notch holds the actuator with 0.15 mm play each side; all 55 pass. **Deferred until the test print shows real fit and finish** (John: a little sloppy is fine for the first one): make the slot the hard stop (knob travel = switch travel + notch play, ~1.8 mm, instead of 2.1, so end-of-travel force goes into the case, not the switch) and a ~0.3 mm × 45° lead-in chamfer on the notch mouth |
+| 2026-11-16 | **nRF24 socket: Samtec SLW-104-01-G-D** (4.57 mm), with each module's header pins trimmed to ~2.6 mm (John) | The module measured 0.8 mm board, 3.0 mm header spacer and a crystal 3.5 mm above the board. On a standard 8.5 mm socket the crystal sits 1.9 mm into the key face; the SLW leaves 2.0 mm. Rejected: a raised area on the top shell (looks awkward) and soldering the module directly (antenna ~8 mm from the cell). Open: a hold-down rib under the face against drops |
 
 PCB layout constraints from the case so far: 4 × 2.2 mm holes at (±61, ±15.5) mm from the board centre with ~5.5 mm head keep-outs; board outline with 9.7 mm corner radii (following the inner wall, 0.3 mm gap) and notches (radius 4 mm) around the case posts at (±67.9, ±15.4) mm; **IR LED axis on the split plane** (footprint LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm: axis 3.0 mm above the board top), LED pads 8.4 mm from the front with the tips 1.5 mm proud; USB-C face 1 mm inside the back face, board edge 0.3 mm from the inside wall; lip gap in the top shell wherever a part reaches the board edge near the split (now: the ESP32 antenna end, at the −Y edge since 2026-11-13); **battery leads**: a notch in the right-hand (−Y) board edge, 128–133 mm from the front and 3 mm deep, for the leads to pass from the cell under the board to the JST PH socket (S2B-PH-K, side entry) on top, mouth facing the front at 140 mm, centred 9 mm right of the centre line; the lip has a gap there too; bottom-side keep-outs (~4 mm) under each key switch for the pads; SETUP switch on the underside at 22 mm from the front, 10 mm right of centre; **no THT pins over the battery** (92–127 mm from the front, ±15 mm), or trim them flush, since only 0.5 mm separates pin tips from a swollen cell. Board top surface 11.1 mm above the case bottom, leaving 13.9 mm to the underside of the key face (nRF24 on a standard socket with the module measured 2026-11-16: 15.8 mm, 1.9 mm into the face; **decided 2026-11-16 (John): Samtec SLW-104-01-G-D**, 4.57 mm, module pins trimmed: 11.9 mm, 2.0 mm clear. Open: a hold-down rib for drops).
 
@@ -54,17 +55,24 @@ Tested with Python 3.11.9.
 
 ## Fit checks: `assembly.py`
 
-`assembly.py` builds the case from `parts/remote_box.py`, adds placeholder models of the parts inside (board, switches, IR LEDs, USB-C, ESP32, nRF24 on its socket, battery, A/B slider, SETUP switch, indicator, keycaps) and runs every fit check: clearances, key-face webs, keycap travel and retention, legends, the A/B slider at both ends, openings on the flat end walls, USB-C routing room, and nRF24 headroom. It exits non-zero if any check fails, so run it after every change.
+`assembly.py` builds the case from `parts/remote_box.py`, adds placeholder models of the parts inside (board, switches, IR LEDs, USB-C, ESP32, nRF24 on its socket, battery, A/B slider, SETUP switch, indicator, keycaps) and runs every fit check: clearances, key-face webs, keycap travel and retention, legends, the A/B slider at both ends, openings on the flat end walls, USB-C routing room, and nRF24 headroom. It exits non-zero if any check fails, so run it after every change. `--nrf-socket-h <mm>` sets the nRF24 socket height (default 4.57, the Samtec SLW; 8.5 is a standard header, which fails the key-face check), and every run ends with a list of the inputs that are still guesses or wait for the test print.
 
 ```powershell
 $py = "$env:USERPROFILE\.venvs\hd_enclosure\Scripts\python.exe"
-& $py hardware\enclosuressembly.py                          # checks + exploded view
-& $py hardware\enclosuressembly.py --explode 0 --top-alpha 0.2   # assembled, see-through top
-& $py hardware\enclosuressembly.py --finish                 # grey shells, black keys, white legends
-& $py hardware\enclosuressembly.py --sweep CORNER_R 8 10 12 14   # rebuild + check per value
+& $py hardware\enclosure\assembly.py                          # checks + exploded view
+& $py hardware\enclosure\assembly.py --explode 0 --top-alpha 0.2   # assembled, see-through top
+& $py hardware\enclosure\assembly.py --finish                 # grey shells, black keys, white legends
+& $py hardware\enclosure\assembly.py --sweep CORNER_R 8 10 12 14   # rebuild + check per value
+& $py hardware\enclosure\assembly.py --board hardware\enclosure\out\hd_remote_board.step   # the real board
 ```
 
-The internal parts are placeholders positioned from the layout explored on 2026-11-13; replace them with the board's STEP export once the PCB is laid out.
+With `--board`, the real board (a KiCad STEP export) replaces the placeholders it covers (PCB, key switches, IR LEDs, ESP32, A/B switch, SETUP switch, indicator, nRF24 socket, battery JST) and every part is clash-checked. Export it after any board change; `out/` isn't committed. From this folder:
+
+```
+kicad-cli pcb export step --force --user-origin 100x80mm --subst-models -o out/hd_remote_board.step ../hd_remote/hd_remote.kicad_pcb
+```
+
+The remaining placeholders (USB-C, whose model KiCad's library lacks, the battery and its leads, the keycaps and the nRF24 module) follow the layout explored on 2026-11-13 and the module measured on 2026-11-16. KiCad's 3D model for J401 is the standard socket scaled to the SLW's 4.57 mm height, since the library has no SLW model.
 
 ## Case assembly
 

@@ -245,7 +245,7 @@ The leading explanation: the shade opens a fixed listening window when it first 
 
 **`wake off` control (2026-11-12):** with `seq off` and `wake off`, the clone sends IR only, and the shade didn't respond. With both back on, it moved. So the wake is still required. (`seq` ignores `wake off`, so IR-only tests need `seq off`.)
 
-**Not yet done:** exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap).
+**Not yet done:** exact trial counts; the maximum reliable range; the wake length the shade needs (450 ms copies the remote's shortest tap; the 2026-11-15 tests below found a sleeping shade needs 1–2 s of wake and IR).
 
 ### 2026-11-09: clone IR + remote RF
 
@@ -338,7 +338,7 @@ The small-hole result agrees with the foil tube, but on its own it was weak: the
 
 ### Next
 
-1. **Clone alone:** ✅ works (2026-11-11, above). Still to run: controls with `wake off` (IR only) and an ID the shade doesn't know; then improve IR range (a second LED, a wider-angle LED, or a test of the off-axis aim).
+1. **Clone alone:** ✅ works (2026-11-11, above). The controls are done (2026-11-12): with `wake off`, IR alone gets no response, and a made-up ID's wake still works (see [RF_PROTOCOL.md](RF_PROTOCOL.md)). Still to do: improve IR range (a second LED, a wider-angle LED, or a test of the off-axis aim).
 2. **Receptive window.** Partly answered 2026-11-15: the time since the last command matters more than the RF-to-IR layout, and a 1–2 s press wakes a sleeping shade (see above). Still open: the `seq gap` sweep (its first attempt was spoiled by the tape), how long until the shade sleeps (sweep the pause between presses), whether rotating channels within each step shortens the wake, and the real remote's hold-to-reverse time.
 3. ~~**nRF24 sniff**~~ Done 2026-11-11: red-mode presses send `ID 01 00 80`, as predicted. See [RF_PROTOCOL.md](RF_PROTOCOL.md).
 4. **Measure the foil directly** with a module at the tube's mouth, remote bare vs. wrapped.

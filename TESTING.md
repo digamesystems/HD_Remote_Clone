@@ -12,7 +12,7 @@ These run on the PC with Unity and the MSYS2 gcc compiler, and take seconds. The
 
 | Suite | Covers |
 |---|---|
-| `test_native_parse` | serial command tokenizing, hex parsing, data-rate parsing |
+| `test_native_parse` | serial command tokenizing, hex parsing, data-rate parsing, arrow-key escape-sequence parsing, hold tracking (taps, key repeats, release) |
 | `test_native_rf` | nRF24 on-air ↔ register address byte order, sniffer duplicate filter, Platinum RF payload decoding, packet runs (counts, gaps, idle flush, `micros()` wrap) |
 | `test_native_ir` | HD IR frame encode/decode: layout, period, round trip of all 16 codes, decoding of real captured frames (including phase-shifted and truncated ones) |
 
@@ -61,7 +61,7 @@ These can't be automated. A feature is **done** once John confirms it and it's r
 | A3 | RF scan shows the original remote's channels | ⏳ ch 33 confirmed by exact-match sniff (both remotes); 52 / 71 not checked; `scan` not run | 2026-11-11 |
 | A4 | Sniffer decodes the original remote's group up/down/release packets | ⏳ group 1 UP held + release decoded from both remotes (docs/RF_PROTOCOL.md). DOWN not sniffed | 2026-11-11 |
 | A6 | Clone RF group commands move the shades | ✅ `grp`: groups 1–4 independently and All, UP and DOWN, no original remote | 2026-11-11 |
-| A7 | Clone pairs with a shade under its own ID | ⏳ `pair 4 add` with a made-up ID: the shade jogged, then `grp 4` worked 5/5 up and 5/5 down (none before pairing). `pair 4 remove` not tested | 2026-11-12 |
+| A7 | Clone pairs with a shade under its own ID | ✅ `pair 4 add` with a made-up ID: the shade jogged, then `grp 4` worked 5/5 up and 5/5 down (none before pairing). `pair 4 remove` (2026-11-15) jogged the shade, and `grp 4` under the made-up ID then got no response. With the working remote's ID, `grp 4` still worked, so only the clone's entry was removed | 2026-11-12; remove 2026-11-15 |
 | A5 | RF-wake hypothesis: IR replay alone vs. with RF burst | ✅ Confirmed by two tests: clone IR alone 0/20, clone IR + remote RF works; remote's IR fails when a foil tube blocks its RF. RF captured 2026-11-11 (`ID 01 00 80`, docs/RF_PROTOCOL.md); our own wake + IR moves the shade with no original remote, reliably at ~1 ft (2026-11-11) | 2026-11-11 |
 
 ## Gate rules
