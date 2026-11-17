@@ -16,24 +16,23 @@ What the prototypes actually cost to get into hand, per board and per case. Upda
 | 2026-11-17 | DigiKey | J401 sockets ×10, D501 ×10, light pipes ×15, J102 ×10 | $25.40 | $7.40 | $6.11 | $38.91 | Board batch (5) |
 | 2026-11-17 | DigiKey | IR sink-test parts (diodes, PN2222A, resistors) | $3.76 | $1.09 | $0.91 | $5.76 | Development |
 | 2026-11-17 | Adafruit | Battery #1578 ×5 | $39.75 | $19.67 | $3.98 | $63.40 | Board batch (5), battery |
-| 2026-11-17 | Amazon | 2 Bridgold LED kits (10 TSAL6200 + 10 receivers) | not recorded | | | not recorded | Board batch (5) |
+| 2026-11-17 | Amazon | 2 Bridgold LED kits (10 TSAL6200 + 10 receivers) | $17.98 | $0.00 | $1.80 | $19.78 | Board batch (5) |
 | 2026-11-13 | JLC3DP | Enclosure test piece (7 parts) | $10.79 | | | landed not recorded | Development (case) |
 
 JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales tax $16.58. The DigiKey order's shipping ($8.49), tariff ($3.73) and sales tax ($3.29) total $44.67 with the $29.16 of merchandise, split between its two lines by merchandise price.
 
 ## Summary
 
-**Board batch, 5 boards** (landed, without the Amazon LED kits that aren't recorded yet):
+**Board batch, 5 boards** (landed):
 
 | | Batch | Per board |
 |---|---|---|
 | JLCPCB, PCB and assembly | $285.98 | $57.20 |
 | DigiKey, hand-fitted parts (with spares) | $38.91 | $7.78 |
-| **Electronics, without the LEDs** | **$324.89** | **$64.98** |
+| Amazon, IR LED kits (10 LEDs, 10 spare receivers) | $19.78 | $3.96 |
+| **Electronics** | **$344.67** | **$68.93** |
 | Batteries | $63.40 | $12.68 |
-| **Electronics plus battery, without the LEDs** | **$388.29** | **$77.66** |
-
-Add the LED kits' landed cost when it's recorded (about $3–4 per board at roughly $18 for the batch).
+| **Electronics plus battery** | **$408.07** | **$81.61** |
 
 **Case:** no case has been bought yet, so there is no per-case figure. The test piece ($10.79 merchandise) is development, not a case. Record each case print order as a row above, then divide by the cases it makes.
 
