@@ -17,7 +17,7 @@ What the prototypes actually cost to get into hand, per board and per case. Upda
 | 2026-11-17 | DigiKey | IR sink-test parts (diodes, PN2222A, resistors) | $3.76 | $1.09 | $0.91 | $5.76 | Development |
 | 2026-11-17 | Adafruit | Battery #1578 ×5 | $39.75 | $19.67 | $3.98 | $63.40 | Board batch (5), battery |
 | 2026-11-17 | Amazon | 2 Bridgold LED kits (10 TSAL6200 + 10 receivers) | $17.98 | $0.00 | $1.80 | $19.78 | Board batch (5) |
-| 2026-11-13 | JLC3DP | Enclosure test piece (7 parts) | $10.79 | | | landed not recorded | Development (case) |
+| 2026-11-13 | JLC3DP | Enclosure test piece (7 parts) | $10.79 | $31.65 | $1.04 | $43.48 | Development (case) |
 
 JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales tax $16.58. The DigiKey order's shipping ($8.49), tariff ($3.73) and sales tax ($3.29) total $44.67 with the $29.16 of merchandise, split between its two lines by merchandise price.
 
@@ -34,9 +34,9 @@ JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales t
 | Batteries | $63.40 | $12.68 |
 | **Electronics plus battery** | **$408.07** | **$81.61** |
 
-**Case:** no case has been bought yet, so there is no per-case figure. The test piece ($10.79 merchandise) is development, not a case. Record each case print order as a row above, then divide by the cases it makes.
+**Case:** no case has been bought yet, so there is no per-case figure. The test piece ($43.48 landed, of which $31.65 was shipping on $10.79 of parts) is development, not a case. Shipping dominates small JLC3DP orders, so a case order's cost per case will fall a lot if several cases, or the case with spare caps and slider knobs, go in one shipment. Record each case print order as a row above, then divide by the cases it makes.
 
-**Development, not spread over the units:** IR sink-test parts $5.76; the test piece.
+**Development, not spread over the units:** IR sink-test parts $5.76; the test piece $43.48 (total $49.24).
 
 **One-time costs inside the JLCPCB figure** (the same for 5 boards or 50): setup $25.75, stencil $8.27, engineering $4.00, feeder loading $52.70, together $90.72. A larger batch spreads them, and a second batch would repeat them.
 
