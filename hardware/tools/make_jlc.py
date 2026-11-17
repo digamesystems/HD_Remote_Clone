@@ -41,7 +41,15 @@ LAYERS = "F.Cu,B.Cu,F.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts"
 # U201 (ESP32-WROOM-32E, 2026-11-16): JLC drew it 90 degrees clockwise of the design, and 3.8 mm
 # (three pin pitches) along its axis toward the antenna. Rotation -90 and Y +3.81 are an estimate
 # from a screenshot; if the preview is still off, adjust here and re-upload the CPL.
-CPL_FIXES = {"U201": (-90, 0.0, 3.81)}
+# U101 and Q103/Q104 (2026-11-17): JLC's models showed pin 1 at the wrong corner (U101 90 degrees
+# round, Q103/Q104 180 degrees), judged from JLC's magenta pin-1 dots against our pad 1.
+# Q101, Q102 (180) and U103 (-90): same, from the west-region screenshot of the freshly loaded CPL.
+CPL_FIXES = {"U201": (-90, 0.0, 3.81), "U101": (-90, 0.0, 0.0), "Q103": (180, 0.0, 0.0),
+             "Q104": (180, 0.0, 0.0), "Q101": (180, 0.0, 0.0), "Q102": (180, 0.0, 0.0),
+             "U103": (-90, 0.0, 0.0)}
+# Package-family pattern from the west region (confirmed on a fresh load): every SOT-23 needed +180 and
+# the SOT-23-5/-6 parts -90. Q301, Q302 and U104 get the same ahead of being checked (predicted).
+CPL_FIXES.update({"Q301": (180, 0.0, 0.0), "Q302": (180, 0.0, 0.0), "U104": (-90, 0.0, 0.0)})
 
 
 def cli(*args):
