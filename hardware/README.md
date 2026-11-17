@@ -25,6 +25,8 @@ Synced with the enclosure (2026-11-13): mounting holes H601–H604 (M2), key swi
 
 **Bring-up:** the staged plan for the first boards is [docs/BRINGUP.md](../docs/BRINGUP.md).
 
+**Fab files for JLCPCB:** `python -I hardware/tools/make_jlc.py` (from the repo root) writes `hardware/fab/`: a Gerber zip (Protel extensions, Excellon drill with PTH and NPTH separate, top-side assembly), a JLC BOM and a JLC placement (CPL) file. The BOM lists only the parts JLC assembles (an LCSC number, not DNP, not through-hole; use `--tht J102` to have JLC place a through-hole part). The CPL keeps KiCad's rotations, so check polarized parts in JLC's placement preview. Rerun it after any board or schematic change.
+
 **Parts list:** [docs/BOM.md](../docs/BOM.md). Its board table is generated from the schematic by `hardware/tools/make_bom.py` (LCSC details cached in `hardware/bom/lcsc_cache.json`, fetched by `lcsc_fetch.py`); rerun it after any schematic change.
 
 ERC (2026-11-13, rechecked 2026-11-16): **0 errors, 0 warnings** on the whole design. References are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR, 4xx nRF24, 5xx Buttons and LEDs, 6xx Test and debug.

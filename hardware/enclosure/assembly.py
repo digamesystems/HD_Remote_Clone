@@ -413,6 +413,14 @@ def check(m, p, info):
     batt_back = m["L"] / 2 - (m["BATT_X"] - m["BATT_L"] / 2)
     ok(info["hdr_d"] - 2.55 > batt_back, "nRF socket pins clear of the battery")
     ok(JST_MOUTH_D > batt_back + 2, "battery JST pins clear of the battery")
+    # J102's body hangs over the board's post notch; the relief flat on that corner post keeps it clear
+    px, py = m["POSTS"][0]
+    zb = m["Z0"] + m["PCB_TOP_Z"]
+    post = (bottom + top) & (Pos(px, py, zb + 5) * Box(8, 8, 10))
+    jst_gap = p["battery JST"].distance_to(post)
+    ok(jst_gap >= 0.8, f"battery connector clears its corner post >= 0.8 mm ({jst_gap:.2f})")
+    ok(m["POST_RELIEF_BELOW"] >= 1.0,
+       f"post relief runs >= 1 mm below the top of the board's standoffs ({m['POST_RELIEF_BELOW']:.1f})")
     ribs, cell = m["batt_ribs"], p["battery"]
     ok(ribs.is_valid and ov(ribs, cell) < 1e-6, "battery ribs clear the cell")
     ok(abs(ov(ribs, bottom) - ribs.volume) < 1e-3, "battery ribs are part of the bottom shell")

@@ -165,6 +165,19 @@ else:
     _post_off = BOSS_INSET
 POST_X, POST_Y = L / 2 - _post_off, W / 2 - _post_off
 POSTS = [(sx * POST_X, sy * POST_Y) for sx in (-1, 1) for sy in (-1, 1)]
+# Relief flat on the back (-X), -Y corner post (decided 2026-11-17, John). The battery connector J102
+# sits beside it, its body hanging 0.7 mm over the board's post notch and 3.3 mm from the post axis
+# (0.3 mm from the 6 mm post). A flat on the post's +Y side, POST_RELIEF_D from the axis, runs from
+# the board top up past the connector's 6 mm height. 2.3 gives ~1.0 mm clearance and keeps a
+# 1.2 mm wall round the screw's clearance hole (1.4 mm round the pilot above the split).
+POST_RELIEF_D = 2.3
+POST_RELIEF_H = 7.0
+# The flat also runs POST_RELIEF_BELOW below the top of the board's standoffs (the board underside),
+# so a board seated low can't catch the connector body on the post (John, 2026-11-17: the corner
+# posts don't support the board, so clearance wins). Below the board top the screw's counterbore
+# (CB_D, which reaches up to the board top) leaves only 0.2 mm of skin between it and the flat. That
+# skin carries no load: the screw clamps through the post above the counterbore's ledge.
+POST_RELIEF_BELOW = 1.0
 
 
 def _battery_ribs():
@@ -207,6 +220,13 @@ with BuildPart() as body:
     with Locations(*[(x, y, FLOOR_TOP) for x, y in POSTS]):
         Cylinder(BOSS_D / 2, (Z_TOP - TOP_T) - FLOOR_TOP,
                  align=(Align.CENTER, Align.CENTER, Align.MIN))
+
+    # relief flat on the corner post beside the battery connector (see POST_RELIEF_D)
+    _relief_len = BOSS_D / 2 - POST_RELIEF_D + 0.8
+    _relief_z0 = Z0 + PCB_BOT_Z - POST_RELIEF_BELOW
+    with Locations((-POST_X, -POST_Y + POST_RELIEF_D + _relief_len / 2, _relief_z0)):
+        Box(BOSS_D + 1.0, _relief_len, (Z0 + PCB_TOP_Z + POST_RELIEF_H) - _relief_z0,
+            align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
 
     # board standoffs, with blind pilot holes (Hole() without a depth would pierce the floor)
     so_pts = [(sx * SO_X, sy * SO_Y) for sx in (-1, 1) for sy in (-1, 1)]

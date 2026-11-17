@@ -69,7 +69,7 @@ python -I hardware/tools/make_bom.py
 
 Not listed (no part to buy): test pads TP101–TP303, TP601–TP603 and TP607–TP613, mounting holes H601–H604.
 
-**DNP rows** are footprints deliberately left empty, so their part isn't bought or placed: C403 (extra nRF24 bulk for a PA/LNA module) and R401 (the nRF24 IRQ link to GPIO 13). They're listed with a part number so they can be fitted later. The key debounce caps C501–C508 were DNP too, until 2026-11-15; JLC now fits them (same 100 nF part as the board's other decoupling caps).
+**DNP rows** are footprints deliberately left empty, so their part isn't bought or placed: C403 (extra nRF24 bulk for a PA/LNA module) and R401 (the nRF24 IRQ link to GPIO 13). They're listed with a part number so they can be fitted later. **J102** (the battery JST connector) has an LCSC number but is hand-fitted: decided 2026-11-16 (John) not to use JLC's through-hole service. `hardware/tools/make_jlc.py` leaves it out of the JLC BOM and placement files by default. The key debounce caps C501–C508 were DNP too, until 2026-11-15; JLC now fits them (same 100 nF part as the board's other decoupling caps).
 
 ## Parts not on the board
 

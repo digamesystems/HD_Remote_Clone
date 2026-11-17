@@ -2,7 +2,7 @@
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
-Status (2026-11-16): `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes (the indicator through a light pipe), a lip, battery ribs and the A/B slider drive. `assembly.py` checks the case against the real board's STEP export (`--board`; 61 checks pass) and against placeholder models of the parts the board has no model for. The dimensions those checks depend on are labelled measured, datasheet, guess or test print (`INPUT_SOURCES` in `assembly.py`), and every run lists the guesses. The first test print (JLC3DP, ordered 2026-11-13) hasn't arrived yet.
+Status (2026-11-16): `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes (the indicator through a light pipe), a lip, battery ribs and the A/B slider drive. `assembly.py` checks the case against the real board's STEP export (`--board`; 62 checks pass) and against placeholder models of the parts the board has no model for. The dimensions those checks depend on are labelled measured, datasheet, guess or test print (`INPUT_SOURCES` in `assembly.py`), and every run lists the guesses. The first test print (JLC3DP, ordered 2026-11-13) hasn't arrived yet.
 
 ## Decisions
 
@@ -33,6 +33,7 @@ Status (2026-11-16): `parts/remote_box.py` models the case as a two-part clamshe
 | 2026-11-15 | **Battery pocket 31 mm** (`BATT_W` 30): the cell datasheet says 30 ± 0.1 mm wide, not Adafruit's 29 | 0.5 mm play per side for a 30 mm cell, 1.0 for 29; never a press fit. Board keep-out was already 31 mm. Measure the real cell, including the protection-board bulge |
 | 2026-11-14 | **A/B slider drive: a solid block with a notch** (`AB_BLOCK_T, AB_BLOCK_W = 2.4, 4.6`, `AB_NOTCH_PLAY = 0.15`), replacing the thin stem with two 1.2 × 1.6 mm prongs | The prongs were fragile in MJF PA12, most at risk in blind assembly (the fork must land round a 1.3 mm actuator you can't see) and in drops. The notch walls are now 1.5 mm wide and the block's full 2.4 mm thick; the block stays inside the switch body's width at both ends of travel, clear of its mounting legs. New check: the notch holds the actuator with 0.15 mm play each side; all 55 pass. **Deferred until the test print shows real fit and finish** (John: a little sloppy is fine for the first one): make the slot the hard stop (knob travel = switch travel + notch play, ~1.8 mm, instead of 2.1, so end-of-travel force goes into the case, not the switch) and a ~0.3 mm × 45° lead-in chamfer on the notch mouth |
 | 2026-11-16 | **nRF24 socket: Samtec SLW-104-01-G-D** (4.57 mm), with each module's header pins trimmed to ~2.6 mm (John) | The module measured 0.8 mm board, 3.0 mm header spacer and a crystal 3.5 mm above the board. On a standard 8.5 mm socket the crystal sits 1.9 mm into the key face; the SLW leaves 2.0 mm. Rejected: a raised area on the top shell (looks awkward) and soldering the module directly (antenna ~8 mm from the cell). Open: a hold-down rib under the face against drops |
+| 2026-11-17 | **Relief flat on the back, −Y corner post**, beside the battery connector J102: one flat 2.3 mm from the post axis (`POST_RELIEF_D`), from 1.0 mm below the board underside (`POST_RELIEF_BELOW`, the top of the board's standoff under H604) up to 7 mm above the board top (`POST_RELIEF_H`) (John) | J102's body hangs 0.7 mm over the board's post notch (the notch is there for the post, so that is fine while it clears) and sat 0.35 mm from the 6 mm post, less than print and soldering tolerances allow for. The flat leaves 1.05 mm. The corner posts don't support the board, so clearance wins over post strength. Below the board top the screw's counterbore (2.1 mm radius) leaves only a 0.2 mm skin against the flat; it carries no load (the screw clamps through the post above the counterbore's ledge), but MJF may not hold it: check it on the first print. Chosen over moving the connector on the board, which would change the JLC files. New checks: the connector clears its post by at least 0.8 mm; the relief reaches at least 1 mm below the standoff top |
 
 PCB layout constraints from the case so far: 4 × 2.2 mm holes at (±61, ±15.5) mm from the board centre with ~5.5 mm head keep-outs; board outline with 9.7 mm corner radii (following the inner wall, 0.3 mm gap) and notches (radius 4 mm) around the case posts at (±67.9, ±15.4) mm; **IR LED axis on the split plane** (footprint LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm: axis 3.0 mm above the board top), LED pads 8.4 mm from the front with the tips 1.5 mm proud; USB-C face 1 mm inside the back face, board edge 0.3 mm from the inside wall; lip gap in the top shell wherever a part reaches the board edge near the split (now: the ESP32 antenna end, at the −Y edge since 2026-11-13); **battery leads**: a notch in the right-hand (−Y) board edge, 128–133 mm from the front and 3 mm deep, for the leads to pass from the cell under the board to the JST PH socket (S2B-PH-K, side entry) on top, mouth facing the front at 140 mm, centred 9 mm right of the centre line; the lip has a gap there too; bottom-side keep-outs (~4 mm) under each key switch for the pads; SETUP switch on the underside at 22 mm from the front, 10 mm right of centre; **no THT pins over the battery** (92–127 mm from the front, ±15 mm), or trim them flush, since only 0.5 mm separates pin tips from a swollen cell. Board top surface 11.1 mm above the case bottom, leaving 13.9 mm to the underside of the key face (nRF24 on a standard socket with the module measured 2026-11-16: 15.8 mm, 1.9 mm into the face; **decided 2026-11-16 (John): Samtec SLW-104-01-G-D**, 4.57 mm, module pins trimmed: 11.9 mm, 2.0 mm clear. Open: a hold-down rib for drops).
 
@@ -99,6 +100,85 @@ One small MJF print that replaces the model's placeholder values with measured o
 | Key stack: base + face + caps marked .0 / .1 / .2 / .3 (mm of play) | Fit one 6 mm × 13 mm tactile switch (legs through the base), screw on the face, try each cap: want no click at rest and a crisp click without a dead zone | `CAP_PLAY` |
 
 The key fixture reproduces the case's 0.90 mm plunger-to-face gap, so the best cap's play transfers directly. Shims under the board can only reduce the play in the real case.
+
+## Fit margins: findings and candidate changes (2026-11-17)
+
+Written after the board went into JLC's placement preview. **Everything under "Candidate changes" is a proposal, not a decision: the model hasn't been changed, and each item waits for measurements from the test print and the first boards.** Only the post relief (see the decision table) has been decided and built.
+
+### Findings
+
+| # | Finding | Why it matters |
+|---|---|---|
+| 1 | **Board edge to the case's inner wall is 0.30 mm on all four sides**, and around the corners (PCB 145.4 × 40.4 mm in the STEP, inner cavity 146.0 × 41.0 mm; `PCB_GAP`). | It's a nominal value with no margin. A routed outline that comes out a little large plus a printed cavity that comes out a little small can close it, and the board then binds on the wall instead of dropping onto its standoffs. The board's 2.2 mm screw holes leave only about 0.1 mm of slack, so nothing else steers it. JLC's stated tolerances (next section) can use up the whole gap in the length direction. |
+| 2 | **J102 (battery connector) was 0.35 mm from the back corner post** (measured on the real KiCad model; the placeholder gave the same). Its body overhangs the board edge by 0.7 mm at the post notch. | Nothing overlapped, so the case checks passed, but 0.35 mm is below the tolerances. Fixed by the post relief (decided 2026-11-17, John). |
+| 3 | **The checks measure overlap, not margin.** `check_board` fails only on more than 0.01 mm³ of overlap, and KiCad DRC reports a part crossing the board edge only as a silkscreen warning. | A connector 0.3 mm from a post passes like one 5 mm away. J102's warning was filed with the intentional overhangs (USB-C, IR LEDs). |
+| 4 | **Courtyards outside the board outline:** U201 (the ESP32's antenna keep-out, by design), D303 and D304 (IR LEDs, by design), J101 (USB-C, by design), and **J102 (not intended: the 0.7 mm at the notch)**. | The first four are the expected overhangs; anything else should be an error. |
+| 5 | **The USB-C recess is tied to the board's distance from the back wall.** The receptacle sits 1.0 mm behind the back face and the plug pocket is that deep, so the wall behind the pocket is 1.0 mm; the check wants at least 0.8 mm. | Any increase in the gap between the board and the back wall deepens the pocket one for one. Only about 0.2 mm is available before that wall is too thin. |
+| 6 | **The board is 1.51 mm thick in KiCad's STEP**, but the case model (`PCB_T`) and JLC's standard thickness are 1.6 mm. | Not fit-critical (0.09 mm), but KiCad's board setup should say 1.6 so the export matches what arrives. |
+
+### Vendor tolerances (JLC's published figures, checked 2026-11-17)
+
+Until now the case and board were sized from remembered figures. These are from JLC's own pages (see the sources below the table), compared with what the design asks of them.
+
+| Spec | JLC's figure | Our design | Reading |
+|---|---|---|---|
+| MJF PA12 dimensional tolerance | ±0.3 mm within 100 mm; **±0.4 % above 100 mm** (assumes no warping, deformation, painting or oil spraying) | Inner cavity 146.0 mm long (±0.58 mm, so ±0.29 mm per end) and 41.0 mm wide (±0.3 mm, so ±0.15 mm per side) | The length is over 100 mm, which roughly doubles the tolerance |
+| MJF PA12 minimum wall | 1.0 mm at 5 × 5 mm, 1.2 at 10 × 10, 1.5 at 50 × 50, 2.0 at 100 × 100 and at 200 × 200; more than 1.5 mm recommended for protrusions, positioning features, snaps and fasteners | Walls and floor 2.0 mm (at the large-part minimum, no margin). **Corner posts: a 0.9 mm tube round the counterbore, on all four posts.** The relief's skin is 0.2 mm, and the two-step proposal's wall was 0.7 mm | The post tubes, the skin and the two-step wall are all under the 1.0 mm minimum |
+| MJF PA12 holes | Holes shrink (more with thicker walls); tolerance ±0.3 mm; allow extra room and ream or tap afterwards for precision. Listed: Φ1.5 mm with depth 1.5–4.5 mm, Φ2.0 mm with depth 2.0–6.0 mm | Light pipe hole 2.92 mm against the pipe's +0.08/−0.05 mm window; screw pilots 1.8 mm and 6 mm deep (between the listed sizes); LED holes 5.4 mm | The pipe's press fit is below what the printer holds, so plan to ream it. The test piece covers the pilot and LED sizes |
+| Engraved and embossed detail | At least 0.8 mm deep and 0.8 mm wide | Legends 0.8 mm deep. The test piece's 0.4 and 0.6 mm samples are below the stated minimum | 0.8 mm is at the limit; check the legend stroke width is 0.8 mm or more |
+| Clearance between assembled parts | 0.2–0.4 mm for fitted parts; 0.6 mm minimum for moving parts | Keycap clearance 0.3 mm; board to wall 0.3 mm | Inside the band, but the band doesn't cover the length tolerance above |
+| PCB outline (JLCPCB, routed) | ±0.2 mm regular, ±0.1 mm high precision (the page doesn't say which is the default) | Outline 145.4 × 40.4 mm | Choose the tier when ordering, and check the cost difference |
+| PCB thickness | ±10 % for boards 1.0 mm and thicker, so 1.44–1.76 mm for 1.6 mm | Model 1.6 mm; the board sits on its underside, so everything on top moves with the thickness | Up to ±0.16 mm on the board top and on the key plungers, against a 0.90 mm plunger-to-face gap and 0.0–0.3 mm of cap play |
+
+Sources: [JLC3DP, PA12-HP Nylon](https://jlc3dp.com/help/article/PA12-HP-Nylon), [JLC3DP, 3D Printing Design Guideline](https://jlc3dp.com/help/article/3D-Printing-Design-Guideline), [JLCPCB PCB capabilities](https://jlcpcb.com/capabilities/pcb-capabilities). JLC's pages disagree with each other in places (for instance the clearance guidance), so recheck before relying on a number.
+
+**Worst-case arithmetic for the 0.3 mm board-to-wall gap** (each figure taken at its limit, all stacked):
+- **Length, per end:** 0.30 − 0.29 (printed cavity) − 0.05 to 0.10 (board outline, half of ±0.1 or ±0.2) = **−0.04 to −0.09 mm**. The gap can close.
+- **Width, per side:** 0.30 − 0.15 − 0.05 to 0.10 = **+0.05 to +0.10 mm**. Positive, with almost nothing to spare.
+- With candidate C (West end +0.2 mm, gap 0.5 mm) the same sum is +0.11 to +0.16 mm.
+
+Whether the limits really stack is something the test print answers: its plate is 110 mm long, so the ±0.4 % figure applies to it too.
+
+### Candidate changes (proposed, pending measurements)
+
+Starting point: a gap of about 0.5–0.6 mm on every side. Revise the numbers once the measurements below are in.
+
+| ID | Proposal | Effect | What else has to change |
+|---|---|---|---|
+| A | **Widen the case (Y) by 0.6 mm** (0.3 mm per side) | Gap 0.6 mm on both long sides. No effect on the PCB layout: the keys, LEDs, slider, SETUP and connectors are centred on Y = 0. | Pin the board standoff positions to the board's holes instead of `SO_Y = W/2 − 7`. The corner posts follow the walls outward; the 1 mm slack in the notch absorbs it. |
+| B | **Lengthen the East (front, IR LED) end by about 0.3 mm** | Gap 0.6 mm at the front. | The IR LEDs are hand-bent: solder them with the leads about 0.3 mm longer so the tips stay 1.5 mm proud of the face. Re-anchor everything measured from the front face (key holes, indicator, A/B slot, SETUP pinhole, battery) to the board frame so it doesn't shift against the board. |
+| C | **Lengthen the West (back, USB) end by 0.2 mm at most** | Gap 0.5 mm at the back. The USB recess becomes 1.2 mm, leaving the minimum 0.8 mm of wall behind the pocket. The charge LED's window is 0.2 mm further from the LED, a negligible loss of light. | The connector can't move (it's on the board), so the back gap is the hardest to open. More than 0.2 mm needs that wall redesigned (for example a locally thicker wall or a different recess budget). |
+| D | **Alternative to A to C: thin the side walls from 2.0 to 1.7 mm** (keep the outer size) | Gap 0.6 mm all round, with no re-anchoring. | Split the floor from the side wall (they share `WALL`). The USB pocket's remaining wall falls under 0.8 mm, so the recess or pocket depth needs a look. The corner posts shift outward 0.3 mm. |
+| E | **Add margin checks** | Catch this class of problem. | In `assembly.py`: a minimum board-to-wall gap, and a minimum clearance (about 0.5 mm) between every board part and the case. A board-edge check script that errors on any courtyard crossing the outline except an explicit list (U201, D303, D304, J101), each with its reason. |
+
+### Measurements that decide it
+
+From the test print, when it arrives. Its plate and wall are printed from the same constants as the case, so the printer's dimensional error shows up in them:
+
+1. **Plate length and width** (modelled 110.0 × 46.0 mm): the scale error in X and Y. The length is over 100 mm, so JLC's ±0.4 % (±0.44 mm) applies, as it does to the case's 146 mm cavity.
+2. **Wall thickness** (2.0 mm) **and wall length** (86 mm): the inner cavity is the outer size minus two walls, so these predict how far the real cavity differs from 146.0 × 41.0.
+3. **Boss diameter** (5.0 mm) and **hole diameters**: already needed for the pilot and LED sizes; they also show whether features grow or shrink.
+
+From the first boards:
+
+4. **PCB outline length, width and thickness** against 145.4 × 40.4 × 1.6 mm.
+
+How to read them (proposal): take the worst case of the printed cavity shrinking and the board outline growing. If the nominal 0.3 mm gap still leaves at least about 0.2 mm after both, keep it and add only the checks (E). If not, adopt A to C (or D), scaled to what was measured.
+
+### Open item: revisit the relief on the south-west post
+
+Noted by John, 2026-11-17: come back to the relief flat (the "notch") on the south-west corner post, the one beside J102 and the USB end (case coordinates −67.9, −15.4 mm; KiCad 32.05, 95.45), because the walls get thin around the screw's capture ledge.
+
+What is thin: between the board underside less 1 mm and the board top, the flat is 2.3 mm from the post axis and the screw's counterbore is 2.1 mm in radius, which leaves a **0.2 mm skin**. Above the board top the walls are 1.2 mm (round the clearance hole) and 1.4 mm (round the pilot). The ledge itself, where the screw head seats, is at the board top (`CB_TOP_BELOW_SPLIT` below the split) and is not cut.
+
+Why it was accepted for now: the skin carries no load, because the screw clamps through the post above the ledge, and the corner posts don't support the board, so clearance came first.
+
+What to look at: how the skin prints on the first case, and whether it should be made deliberately thicker or deliberately open. Options raised so far (proposals, none decided):
+- a **two-step relief**: the full flat above the board top and a shallower flat (2.8 mm from the axis, a 0.7 mm wall) below it, down to 1 mm below the standoff top. It was built and shown on 2026-11-17, then replaced by the single flat at John's request;
+- **lowering the screw-head seat** about 1.6 mm on all four posts, which allows the full flat all the way down, with M2 × 10 case screws instead of M2 × 8 to keep the thread engagement in the top boss;
+- **cutting through on purpose**, so the flat opens a window into the counterbore instead of leaving a 0.2 mm skin that may not print.
+
+Decide this together with the margin changes above: widening or lengthening the case shifts the corner posts relative to the board's notches.
 
 ## Views
 
