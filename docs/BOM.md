@@ -75,7 +75,7 @@ Not listed (no part to buy): test pads TP101–TP303, TP601–TP603 and TP607–
 
 | Item | Qty | Part | Source | Notes |
 |---|---|---|---|---|
-| Battery | 1 | 500 mAh 3.7 V LiPo with JST-PH plug, PKCELL LP-503035 ([datasheet](https://cdn-shop.adafruit.com/product-files/1578/Datasheet.pdf)) | [Adafruit #1578](https://www.adafruit.com/product/1578) | Built-in protection (S-8261AAJMD). See appendix: polarity, width. 5 planned for the first five boards (2026-11-17), not ordered yet |
+| Battery | 1 | 500 mAh 3.7 V LiPo with JST-PH plug, PKCELL LP-503035 ([datasheet](https://cdn-shop.adafruit.com/product-files/1578/Datasheet.pdf)) | [Adafruit #1578](https://www.adafruit.com/product/1578) | Built-in protection (S-8261AAJMD). See appendix: polarity, width. 5 ordered 2026-11-17 (John) for the first five boards |
 | nRF24L01+ module | 1 | 2×4-header module with PCB antenna | hiBCTR 10-pack (on hand) | Plugs into J401, antenna toward the IR end. Possibly Si24R1 clones: screen with `test` first |
 | Board screws | 4 | M2 self-tapping, ~6 mm | any | Into the case standoffs |
 | Indicator light pipe | 1 per board (15 ordered 2026-11-17) | Bivar PLP2-250: clear polycarbonate, 3 mm round, 6.35 mm below its 3.3 × 0.8 mm head ([drawing](https://www.bivar.com/parts_content/Datasheets/PLP2-XXX.pdf)) | [DigiKey 586461](https://www.digikey.com/en/products/detail/bivar-inc/PLP2-250/586461), DigiKey PN 492-1153-ND | Presses into a 2.92 mm hole in the key face (panel 1.2–2.4 mm; ours is 2.0). Ends ~0.95 mm above the LED dome. Glue it if the printed hole is loose |

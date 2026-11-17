@@ -28,7 +28,7 @@ The boards don't need to wait for the enclosure test piece (noted 2026-11-16): e
   - [x] IR LEDs D303/D304: **2 Bridgold kits ordered from Amazon, 2026-11-17 (John)**. The kit's 5 TSAL6200 each, with the 5 from the first kit, give 10 for 5 boards. DigiKey's genuine TSAL6200 was out of stock (21-week lead time).
   - [x] **DigiKey, ordered 2026-11-17 (John):** J401 socket 612-SLW-104-01-G-D-ND ×10; D501 Kingbright WP59EGW 754-1232-ND ×10 (not "1747631", which is DigiKey's product ID); Bivar PLP2-250 light pipes 492-1153-ND ×15 (the fit test uses four hole sizes); J102 JST S2B-PH-K-S 455-1719-ND ×10.
   - [x] **DigiKey, sink-test parts, same order:** 1N4148 1N4148FS-ND ×10, PN2222A PN2222AFS-ND ×5, 470 Ω 470QBK-ND ×10, 100 kΩ 13-CFR-25JB-52-100K-ND ×10, 3.3 Ω 3.3QBK-ND ×10 (R_E as on the board), 4.7 Ω 4.7QBK-ND ×10 (the fallback, about 110 mA). This replaces the two 6.8 Ω in parallel below. The DigiKey order total was $44.67 (subtotal $29.16, shipping $8.49, tariff $3.73, sales tax $3.29), all ten lines in stock, FedEx Ground.
-  - [ ] **Batteries:** Adafruit #1578 ×5 (John), $7.95 each. Meter each plug's polarity before connecting (stage 7).
+  - [x] **Batteries, ordered 2026-11-17 (John):** Adafruit #1578 ×5 at $7.95 each ($39.75; UPS Ground $19.67, tax $3.98, total $63.40). Meter each plug's polarity before connecting (stage 7); the red wire should be + and land on J102 pin 1.
   - Already on hand: the 13 mm key switches (100, ordered 2026-11-13), the BOJACK 5 mm switches for SETUP, the nRF24 modules, and the M2 case screws. TP604–TP606 loops are optional.
 
 ## Before the boards arrive
