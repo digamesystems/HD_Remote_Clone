@@ -17,7 +17,7 @@ The header is 2×4 at 2.54 mm pitch, at the end of the board away from the anten
    [ ] = square pad, pin 1
 ```
 
-Board size per the seller's drawing: 15.2 × 28.5 mm.
+Board size per the seller's drawing: 15.2 × 28.5 mm. **Measured on one of our modules** (John, 2026-11-16): 28.8 × 14.9 mm; board 0.8 mm thick; the black plastic header spacer is 3.0 mm (board plus spacer 3.8 mm) and the header pins stand 5.3–5.4 mm below it; the crystal can is the tallest part, 3.5 mm above the board (4.3 mm with the board), 9.7 mm long, starting about 7 mm from the back edge; the header's centre is about 2.5 mm from the back edge. On the handheld PCB the pins are trimmed to about 2.6 mm to suit the low-profile socket (see [docs/BRINGUP.md](BRINGUP.md), stage 6).
 
 <img src="images/nrf24_module_front.jpg" alt="nRF24 module, component side, antenna at the top" width="250">
 

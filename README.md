@@ -35,7 +35,7 @@ New to the project? Start here:
 | RF settings on our remotes | ✅ published settings confirmed by sniffing (2026-11-11) |
 | RF wake frame for IR (`ID 01 00 80`) | ✅ sniffed from both remotes, see [RF_PROTOCOL.md](docs/RF_PROTOCOL.md) |
 | RF transmit emulation | ✅ red-mode wake (`wake`, `send`) and group commands (`grp`): groups 1–4 and All, up and down (2026-11-11); group pairing under the clone's own ID (`pair`, 2026-11-12) |
-| Handheld PCB (KiCad, [hardware/](hardware/README.md)) | ✅ schematic and layout complete, DRC/ERC clean; pre-order checks in progress ([docs/BRINGUP.md](docs/BRINGUP.md)); not ordered yet |
+| Handheld PCB (KiCad, [hardware/](hardware/README.md)) | ✅ schematic and layout complete, DRC/ERC clean; ordered from JLCPCB 2026-11-17: 5 assembled boards; first power-up plan in [docs/BRINGUP.md](docs/BRINGUP.md) |
 | Enclosure (3D-printed clamshell, [hardware/enclosure/](hardware/enclosure/README.md)) | ✅ modelled, fit checks pass against the board; test print ordered 2026-11-13, not yet received |
 | Firmware pin profile for the PCB (`pio run -e handheld`) | ✅ builds (2026-11-14); untested on hardware |
 | Final remote: button UX, indicator LED, deep sleep, enclosure | 🔲 next |

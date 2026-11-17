@@ -1,6 +1,6 @@
 # Handheld board: design spec
 
-**Status (2026-11-16):** the schematic and layout are complete (DRC and ERC clean; see [hardware/README.md](../hardware/README.md)) and the parts list is in [BOM.md](BOM.md). The board hasn't been ordered or built yet, so items marked *verify* still need a breadboard test, a datasheet check or the first board ([BRINGUP.md](BRINGUP.md)).
+**Status (2026-11-17):** the schematic and layout are complete (DRC and ERC clean; see [hardware/README.md](../hardware/README.md)) and the parts list is in [BOM.md](BOM.md). The board was ordered from JLCPCB on 2026-11-17 (5 assembled) and hasn't been built yet, so items marked *verify* still need a breadboard test, a datasheet check or the first board ([BRINGUP.md](BRINGUP.md)).
 
 The goal is a battery handheld that replaces the original Platinum remote. It sends point-and-press IR with our RF wake, and RF group commands, using the firmware developed on the DevKitC breadboard.
 
@@ -200,7 +200,7 @@ Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid 
 - A/B slide switch (SPDT): GPIO 21 to 3V3 (B) or GND (A). No pull needed. It draws no current in either position.
 - The firmware debounces (~20–30 ms) and reads which button caused the wake with `esp_sleep_get_ext1_wakeup_status()`.
 
-## Board assembly (planned 2026-11-13)
+## Board assembly (planned 2026-11-13; ordered 2026-11-17)
 
 **JLC assembles the SMD parts:** the ESP32-WROOM-32E, CP2102N, charger, LDO, FETs and transistors, all passives, the A/B slide switch, and the USB-C receptacle (SMD pads plus through-hole shell legs, routine for JLC). The schematic sticks to parts JLC stocks for this reason.
 
@@ -214,7 +214,7 @@ Layout: 100 nF right at the socket's VCC/GND pins, the 10 µF next to it, solid 
 | Indicator LED (5 mm, 3-lead, Kingbright WP59EGW) | 1 | seated **flush on the board**; a light pipe in the key face carries the light, so its height needs no adjusting. Diode-test the leads first and keep each joint to 2–3 s |
 | Light pipe (Bivar PLP2-250) | 1 | presses into the key face (not soldered); test-fit it and glue it if the printed hole is loose |
 | nRF24 socket (2×4) | 1 | Samtec SLW-104-01-G-D, low-profile (decided 2026-11-16, John; module pins trimmed to ~2.6 mm) |
-| Battery JST (S2B-PH-K) | 1 | |
+| Battery JST (S2B-PH-K-S, DigiKey 455-1719-ND) | 1 | hand-fitted (John, 2026-11-17), not placed by JLC. Genuine JST PH, so it mates with Adafruit's plug; meter the battery's polarity first |
 | Ground test loops (Keystone 5000) | 3 | optional |
 
 JLC can place THT parts too, at extra cost per part type and only from stock. Here the heights need hand-setting anyway (IR LED axis, indicator protrusion), and SETUP mounts upside down.
