@@ -128,6 +128,39 @@ void test_wake_payload_layout() {
   TEST_ASSERT_EQUAL_HEX8_ARRAY(expect, p, 5);
 }
 
+void test_usable_remote_ids() {
+  TEST_ASSERT_FALSE(rf::isUsableRemoteId(0x00, 0x00));
+  TEST_ASSERT_FALSE(rf::isUsableRemoteId(0xFF, 0xFF));
+  TEST_ASSERT_TRUE(rf::isUsableRemoteId(0x00, 0xFF));
+  TEST_ASSERT_TRUE(rf::isUsableRemoteId(0xFF, 0x00));
+  TEST_ASSERT_TRUE(rf::isUsableRemoteId(0x12, 0x34));
+}
+
+void test_remote_id_from_random_uses_low_half() {
+  uint8_t id[2] = {0, 0};
+  TEST_ASSERT_TRUE(rf::remoteIdFromRandom(0xABCD3412u, id));
+  TEST_ASSERT_EQUAL_HEX8(0x12, id[0]);
+  TEST_ASSERT_EQUAL_HEX8(0x34, id[1]);
+}
+
+void test_remote_id_from_random_falls_back_to_high_half() {
+  uint8_t id[2] = {0, 0};
+  TEST_ASSERT_TRUE(rf::remoteIdFromRandom(0xC10E0000u, id));
+  TEST_ASSERT_EQUAL_HEX8(0x0E, id[0]);
+  TEST_ASSERT_EQUAL_HEX8(0xC1, id[1]);
+  TEST_ASSERT_TRUE(rf::remoteIdFromRandom(0x5678FFFFu, id));
+  TEST_ASSERT_EQUAL_HEX8(0x78, id[0]);
+  TEST_ASSERT_EQUAL_HEX8(0x56, id[1]);
+}
+
+void test_remote_id_from_random_rejects_unusable() {
+  uint8_t id[2] = {0x99, 0x99};
+  TEST_ASSERT_FALSE(rf::remoteIdFromRandom(0x00000000u, id));
+  TEST_ASSERT_FALSE(rf::remoteIdFromRandom(0xFFFFFFFFu, id));
+  TEST_ASSERT_FALSE(rf::remoteIdFromRandom(0xFFFF0000u, id));
+  TEST_ASSERT_EQUAL_HEX8(0x99, id[0]);  // untouched on failure
+}
+
 void test_group_names() {
   TEST_ASSERT_EQUAL_STRING("1", rf::groupName(0x01).c_str());
   TEST_ASSERT_EQUAL_STRING("3", rf::groupName(0x04).c_str());
@@ -266,6 +299,10 @@ int main() {
   RUN_TEST(test_describe_forum_example);
   RUN_TEST(test_describe_wake_frames);
   RUN_TEST(test_wake_payload_layout);
+  RUN_TEST(test_usable_remote_ids);
+  RUN_TEST(test_remote_id_from_random_uses_low_half);
+  RUN_TEST(test_remote_id_from_random_falls_back_to_high_half);
+  RUN_TEST(test_remote_id_from_random_rejects_unusable);
   RUN_TEST(test_group_payload_matches_sniff);
   RUN_TEST(test_group_payload_down_and_all);
   RUN_TEST(test_setup_payload_matches_sniff);

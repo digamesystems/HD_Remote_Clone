@@ -4,6 +4,8 @@
 #include <Preferences.h>
 #include <RF24.h>
 #include <SPI.h>
+#include <bootloader_random.h>
+#include <esp_random.h>
 
 #include "dup_filter.h"
 #include "hd_rf.h"
@@ -47,9 +49,10 @@ constexpr uint32_t kRunIdleUs = 30000;  // a run ends after 30 ms of silence
 uint32_t rxTotal = 0;
 bool dupFilter = false;
 
-// --- remote ID for wake frames ---
-// Kept in flash (NVS), not in the source: the ID pairs a remote with the shades,
-// so it stays out of the repo. Set it once with `id <hex>` from a sniff.
+// --- remote ID for wake, group and setup frames ---
+// Kept in flash (NVS), not in the source. A unit with none generates a random
+// one at boot (decided 2026-11-18, John), so each builder's clone pairs under
+// its own ID; `id <hex>` overrides it (e.g. an original remote's, from a sniff).
 constexpr const char* kPrefsNs = "hd";
 constexpr const char* kPrefsIdKey = "rid";
 uint8_t remoteId[2] = {0, 0};
@@ -167,8 +170,27 @@ void pollSniff() {
 
 }  // namespace
 
+namespace {
+
+bool saveRemoteId(const uint8_t id[2]) {
+  Preferences prefs;
+  prefs.begin(kPrefsNs, false);
+  bool ok = prefs.putBytes(kPrefsIdKey, id, 2) == 2;
+  prefs.end();
+  if (ok) {
+    memcpy(remoteId, id, 2);
+    haveRemoteId = true;
+  }
+  return ok;
+}
+
+}  // namespace
+
 void begin() {
   loadRemoteId();
+  if (!haveRemoteId && newRemoteId()) {
+    Serial.printf("No remote ID in flash: generated %02X %02X.\n", remoteId[0], remoteId[1]);
+  }
   ensureRadio();
 }
 
@@ -177,28 +199,24 @@ bool hasRemoteId() { return haveRemoteId; }
 bool setRemoteId(const String& hex) {
   uint8_t tmp[5];
   if (hd::parseHex(hex.c_str(), tmp, sizeof(tmp)) != 2) return false;
-  Preferences prefs;
-  prefs.begin(kPrefsNs, false);
-  bool ok = prefs.putBytes(kPrefsIdKey, tmp, 2) == 2;
-  prefs.end();
-  if (ok) {
-    memcpy(remoteId, tmp, 2);
-    haveRemoteId = true;
-  }
-  return ok;
+  return saveRemoteId(tmp);
 }
 
-void clearRemoteId() {
-  Preferences prefs;
-  prefs.begin(kPrefsNs, false);
-  prefs.remove(kPrefsIdKey);
-  prefs.end();
-  haveRemoteId = false;
+bool newRemoteId() {
+  // esp_random() is only truly random while an entropy source runs (the radio
+  // subsystem, which this firmware doesn't start, or this one). Not while the
+  // ADC is in use; the serial loop is single-threaded, so nothing else is.
+  uint8_t id[2];
+  bootloader_random_enable();
+  while (!hd::rf::remoteIdFromRandom(esp_random(), id)) {
+  }
+  bootloader_random_disable();
+  return saveRemoteId(id);
 }
 
 void printRemoteId() {
   if (haveRemoteId) Serial.printf("Remote ID: %02X %02X (saved in flash)\n", remoteId[0], remoteId[1]);
-  else Serial.println("Remote ID: not set. Use: id <4 hex digits>, from a sniff of your remote.");
+  else Serial.println("Remote ID: not set (flash write failed?). Try: id new");
 }
 
 namespace {

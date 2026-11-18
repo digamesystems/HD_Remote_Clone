@@ -1,6 +1,6 @@
 # Firmware and pin map
 
-> **TL;DR** (summary checked 2026-11-18 10:59): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
+> **TL;DR** (summary checked 2026-11-18 11:33): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
 
 One PlatformIO codebase runs on **two hardware targets**. Which one you get depends on the build environment you pick.
 
@@ -61,7 +61,7 @@ The firmware version is shown at boot and in `help`. Type `help` in the monitor.
 | Up / Down arrow keys | Send `up` / `down` (channel A) with the RF wake, at the prompt or during capture. Pattern set by `seq` |
 | `seq [on\|off\|rf\|gap\|ir <ms>]` | Arrow-key pattern. `on` (default, experimental): RF on ch 33, IR, RF on ch 52, IR, RF on ch 71, IR, with `rf` ms of wake per channel (default 50), a `gap` before each IR (0) and `ir` ms per IR step (50, three frames). `off`: one 450 ms wake on all channels, then one 500 ms IR burst |
 | `hold [on\|off\|first <ms>]` | Arrow keys send `seq` steps for as long as the key is held, and print the hold time. `first` is the release timeout before the keyboard's first repeat (default 700 ms). Either arrow stops at 5000 ms |
-| `id [hex\|clear]` | Show or set the remote ID used in the wake frame (from a sniff). Saved in the ESP32's flash, not in the source |
+| `id [hex\|new]` | Show the remote ID used in wake, group and setup frames; set it (e.g. an original remote's, from a sniff); or `new` for a fresh random one. Saved in the ESP32's flash, not in the source. A unit with none generates a random one at boot |
 | `grp <1-4\|all> <up\|down> [ms]` | RF group command, as in green mode: `ID 20 <group> A1/A2` for `ms` (default 300, max 5000), then the `21`/`22` release tail for 330 ms, on ch 33/52/71. RF only, no aiming. DOWN works on the shades (2026-11-11); the DOWN codes come from spitcool's notes and haven't been sniffed by us |
 | `pair <1-4\|all> <add\|remove>` | Group assignment under the stored ID: setup frames (`ID 30\|31 GROUP 80`) interleaved with OPEN / CLOSE IR, using the `seq` timings. Aim at one shade's eye from a few inches. Wake the shade first, or retry |
 | `wake [ms\|on\|off]` | Send the RF wake (`ID 01 00 80` on ch 33/52/71) alone for `ms` (default 450), or turn the automatic wake before `send` / arrow keys on or off |

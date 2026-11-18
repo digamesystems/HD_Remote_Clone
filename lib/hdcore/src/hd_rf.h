@@ -64,6 +64,14 @@ void groupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool up, bool held,
 void setupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool add, bool held,
                   uint8_t out[kPayloadSize]);
 
+// A remote ID we're willing to generate: anything but 00 00 and FF FF.
+bool isUsableRemoteId(uint8_t id0, uint8_t id1);
+
+// Picks a remote ID from 32 random bits: the low 16 bits (low byte first), or
+// the high 16 if the low ones aren't usable. Returns false if neither half is;
+// the caller draws again.
+bool remoteIdFromRandom(uint32_t r, uint8_t out[2]);
+
 // "1".."4" -> 0x01, 0x02, 0x04, 0x08; "all" -> 0xFF (any case). -1 if invalid.
 int parseGroup(const std::string& s);
 

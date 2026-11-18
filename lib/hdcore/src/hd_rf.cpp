@@ -32,6 +32,22 @@ const char* actionName(uint8_t action) {
   return "?";
 }
 
+bool isUsableRemoteId(uint8_t id0, uint8_t id1) {
+  return !(id0 == 0x00 && id1 == 0x00) && !(id0 == 0xFF && id1 == 0xFF);
+}
+
+bool remoteIdFromRandom(uint32_t r, uint8_t out[2]) {
+  for (int shift : {0, 16}) {
+    uint8_t lo = (r >> shift) & 0xFF, hi = (r >> (shift + 8)) & 0xFF;
+    if (isUsableRemoteId(lo, hi)) {
+      out[0] = lo;
+      out[1] = hi;
+      return true;
+    }
+  }
+  return false;
+}
+
 void wakePayload(uint8_t id0, uint8_t id1, uint8_t out[kPayloadSize]) {
   out[0] = id0;
   out[1] = id1;

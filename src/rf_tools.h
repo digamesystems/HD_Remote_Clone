@@ -17,11 +17,12 @@ void startScan();
 void startSniff();
 void stop();
 
-// Remote ID (2 bytes) used in wake frames. Saved in flash (NVS), never in the
-// source, since it pairs a remote with the shades.
+// Remote ID (2 bytes) used in wake, group and setup frames. Saved in flash
+// (NVS), never in the source. begin() generates a random one if none is saved.
 bool hasRemoteId();
 bool setRemoteId(const String& hex);  // 4 hex digits, e.g. "12 34" or "1234"
-void clearRemoteId();
+bool newRemoteId();  // random, never 0000/FFFF; saved. False if the save failed
+
 void printRemoteId();
 // Blocking: sends the red-mode wake frame (ID 01 00 80) on ch 33/52/71 in
 // rotation for `ms`, as the original remote does while an arrow is held. The

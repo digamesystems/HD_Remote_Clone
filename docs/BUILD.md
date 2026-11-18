@@ -1,6 +1,6 @@
 # Build your own
 
-> **TL;DR** (summary checked 2026-11-18 11:25): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
+> **TL;DR** (summary checked 2026-11-18 11:33): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
 
 This page is the short path. The reasons, measurements and evidence are in the other docs: [IR_PROTOCOL.md](IR_PROTOCOL.md), [RF_PROTOCOL.md](RF_PROTOCOL.md) and [FIRMWARE.md](FIRMWARE.md).
 
@@ -44,21 +44,15 @@ The monitor runs at 115200 baud. Type `help` for the command list. If the upload
 
 Type `test` to check the radio module. It should report PASS at 2 Mbps.
 
-## Set your ID
+## Your ID
 
-The radio frames carry a 2-byte remote ID. Generate your own **random** 4-digit hex ID; don't copy one from a web page, this one included. For example, on the PC:
-
-```
-python -c "import secrets; print(secrets.token_hex(2))"
-```
-
-(or roll dice for 4 hex digits). If you get `0000` or `ffff`, generate another. Then store it in the serial monitor, using your own 4 digits:
+The radio frames carry a 2-byte remote ID, which is what a shade remembers when you pair. On its first boot the firmware generates a **random** ID, saves it in flash and prints it:
 
 ```
-id <your 4 digits>
+No remote ID in flash: generated XX XX.
 ```
 
-The ID is saved in the ESP32's flash. Use a random value rather than a well-known one: a neighbour's clone with the same ID could control any shade you pair with it.
+Type `id` to see it again. You don't need to do anything else. A random ID matters: a neighbour's clone with the same ID could control any shade you pair with it. `id new` draws a fresh one (shades paired under the old ID won't answer group commands from the new one), and `id <4 hex digits>` sets one by hand.
 
 ## Point-and-press
 
@@ -95,7 +89,7 @@ Design details: [HARDWARE.md](HARDWARE.md) (spec), [BOM.md](BOM.md) (parts), [ha
 | Symptom | Try |
 |---|---|
 | `test` fails | Check the wiring and the 10 µF cap, keep SPI wires under ~15 cm, and try another module |
-| `No RF wake: remote ID not set (id <hex>).` | Set your ID ([above](#set-your-id)) |
+| `No RF wake: remote ID not set (id <hex>).` | Type `id new` ([Your ID](#your-id)) |
 | Shade doesn't respond | Get closer, hold the LED still, aim straight at the sensor eye and press longer (2 s). Check the channel (A/B). If it still never responds, try another radio module: `test` only checks that the ESP32 can talk to it, not that it transmits |
 | `pair` gets no jog | Wake the shade first (move it with an arrow), then retry |
 | `grp` does nothing | The shade isn't paired to this ID or group: run `pair` again |

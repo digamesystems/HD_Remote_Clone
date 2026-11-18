@@ -17,7 +17,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.5";
+constexpr const char* kFwVersion = "0.9.6";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -114,7 +114,8 @@ void help() {
       "                          first repeat, default 700). Either arrow stops at 5000 ms\n"
       "  wake [ms|on|off]       send the RF wake alone (default 450 ms), or turn the\n"
       "                          automatic wake before send / arrow keys on or off\n"
-      "  id [hex|clear]          show or set the remote ID used by wake / grp (saved in flash)\n"
+      "  id [hex|new]            show, set or regenerate (random) the remote ID used by\n"
+      "                          wake / grp / pair (saved in flash; generated at first boot)\n"
       "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
       "                          (default 300, max 5000), then the release tail. No IR\n"
       "  pair <1-4|all> <add|remove>  group assignment with the stored id: setup frames\n"
@@ -363,7 +364,7 @@ void handle(String cmdline) {
   }
   else if (c == "id") {
     tok[1].toLowerCase();
-    if (tok[1] == "clear") rf::clearRemoteId();
+    if (tok[1] == "new") ok = rf::newRemoteId();
     else if (tok[1].length()) ok = rf::setRemoteId(tok[1] + tok[2]);  // "12 34" or "1234"
     if (ok) rf::printRemoteId();
   }
