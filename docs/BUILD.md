@@ -1,6 +1,6 @@
 # Build your own
 
-> **TL;DR** (summary checked 2026-11-18): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
+> **TL;DR** (summary checked 2026-11-18 10:59): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
 
 This page is the short path. The reasons, measurements and evidence are in the other docs: [IR_PROTOCOL.md](IR_PROTOCOL.md), [RF_PROTOCOL.md](RF_PROTOCOL.md) and [FIRMWARE.md](FIRMWARE.md).
 

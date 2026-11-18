@@ -2,11 +2,13 @@
 """Flag docs whose TL;DR may be stale.
 
 Each long doc opens with a "> **TL;DR** (summary checked YYYY-MM-DD)" block.
-This lists every doc that has been changed after that date: in a commit dated
-later, or with uncommitted changes. It is a prompt to reread the summary, not
+This lists every doc changed since its TL;DR line was last touched: git blame
+finds the commit that last changed that line, and any later commit to the file
+(or uncommitted changes) is flagged. Commit order, not dates, so edits later on
+the same day are caught. It is a prompt to reread the summary, not
 a verdict: most changes don't touch what a TL;DR says. If a TL;DR does need
 new wording, ask John first (CLAUDE.md, TL;DR blocks); if it is still right,
-bump its date.
+restamp it: today's date, or "YYYY-MM-DD HH:MM" if it already shows today.
 
     python -I hardware/tools/check_tldr.py
 
@@ -18,7 +20,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TLDR = re.compile(r"\*\*TL;DR\*\*\s*\(summary checked (\d{4}-\d{2}-\d{2})\)")
+# Date, plus an optional time when a summary is reconfirmed on the same day it
+# was last stamped (the line must change for blame to see the recheck).
+TLDR = re.compile(r"\*\*TL;DR\*\*\s*\(summary checked (\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2})?)\)")
 
 
 def git(*args):
@@ -32,13 +36,20 @@ def main():
         rel = path.relative_to(ROOT).as_posix()
         if rel.startswith((".pio/", ".git/")):
             continue
-        m = TLDR.search(path.read_text(encoding="utf-8")[:4000])
+        text = path.read_text(encoding="utf-8")
+        m = TLDR.search(text[:4000])
         if not m:
             continue
         checked = m.group(1)
-        # Commit dates of every commit touching the doc after the checked date
-        later = git("log", "--format=%cs %h %s", f"--since={checked} 23:59:59", "--", rel)
+        line_no = text.count("\n", 0, m.start()) + 1
         dirty = git("status", "--porcelain", "--", rel)
+        # Commit that last touched the TL;DR line (all zeros if uncommitted)
+        blame = git("blame", "--porcelain", "-L", f"{line_no},{line_no}", "--", rel)  # working copy
+        since = blame.split()[0] if blame else ""
+        if not since or set(since) == {"0"}:
+            later = ""                    # the TL;DR itself is new or being edited now
+        else:
+            later = git("log", "--format=%cs %h %s", f"{since}..HEAD", "--", rel)
         if not later and not dirty:
             print(f"ok     {rel} (checked {checked})")
             continue
@@ -50,7 +61,8 @@ def main():
             print("         (uncommitted changes)")
     if flagged:
         print(f"\n{flagged} doc(s) changed since their TL;DR was checked: reread the summary; "
-              "ask John before rewording it, or bump the date if it still holds.")
+              "ask John before rewording it, or restamp it if it still holds\n"
+              "(today's date, or 'YYYY-MM-DD HH:MM' if it already shows today).")
     return 1 if flagged else 0
 
 

@@ -1,6 +1,6 @@
 # Handheld board: design spec
 
-> **TL;DR** (summary checked 2026-11-18): the spec for the rev 1 handheld board. It has:
+> **TL;DR** (summary checked 2026-11-18 10:59): the spec for the rev 1 handheld board. It has:
 > - an ESP32-WROOM-32E
 > - one LiPo cell, charged over USB-C (MCP73831), with a power path and a 3.3 V LDO
 > - a CP2102N USB-serial bridge with auto-reset

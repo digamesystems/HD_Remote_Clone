@@ -1,6 +1,6 @@
 # HD Platinum IR protocol (point-and-press / red mode)
 
-> **TL;DR** (summary checked 2026-11-18): only the UP and DOWN arrows send IR, and only outside the green group window. A frame is a 2.75 ms header mark and space, then 4 pulse-distance bits (MSB first). Frames repeat back to back every 17.19 ms while the key is held, with no toggle bit, counter or shade address. Codes: channel A UP `0101`, DOWN `0110`; channel B UP `1001`, DOWN `1010`. The carrier is 40 kHz per the manual; the clone's 39.7 kHz works. **IR alone doesn't move a shade:** it also needs the RF wake frame `ID 01 00 80` ([RF_PROTOCOL.md](RF_PROTOCOL.md)), and a sleeping shade needs RF and IR together for about 1–2 s.
+> **TL;DR** (summary checked 2026-11-18 10:59): only the UP and DOWN arrows send IR, and only outside the green group window. A frame is a 2.75 ms header mark and space, then 4 pulse-distance bits (MSB first). Frames repeat back to back every 17.19 ms while the key is held, with no toggle bit, counter or shade address. Codes: channel A UP `0101`, DOWN `0110`; channel B UP `1001`, DOWN `1010`. The carrier is 40 kHz per the manual; the clone's 39.7 kHz works. **IR alone doesn't move a shade:** it also needs the RF wake frame `ID 01 00 80` ([RF_PROTOCOL.md](RF_PROTOCOL.md)), and a sleeping shade needs RF and IR together for about 1–2 s.
 
 Reverse engineered on 2026-11-07 from the original Platinum remote. The source of truth in code is [`lib/hdcore/src/hd_ir.h`](../lib/hdcore/src/hd_ir.h).
 
@@ -364,7 +364,7 @@ The receiver OUT was on GPIO 32 for the Nov 7 ESP32 captures, GPIO 14 from Nov 8
 ## Firmware support
 
 - `ir` / `ir quiet`: capture and print a decoded summary per burst, e.g. `HD: code=0101 (A UP) frames=147 other=0 duration=2.53 s`.
-- `send up|down|bbbb [ms]`: repeat steps (RF wake on one channel, then IR, at the `seq` timings) for about `ms` (default 1000), whole steps only (from v0.9.2). The wake needs a remote ID set with `id`; with `wake off` it sends IR alone for `ms`. `up` and `down` are channel A; use `1001` / `1010` for B. OPEN codes are limited to 5000 ms and others to 10000 ms. `play` replays raw captures and has no such limit.
+- `send up|down|bbbb [ms]`: repeat steps (RF wake on one channel, then IR, at the `seq` timings) for about `ms` (default 1000), whole steps only (from v0.9.2). The wake needs a remote ID set with `id`; with `wake off` it sends IR alone for `ms`. `up` and `down` are channel A; use `1001` / `1010` for B. Every code is limited to 5000 ms (from v0.9.5; before that OPEN was limited to 5000 ms and others to 10000 ms). `play` replays raw captures and has no such limit.
 - PC Up/Down arrow keys in the serial monitor: 3 steps per press (`seq`, about 0.32 s), or one wake then 500 ms of IR with `seq off`.
 - `hold on` (v0.9.3): the arrow keys send steps for as long as the key is held and print the hold time. Release is inferred from the terminal's key repeats; `hold first <ms>` sets how long to wait for the first repeat (default 700).
 - Lines starting with `#` are comments: echoed to the log, and they don't stop a running capture. Use them to annotate tests.

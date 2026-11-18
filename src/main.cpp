@@ -111,7 +111,7 @@ void help() {
       "                          IR burst (off)\n"
       "  hold [on|off|first <ms>]  arrow keys send seq steps while held and print the\n"
       "                          hold time (first: release timeout before the keyboard's\n"
-      "                          first repeat, default 700). Up arrow stops at 5000 ms\n"
+      "                          first repeat, default 700). Either arrow stops at 5000 ms\n"
       "  wake [ms|on|off]       send the RF wake alone (default 450 ms), or turn the\n"
       "                          automatic wake before send / arrow keys on or off\n"
       "  id [hex|clear]          show or set the remote ID used by wake / grp (saved in flash)\n"
