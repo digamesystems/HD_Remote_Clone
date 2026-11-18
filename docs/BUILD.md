@@ -1,12 +1,12 @@
 # Build your own
 
-> **TL;DR** (summary checked 2026-11-18 10:59): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
+> **TL;DR** (summary checked 2026-11-18 11:25): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
 
 This page is the short path. The reasons, measurements and evidence are in the other docs: [IR_PROTOCOL.md](IR_PROTOCOL.md), [RF_PROTOCOL.md](RF_PROTOCOL.md) and [FIRMWARE.md](FIRMWARE.md).
 
 ## Before you start
 
-- **Shades:** Hunter Douglas shades with **Platinum Technology** (the 2013-era system, before PowerView) that work with the Platinum handheld remote. We've tested on our own shades only: top-down/bottom-up models, battery versions converted to DC power. Other Platinum shades will probably behave the same, but that hasn't been checked.
+- **Shades:** Hunter Douglas shades with **Platinum Technology** (the 2013-era system, before PowerView) that work with the Platinum handheld remote. We've tested on our own shades only: top-down/bottom-up models, battery versions converted to DC power. Other Platinum shades haven't been tried; reports are welcome (open an issue).
 - **What you get:** a breadboard you control by typing commands in a serial terminal on a PC. It isn't a handheld yet.
 - **Skills:** basic breadboard wiring and [PlatformIO](https://platformio.org/). Soldering is optional (a capacitor on the radio module).
 - **Original remote:** not needed.
@@ -46,10 +46,16 @@ Type `test` to check the radio module. It should report PASS at 2 Mbps.
 
 ## Set your ID
 
-The radio frames carry a 2-byte remote ID. Pick your own **random** 4-digit hex ID (not `0000` or `FFFF`) and store it:
+The radio frames carry a 2-byte remote ID. Generate your own **random** 4-digit hex ID; don't copy one from a web page, this one included. For example, on the PC:
 
 ```
-id 3a7c
+python -c "import secrets; print(secrets.token_hex(2))"
+```
+
+(or roll dice for 4 hex digits). If you get `0000` or `ffff`, generate another. Then store it in the serial monitor, using your own 4 digits:
+
+```
+id <your 4 digits>
 ```
 
 The ID is saved in the ESP32's flash. Use a random value rather than a well-known one: a neighbour's clone with the same ID could control any shade you pair with it.
@@ -89,7 +95,7 @@ Design details: [HARDWARE.md](HARDWARE.md) (spec), [BOM.md](BOM.md) (parts), [ha
 | Symptom | Try |
 |---|---|
 | `test` fails | Check the wiring and the 10 µF cap, keep SPI wires under ~15 cm, and try another module |
-| `send` says there's no ID | Set one with `id <hex>` |
+| `No RF wake: remote ID not set (id <hex>).` | Set your ID ([above](#set-your-id)) |
 | Shade doesn't respond | Get closer, hold the LED still, aim straight at the sensor eye and press longer (2 s). Check the channel (A/B). If it still never responds, try another radio module: `test` only checks that the ESP32 can talk to it, not that it transmits |
 | `pair` gets no jog | Wake the shade first (move it with an arrow), then retry |
 | `grp` does nothing | The shade isn't paired to this ID or group: run `pair` again |
