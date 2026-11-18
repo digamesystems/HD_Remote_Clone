@@ -158,7 +158,7 @@ Next:
 | nRF24 CE | 17 | **move (e.g. 21) on WROVER boards; 16/17 used by PSRAM** |
 | nRF24 IRQ (optional) | 16 | **move (e.g. 22) on WROVER boards** |
 
-**Radio B dropped (decided 2026-11-18, John):** radio B (the second nRF24 for loopback) is dropped from the project. The working main radio did the sniffing, and the clone's own group commands confirmed the transmit side. A module in the handheld's socket either works or it doesn't. Docs updated 2026-11-18; the code (`HAS_RADIO_B`, `HW_NRF24_B`, radio B pins, `beacon`, the `test_device_rf` loopback test, and the TESTING.md / HARDWARE.md lines describing them) is still to be removed in a separate commit.
+**Radio B dropped (decided 2026-11-18, John):** radio B (the second nRF24 for loopback) is dropped from the project. The working main radio did the sniffing, and the clone's own group commands confirmed the transmit side. A module in the handheld's socket either works or it doesn't. Removed from the docs and the code on 2026-11-18 (fw 0.9.4: `beacon`, `HAS_RADIO_B`, `HW_NRF24_B`, the radio B pins, `kBeaconPayload` and the loopback tests). GPIO 13, 21, 25, 26 and 27 are free on the breadboard.
 
 Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_ANY_HIGH` (original ESP32's ext1 only supports ANY_HIGH or ALL_LOW). On S3/C3, revisit pins and polarity.
 
@@ -166,7 +166,7 @@ Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_
 Selected by `-DHD_BOARD_HANDHELD` (envs `handheld` / `handheld_test`); source of truth is `include/pins.h`, taken from the PCB netlist (WROOM-32E). Same as the breadboard: IR TX 4 (HIGH = LEDs on, R301 470 Ω → two BC817), nRF24 CSN 5 / CE 17 / SPI 18-19-23. Different:
 - Keys (active-HIGH, 100 k pull-down + 100 nF (C501–C508, fitted) at each switch; the firmware still debounces; all RTC GPIOs for ext1 wake): UP 32, DOWN 33, ALL 25, G1 26, G2 34, G3 27, G4 36, SETUP 35 (34/35/36 input-only).
 - A/B slider 14 (via 10 k; driven to 3V3 or GND; which position is A is to be confirmed at bring-up). Battery sense 39 (1 M/1 M, reads VBAT/2). LED red 22, green 16 (common cathode, HIGH = on). nRF IRQ 13 (via 0 Ω R401, unused).
-- No IR receiver and no radio B: `HAS_IR_RX` / `HAS_RADIO_B` are false, so `ir` capture and `beacon` say so instead of touching pins. `btn` prints all keys, A/B and VBAT; `led r|g|both|off` drives the indicator (plain on/off for bring-up; LEDC PWM comes with the handheld UX).
+- No IR receiver: `HAS_IR_RX` is false, so `ir` capture says so instead of touching pins. `btn` prints all keys, A/B and VBAT; `led r|g|both|off` drives the indicator (plain on/off for bring-up; LEDC PWM comes with the handheld UX).
 
 ### Netlist (sheet 1: IR + buttons)
 - TSOP38238 (pinout facing dome: OUT, GND, VS): VS ← 100 Ω ← 3V3; 100 nF VS→GND at the TSOP; GND→GND; OUT→GPIO 14.

@@ -17,7 +17,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.3";
+constexpr const char* kFwVersion = "0.9.4";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -129,7 +129,6 @@ void help() {
       "  info                    printPrettyDetails()\n"
       "  scan                    RPD carrier sweep over ch 0-125\n"
       "  sniff                   listen with current config\n"
-      "  beacon [n]              loopback: radio B sends n packets (default 100)\n"
       "  hd                      preset: Platinum handheld (also 'ch 52' / 'ch 71')\n"
       "  promisc <aa|55>         fallback preset: 2-byte addr 00 AA / 00 55, no CRC, 32 B\n"
       "  ch <0-125> | rate <250k|1m|2m> | aw <2-5> | addr <hex, on-air order>\n"
@@ -380,10 +379,6 @@ void handle(String cmdline) {
   else if (c == "info") rf::printDetails();
   else if (c == "scan") { rf::startScan(); mode = Mode::RfBusy; }
   else if (c == "sniff") { rf::startSniff(); mode = Mode::RfBusy; }
-  else if (c == "beacon") {
-    ok = rf::startBeacon(tok[1].length() ? tok[1].toInt() : 100);
-    if (ok) mode = Mode::RfBusy;
-  }
   else if (c == "hd") { rf::presetHd(); rf::printConfig(); }
   else if (c == "promisc") {
     tok[1].toLowerCase();
@@ -504,7 +499,7 @@ void loop() {
   if (mode == Mode::IrCapture) ir::pollCapture();
   else if (mode == Mode::RfBusy) {
     rf::poll();
-    if (!rf::busy()) {  // finished on its own (loopback) or failed to start
+    if (!rf::busy()) {  // failed to start
       mode = Mode::Idle;
       Serial.print("> ");
     }

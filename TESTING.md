@@ -33,7 +33,7 @@ On the **handheld PCB**, use the `handheld_test` environment (PCB pin map, `HD_B
 pio test -e handheld_test --upload-port COMx
 ```
 
-[`include/hw_config.h`](include/hw_config.h) declares what's present on each board (the breadboard section, or the handheld section when built with `HD_BOARD_HANDHELD`). On the PCB the IR loopback and radio B tests are always ignored: it has no IR receiver and no second radio.
+[`include/hw_config.h`](include/hw_config.h) declares what's present on each board (the breadboard section, or the handheld section when built with `HD_BOARD_HANDHELD`). On the PCB the IR loopback test is always ignored: it has no IR receiver.
 
 - Hardware declared **absent**: the test is **IGNORED** and reported as *not verified*.
 - Hardware declared **present**: the test **must pass**. A failure blocks deploy.
@@ -43,10 +43,10 @@ Update `hw_config.h` whenever the breadboard changes. We can add loopbacks or ot
 | Suite | Needs | Covers |
 |---|---|---|
 | `test_device_board` | board only | chip is the original ESP32 (D0WD), no PSRAM (so not WROVER), flash ≥ 4 MB |
-| `test_device_rf` | `HW_NRF24` (+ `HW_NRF24_B` for loopback) | `begin()`, `isChipConnected()`, 200× register read-back at 1 and 2 Mbps, Platinum RX config applies; loopback: radio B → main radio at the Platinum settings, ≥ 45/50 packets on each of ch 33, 52, 71 |
+| `test_device_rf` | `HW_NRF24` | `begin()`, `isChipConnected()`, 200× register read-back at 1 and 2 Mbps, Platinum RX config applies |
 | `test_device_ir` | `HW_IR_LOOPBACK` | TSAL6200 → receiver round trip of a synthetic frame within ±max(200 µs, 25%); 10/10 reliability; HD UP/DOWN bursts decode correctly |
 
-A loopback between two clone modules shows the sniffer works, but not that it hears the original remote, whose frames may differ in detail; acceptance A4 (group-mode sniff) is the real check. Planned: button and deep-sleep wake tests (`HW_BUTTONS`).
+These tests show a module answers over SPI, not that its radio works. The radio checks are manual: `sniff` hearing an original remote (acceptance A4, group-mode sniff) and `grp` moving a paired shade. Planned: button and deep-sleep wake tests (`HW_BUTTONS`).
 
 **Implementation note:** `pio test` defines `UNIT_TEST`, which switches IRremoteESP8266 into a host-stub mode. [`scripts/no_unit_test_define.py`](scripts/no_unit_test_define.py) strips that define for the ESP32 environments so device tests use the real library.
 

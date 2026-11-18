@@ -63,7 +63,7 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 
 Free afterwards: 21 (spare since 2026-11-14), 2, 12, 15 (strapping; leave alone or use carefully). Firmware: enable an internal pull on unused pins (Espressif checklist).
 
-**Firmware profile (2026-11-14):** this map is `include/pins.h` under `HD_BOARD_HANDHELD`, built with `pio run -e handheld` (Tier 2 tests: `handheld_test`). The default `esp32dev` environment keeps the breadboard map. The PCB has no IR receiver and no second radio, so IR capture and `beacon` report that instead of touching pins. Which A/B slider position reads high is to be confirmed at bring-up.
+**Firmware profile (2026-11-14):** this map is `include/pins.h` under `HD_BOARD_HANDHELD`, built with `pio run -e handheld` (Tier 2 tests: `handheld_test`). The default `esp32dev` environment keeps the breadboard map. The PCB has no IR receiver, so IR capture reports that instead of touching pins. Which A/B slider position reads high is to be confirmed at bring-up.
 
 **Key pins re-assigned (2026-11-13, PCB layout):** the RTC pins all sit in the module's left pin column, and their order up that column decides how the eight key lines fan out to the keys. The first assignment crossed itself 20 times there. A search over every valid assignment (key pins interchangeable; VBAT_SENSE on an ADC1 pin) found 3 crossings at best; the one used has 4 but keeps VBAT_SENSE on GPIO 39 and only one key (G4) on GPIO 36/39, the same as before. UP, DOWN and ALL are unchanged, so the breadboard firmware (UP 32, DOWN 33) still matches. Across the whole board the ratsnest crossings fell from 187 to 159.
 

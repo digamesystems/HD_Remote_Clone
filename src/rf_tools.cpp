@@ -18,11 +18,6 @@ namespace {
 RF24 radio(PIN_NRF_CE, PIN_NRF_CSN);
 bool radioOk = false;
 
-// Optional second module for loopback checks, on its own SPI bus.
-SPIClass hspi(HSPI);
-RF24 radioB(PIN_NRF_B_CE, PIN_NRF_B_CSN);
-bool radioBOk = false;
-
 // Defaults: the Platinum handheld (see hd_rf.h). `promisc` switches to the
 // address-less fallback.
 struct Config {
@@ -34,7 +29,7 @@ struct Config {
   uint8_t payloadSize = hd::rf::kPayloadSize;
 } cfg;
 
-enum class Mode { Idle, Scan, Sniff, Beacon } mode = Mode::Idle;
+enum class Mode { Idle, Scan, Sniff } mode = Mode::Idle;
 
 // --- scan state ---
 constexpr uint8_t kNumChannels = 126;
@@ -51,12 +46,6 @@ hd::RunTracker runs;
 constexpr uint32_t kRunIdleUs = 30000;  // a run ends after 30 ms of silence
 uint32_t rxTotal = 0;
 bool dupFilter = false;
-
-// --- beacon state ---
-constexpr uint32_t kBeaconIntervalUs = 2000;
-constexpr uint32_t kBeaconSettleMs = 50;
-int beaconTarget = 0, beaconSent = 0, beaconTxFail = 0, beaconRx = 0, beaconRpd = 0;
-uint32_t beaconLastUs = 0, beaconDoneMs = 0;
 
 // --- remote ID for wake frames ---
 // Kept in flash (NVS), not in the source: the ID pairs a remote with the shades,
@@ -82,20 +71,7 @@ bool ensureRadio() {
   return radioOk;
 }
 
-bool ensureRadioB() {
-  if (radioBOk) return true;
-  if (!HAS_RADIO_B) {
-    Serial.println("No radio B on this board.");
-    return false;
-  }
-  hspi.begin(PIN_NRF_B_SCK, PIN_NRF_B_MISO, PIN_NRF_B_MOSI, PIN_NRF_B_CSN);
-  radioBOk = radioB.begin(&hspi) && radioB.isChipConnected();
-  if (!radioBOk) Serial.println("Radio B not responding (check its wiring on GPIO 25/26/27/13/21).");
-  return radioBOk;
-}
-
-// Applies cfg to a radio, except listening/writing. Both radios use it so the
-// beacon and the sniffer always agree.
+// Applies cfg to the radio, except listening/writing.
 void applyCommon(RF24& r) {
   r.stopListening();
   r.setAutoAck(false);
@@ -127,14 +103,6 @@ void applyRx() {
   registerAddress(reg);
   radio.openReadingPipe(0, reg);
   radio.startListening();
-}
-
-void applyTxB() {
-  applyCommon(radioB);
-  radioB.setPALevel(RF24_PA_MIN);  // bench loopback; keep it quiet near the shades
-  uint8_t reg[5];
-  registerAddress(reg);
-  radioB.openWritingPipe(reg);
 }
 
 void printHex(const uint8_t* p, uint8_t n) {
@@ -195,36 +163,6 @@ void pollSniff() {
   }
   hd::PacketRun done;
   if (!dupFilter && runs.flushIfIdle(micros(), kRunIdleUs, &done)) printRun(done);
-}
-
-void beaconPayload(uint8_t* out) {
-  memset(out, 0, 32);
-  memcpy(out, hd::rf::kBeaconPayload, min<uint8_t>(cfg.payloadSize, hd::rf::kPayloadSize));
-}
-
-void pollBeacon() {
-  uint8_t expect[32], buf[32];
-  beaconPayload(expect);
-  while (radio.available()) {
-    radio.read(buf, cfg.payloadSize);
-    if (memcmp(buf, expect, cfg.payloadSize) == 0) beaconRx++;
-    if (radio.testRPD()) beaconRpd++;
-  }
-  if (beaconSent < beaconTarget) {
-    if (micros() - beaconLastUs >= kBeaconIntervalUs) {
-      beaconLastUs = micros();
-      if (!radioB.write(expect, cfg.payloadSize)) beaconTxFail++;
-      beaconSent++;
-      if (beaconSent == beaconTarget) beaconDoneMs = millis();
-    }
-    return;
-  }
-  if (millis() - beaconDoneMs < kBeaconSettleMs) return;
-  Serial.printf("Loopback: sent %d, received %d (%.0f%%), RPD set on %d, TX failures %d.\n",
-                beaconSent, beaconRx, 100.0 * beaconRx / beaconSent, beaconRpd, beaconTxFail);
-  Serial.println(beaconRx == beaconSent ? "RESULT: PASS" : "RESULT: FAIL (some packets lost)");
-  radio.stopListening();
-  mode = Mode::Idle;
 }
 
 }  // namespace
@@ -425,21 +363,6 @@ void startSniff() {
                            : "Sniffing. One line per run of identical packets. Send any line to stop.");
 }
 
-bool startBeacon(int count) {
-  if (count < 1) return false;
-  if (!ensureRadio() || !ensureRadioB()) return true;  // error already printed
-  applyRx();
-  applyTxB();
-  beaconTarget = count;
-  beaconSent = beaconTxFail = beaconRx = beaconRpd = 0;
-  beaconLastUs = micros() - kBeaconIntervalUs;
-  mode = Mode::Beacon;
-  printConfig();
-  Serial.printf("Loopback: radio B sends %d packets, main radio receives. Send any line to stop.\n",
-                count);
-  return true;
-}
-
 void stop() {
   if (mode == Mode::Idle) return;
   if (mode == Mode::Sniff) {
@@ -448,7 +371,6 @@ void stop() {
     Serial.printf("Sniff stopped. %lu packets.\n", (unsigned long)rxTotal);
   }
   if (mode == Mode::Scan) Serial.println("Scan stopped.");
-  if (mode == Mode::Beacon) Serial.printf("Loopback stopped: sent %d, received %d.\n", beaconSent, beaconRx);
   radio.stopListening();
   mode = Mode::Idle;
 }
@@ -458,7 +380,6 @@ bool busy() { return mode != Mode::Idle; }
 void poll() {
   if (mode == Mode::Scan) pollScan();
   else if (mode == Mode::Sniff) pollSniff();
-  else if (mode == Mode::Beacon) pollBeacon();
 }
 
 void setChannel(uint8_t ch) { cfg.channel = min<uint8_t>(ch, 125); }

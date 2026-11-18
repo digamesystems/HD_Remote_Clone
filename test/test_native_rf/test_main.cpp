@@ -206,15 +206,6 @@ void test_describe_needs_five_bytes() {
   TEST_ASSERT_EQUAL_STRING("", rf::describePayload(p, 6).c_str());
 }
 
-void test_beacon_is_not_a_known_command() {
-  TEST_ASSERT_EQUAL_STRING("?", rf::actionName(rf::kBeaconPayload[4]));
-  TEST_ASSERT_EQUAL_STRING("none", rf::groupName(rf::kBeaconPayload[3]).c_str());
-  TEST_ASSERT_NOT_EQUAL(rf::kModeGroup, rf::kBeaconPayload[2]);
-  TEST_ASSERT_NOT_EQUAL(rf::kModeNoGroup, rf::kBeaconPayload[2]);
-  TEST_ASSERT_NOT_EQUAL(rf::kModeSetupAdd, rf::kBeaconPayload[2]);
-  TEST_ASSERT_NOT_EQUAL(rf::kModeSetupRemove, rf::kBeaconPayload[2]);
-}
-
 // --- packet runs ---
 
 void test_runs_count_identical_packets() {
@@ -283,7 +274,6 @@ int main() {
   RUN_TEST(test_group_names);
   RUN_TEST(test_action_names);
   RUN_TEST(test_describe_needs_five_bytes);
-  RUN_TEST(test_beacon_is_not_a_known_command);
   RUN_TEST(test_runs_count_identical_packets);
   RUN_TEST(test_runs_split_on_new_payload);
   RUN_TEST(test_runs_flush_when_idle);

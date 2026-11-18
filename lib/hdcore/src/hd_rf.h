@@ -50,10 +50,6 @@ enum : uint8_t {
   kActionWakeRelease = 0x00,
 };
 
-// Our loopback beacon: ID 0000, mode 00, group none, action 55. Mode 00 and
-// action 55 have never been seen, so it matches no known command.
-constexpr uint8_t kBeaconPayload[kPayloadSize] = {0x00, 0x00, 0x00, 0x00, 0x55};
-
 // The frame a red-mode arrow press sends: ID0 ID1 01 00 80.
 void wakePayload(uint8_t id0, uint8_t id1, uint8_t out[kPayloadSize]);
 

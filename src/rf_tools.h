@@ -15,10 +15,6 @@ void printDetails();
 void startScan();
 // Listen on the current config and print received payloads.
 void startSniff();
-// Loopback: radio B (pins.h) sends `count` beacon packets with the current
-// config while the main radio receives, then prints sent/received.
-// Returns false for a bad count.
-bool startBeacon(int count);
 void stop();
 
 // Remote ID (2 bytes) used in wake frames. Saved in flash (NVS), never in the
@@ -42,7 +38,7 @@ bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs);
 // remove: 31), on one channel for `ms`, at least one packet. Prints nothing
 // on success. Returns the packet count, or -1 on error (no ID or no radio).
 long sendSetupOn(uint8_t group, bool add, uint8_t channel, uint32_t ms);
-bool busy();  // a scan, sniff or loopback is running
+bool busy();  // a scan or sniff is running
 void poll();  // call from loop()
 
 // Config (applied when a scan/sniff starts). Defaults to the Platinum handheld.

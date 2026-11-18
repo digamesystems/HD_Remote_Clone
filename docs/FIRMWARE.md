@@ -70,7 +70,6 @@ The firmware version is shown at boot and in `help`. Type `help` in the monitor.
 | `info` | Print the nRF24 register details |
 | `scan` | Carrier-detect sweep over channels 0–125 |
 | `sniff` | Receive with the current settings. Prints one line per run of identical packets: count, payload, decoded fields, span and packet gaps |
-| `beacon [n]` | Loopback check: radio B sends `n` packets (default 100) with the current settings; prints sent / received |
 | `hd` | Preset for the Platinum handheld (the default): ch 33, 2 Mbps, `E7E7E7`, CRC-16, 5 bytes. Use `ch 52` / `ch 71` for the other channels |
 | `promisc aa\|55` | Fallback preset for address-less sniffing; turns the duplicate filter on |
 | `ch`, `rate`, `aw`, `addr`, `crc`, `pl`, `filter`, `cfg` | Sniffer settings |
@@ -85,7 +84,7 @@ include/pins.h        pin maps (breadboard default; handheld PCB with HD_BOARD_H
 include/hw_config.h   what's present on each board (gates hardware tests)
 src/main.cpp          serial menu / dispatch
 src/ir_tools.*        IR capture, dump, replay
-src/rf_tools.*        nRF24 self-test, scanner, sniffer, loopback beacon
+src/rf_tools.*        nRF24 self-test, scanner, sniffer, wake / group / setup frames
 lib/hdcore/           hardware-independent logic (HD IR frame codec, Platinum RF payloads, parsing,
                       address order, dup filter, packet runs, arrow-key hold tracking)
 test/                 Tier 1 host tests (test_native_*) and Tier 2 device tests (test_device_*)

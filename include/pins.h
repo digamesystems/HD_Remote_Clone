@@ -13,8 +13,7 @@ constexpr uint8_t PIN_NONE = 0xFF;  // feature not present on this board
 #if defined(HD_BOARD_HANDHELD)
 
 // --- Handheld PCB rev 1 (module pin -> GPIO, from hd_remote.kicad_pcb) ---
-constexpr bool HAS_IR_RX   = false;  // no IR receiver on the PCB
-constexpr bool HAS_RADIO_B = false;  // no second nRF24 on the PCB
+constexpr bool HAS_IR_RX = false;  // no IR receiver on the PCB
 
 constexpr uint8_t PIN_IR_RX = PIN_NONE;
 constexpr uint8_t PIN_IR_TX = 4;   // module pin 26; R301 470R -> Q301/Q302 bases (HIGH = LEDs on)
@@ -49,17 +48,10 @@ constexpr uint8_t PIN_NRF_CSN = 5;   // module pin 29
 constexpr uint8_t PIN_NRF_CE  = 17;  // module pin 28
 constexpr uint8_t PIN_NRF_IRQ = 13;  // module pin 16, via R401 (0R, optional), unused for now
 
-constexpr uint8_t PIN_NRF_B_SCK  = PIN_NONE;
-constexpr uint8_t PIN_NRF_B_MISO = PIN_NONE;
-constexpr uint8_t PIN_NRF_B_MOSI = PIN_NONE;
-constexpr uint8_t PIN_NRF_B_CSN  = PIN_NONE;
-constexpr uint8_t PIN_NRF_B_CE   = PIN_NONE;
-
 #else
 
 // --- Breadboard (ESP32-DevKitC) ---
-constexpr bool HAS_IR_RX   = true;
-constexpr bool HAS_RADIO_B = true;   // wiring optional; see HW_NRF24_B in hw_config.h
+constexpr bool HAS_IR_RX = true;
 
 constexpr uint8_t PIN_IR_RX   = 14;  // IR receiver OUT (TSOP38238 / VS1838B)
 constexpr uint8_t PIN_IR_TX   = 4;   // NPN base via 1 kOhm (HIGH = LED on)
@@ -70,14 +62,5 @@ constexpr uint8_t PIN_BTN_DN  = 33;  // active-HIGH, external 10k pull-down
 constexpr uint8_t PIN_NRF_CSN = 5;
 constexpr uint8_t PIN_NRF_CE  = 17;
 constexpr uint8_t PIN_NRF_IRQ = 16;  // optional, unused for now
-
-// Optional second nRF24 ("radio B") for loopback checks: B transmits, the main
-// radio receives. Own SPI bus (HSPI) on remapped pins: HSPI's default SCK is
-// GPIO 14 (our IR receiver) and its MISO is GPIO 12, a boot strapping pin.
-constexpr uint8_t PIN_NRF_B_SCK  = 25;
-constexpr uint8_t PIN_NRF_B_MISO = 26;
-constexpr uint8_t PIN_NRF_B_MOSI = 27;
-constexpr uint8_t PIN_NRF_B_CSN  = 13;
-constexpr uint8_t PIN_NRF_B_CE   = 21;
 
 #endif
