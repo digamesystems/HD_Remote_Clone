@@ -37,7 +37,7 @@ The header doesn't fit a breadboard directly, because each pin pair would be sho
 
 Keep SPI wires short, under about 15 cm.
 
-### Radio A: main module (VSPI)
+### Main module (VSPI)
 
 | Module pin | Signal | ESP32 |
 |---|---|---|
@@ -50,31 +50,14 @@ Keep SPI wires short, under about 15 cm.
 | 7 | MISO | GPIO 19 |
 | 8 | IRQ | GPIO 16 (reserved; the firmware doesn't use it yet, so it can stay unconnected) |
 
-### Radio B: optional second module for loopback (HSPI)
-
-Used only by `beacon` and the loopback device test. Set `HW_NRF24_B` in [`include/hw_config.h`](../include/hw_config.h) when it's wired.
-
-| Module pin | Signal | ESP32 |
-|---|---|---|
-| 1 | GND | GND |
-| 2 | VCC | 3V3 |
-| 3 | CE | GPIO 21 |
-| 4 | CSN | GPIO 13 |
-| 5 | SCK | GPIO 25 |
-| 6 | MOSI | GPIO 27 |
-| 7 | MISO | GPIO 26 |
-| 8 | IRQ | not connected |
-
-HSPI is remapped because its default SCK (GPIO 14) is our IR receiver and its default MISO (GPIO 12) is a boot strapping pin.
-
-On WROVER boards, GPIO 16 and 17 are used by PSRAM, so radio A's CE and IRQ must move.
+On WROVER boards, GPIO 16 and 17 are used by PSRAM, so the module's CE and IRQ must move.
 
 ## Power
 
-Fit a 10 µF capacitor across VCC and GND for each module, as close to the module as you can, with the stripe (−) to GND. Soldering it to the back of the header across pins 1 and 2 works well.
+Fit a 10 µF capacitor across VCC and GND, as close to the module as you can, with the stripe (−) to GND. Soldering it to the back of the header across pins 1 and 2 works well.
 
 ## Checking a module
 
 1. `test <label>`: register read-back over SPI. This shows the module answers, not that its radio works.
-2. `beacon` (with radio B wired): radio B transmits and radio A receives. This proves the radio link between two modules, but two clones could share a quirk.
-3. Sniffing the original remote is the real proof that a module can hear it.
+2. `sniff` while pressing a group key and an arrow on an original remote: this proves the module can hear the remote.
+3. `grp` moving a shade paired to the stored ID: this proves the module transmits.

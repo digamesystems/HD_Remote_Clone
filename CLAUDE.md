@@ -103,7 +103,7 @@ Next:
    - **Random ID per handheld** (review, Nov 12): if every builder uses the same ID, neighbours' clones in RF range would share it, and pairing one would let the other control those shades. On first boot (NVS empty), generate a random 16-bit ID with `esp_random()`, skip `0000` and `FFFF`, store it in NVS; optionally sniff ch 33 for a few seconds first and avoid any ID heard. Keep `id <hex>` to override it.
    - Physical buttons (all eight keys; pins fixed by the PCB, see "Pin map (handheld PCB rev 1)"), the remote's UX (group key opens a ~6.5 s retriggerable green window in which arrows send `grp`; otherwise arrows send wake+IR steps **for as long as the key is held**, per the Nov 15 timing notes), and a **red/green bicolor indicator LED** (user request, Nov 11). On the PCB: D501 common-cathode red/green, red on GPIO 22 via 330 Ω, green on GPIO 16 via 270 Ω, LEDC PWM. Asked the user to describe the original's LED behaviour (steady vs flashing during red presses; green through the whole window or only on presses; low-battery or setup patterns). Then deep sleep (ext1 wake), battery, enclosure.
    - **Reset with the case closed (decided Nov 16, John):** no external reset, on the prototype or the planned run of five (all users are developers who know the serial reset). Recovery: USB auto-reset (works from sleep or a hang, only with USB plugged in), watchdogs (**keep the task and RTC watchdogs enabled in the handheld firmware**), or open the case. Test auto-reset first at board bring-up. A RESET pinhole next to SETUP is the later-revision fix. Details: `docs/HARDWARE.md`, Reset and recovery.
-3. **nRF24 bring-up, remaining** (one ESP32; the user prefers not to use a second): screen the other modules with `test <n>` (numeric labels: `a1` parses as 0); fit the 10 µF caps; optionally radio B + `beacon`; sniff ch 52/71.
+3. **nRF24 bring-up, remaining** (one ESP32; the user prefers not to use a second): screen the other modules with `test <n>` (numeric labels: `a1` parses as 0); fit the 10 µF caps; sniff ch 52/71.
 4. Measure foil attenuation with a module at the tube's mouth; probe the remote's LED drive; optionally scope its battery current for radio-shaped steps.
 
 **Manual notes (read in full Nov 11; text extracted to the scratchpad, not committed):**
@@ -157,8 +157,8 @@ Next:
 | nRF24 CSN | 5 | VSPI default CS |
 | nRF24 CE | 17 | **move (e.g. 21) on WROVER boards; 16/17 used by PSRAM** |
 | nRF24 IRQ (optional) | 16 | **move (e.g. 22) on WROVER boards** |
-| Radio B SCK / MISO / MOSI | 25 / 26 / 27 | optional second nRF24 for loopback (`beacon`, t2), own SPI bus (HSPI, remapped: default SCK 14 is IR RX, MISO 12 is a strapping pin) |
-| Radio B CSN / CE | 13 / 21 | `HW_NRF24_B` in hw_config.h |
+
+**Radio B dropped (decided 2026-11-18, John):** radio B (the second nRF24 for loopback) is dropped from the project. The working main radio did the sniffing, and the clone's own group commands confirmed the transmit side. A module in the handheld's socket either works or it doesn't. Docs updated 2026-11-18; the code (`HAS_RADIO_B`, `HW_NRF24_B`, radio B pins, `beacon`, the `test_device_rf` loopback test, and the TESTING.md / HARDWARE.md lines describing them) is still to be removed in a separate commit.
 
 Buttons are active-high so deep-sleep wake can use `ext1` with `ESP_EXT1_WAKEUP_ANY_HIGH` (original ESP32's ext1 only supports ANY_HIGH or ALL_LOW). On S3/C3, revisit pins and polarity.
 
@@ -179,7 +179,6 @@ Selected by `-DHD_BOARD_HANDHELD` (envs `handheld` / `handheld_test`); source of
 - VCC → 3V3 (3.3 V only!). With an adapter base: feed 5 V, omit the cap.
 - 10 µF across VCC/GND soldered at the module (stripe to GND).
 - SPI per pin map. Keep SPI wires short (< ~15 cm); retest "failed" modules on short wires before discarding.
-- Radio B (optional, loopback): same power rules and its own 10 µF cap; SCK 25, MISO 26, MOSI 27, CSN 13, CE 21. A few cm from the main module is fine (beacon uses PA_MIN).
 
 ## Firmware plan (next step)
 One PlatformIO project, serial-menu driven, usable from this weekend through Monday:

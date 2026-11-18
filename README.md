@@ -1,5 +1,9 @@
 # HD Platinum Remote Clone
 
+| ![Assembled handheld: grey shells, black keys, two IR LEDs at the end](docs/images/enclosure/enclosure_finish.png) | ![Exploded view with both shells see-through, showing the PCB, keys and indicator](docs/images/enclosure/enclosure_exploded.png) |
+|:---:|:---:|
+| Assembled (CAD render) | Exploded (CAD render) |
+
 A DIY replacement for the handheld remote used with Hunter Douglas **Platinum Technology** motorized shades (the 2013-era system, before PowerView). It's built on an ESP32 with an IR LED/receiver and an nRF24L01+ 2.4 GHz radio.
 
 > Personal hobby project. Not affiliated with or endorsed by Hunter Douglas. "Hunter Douglas", "Platinum" and "PowerView" are their trademarks and are used here only to say what this works with.
@@ -14,14 +18,33 @@ Replace a degraded original remote with a homemade one that can:
 
 The protocols aren't documented, so the first phase was reverse engineering. This repo's firmware is the toolkit for that: it captures, dumps and replays IR, tests, scans and sniffs nRF24, and now drives shades on its own (IR with the RF wake, group commands, and pairing under its own ID). The next phase is the handheld: a custom PCB (designed, not yet built) and its firmware.
 
+## Where things are
+
+| Want to… | Go to |
+|---|---|
+| Understand the IR codes | [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) |
+| Understand the 2.4 GHz RF frames and pairing | [docs/RF_PROTOCOL.md](docs/RF_PROTOCOL.md) |
+| See what is still unknown | [docs/RESEARCH.md](docs/RESEARCH.md) |
+| Run the firmware, see the serial commands and pin map | [docs/FIRMWARE.md](docs/FIRMWARE.md) |
+| Wire the breadboard / nRF24 modules | [docs/WIRING.md](docs/WIRING.md) |
+| Build the handheld | [docs/HARDWARE.md](docs/HARDWARE.md) (spec), [hardware/](hardware/README.md) (PCB), [hardware/enclosure/](hardware/enclosure/README.md) (case), [docs/BOM.md](docs/BOM.md), [docs/BRINGUP.md](docs/BRINGUP.md), [docs/COSTS.md](docs/COSTS.md) |
+| Check the raw evidence | [captures/](captures/) (serial logs, logic-analyzer files; remote IDs redacted) |
+| Test a change | [TESTING.md](TESTING.md) |
+
 ## Contributing
 
-New to the project? Start here:
+Hardware-independent logic belongs in `lib/hdcore/` with a host unit test; hardware-touching code goes in `src/`. Read [TESTING.md](TESTING.md) first. `include/hw_config.h` records what hardware is present on each board (breadboard, or the handheld PCB with `-e handheld`). Docs say what is confirmed and what is hypothesis; please keep it that way.
 
-1. **[TESTING.md](TESTING.md):** how changes are tested (host unit tests, on-device tests, manual checks) and the gate a release must pass.
-2. **Code layout:** hardware-independent logic belongs in `lib/hdcore/` with a host unit test. Hardware-touching code goes in `src/`. See [Firmware](#firmware) below.
-3. **Protocols:** [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) describes the decoded IR frame format and codes, plus the shade tests. [docs/RF_PROTOCOL.md](docs/RF_PROTOCOL.md) covers the 2.4 GHz side, including the RF wake the shade needs alongside IR.
-4. **Hardware:** the [pin map](#pin-map), [docs/WIRING.md](docs/WIRING.md) for connecting the nRF24 modules, the handheld's design spec [docs/HARDWARE.md](docs/HARDWARE.md), parts list [docs/BOM.md](docs/BOM.md) and first-power-up plan [docs/BRINGUP.md](docs/BRINGUP.md), and `include/hw_config.h`, which records what hardware is present on each board (breadboard, or the handheld PCB with `-e handheld`).
+## Quick start
+
+```
+pio run -t upload         # breadboard (esp32dev)
+pio device monitor        # 115200 baud, then type help
+pio run -e handheld       # handheld PCB profile (builds; untested on hardware)
+pio test -e native        # host unit tests, no hardware
+```
+
+Commands and pin map: [docs/FIRMWARE.md](docs/FIRMWARE.md).
 
 ## Status
 
@@ -41,7 +64,6 @@ New to the project? Start here:
 | Final remote: button UX, indicator LED, deep sleep, enclosure | 🔲 next |
 
 ## Technical approach
-
 ### What the original remote does
 
 - **IR mode (red LED):** a proprietary IR code on a 40 kHz carrier, aimed at one shade. Pressing the opposite button stops movement.
@@ -63,30 +85,11 @@ New to the project? Start here:
   - Channel 7 / 1 Mbps, quoted in one forum thread, conflicts with this. spitcool's notes associate those settings with the later PowerView Pebble remote.
   - **Confirmed on both our remotes** by sniffing ch 33 (2026-11-11). Details in [RF_PROTOCOL.md](docs/RF_PROTOCOL.md).
 
-### Open questions
-
-- **RF wake-up for IR?** Several secondhand sources say battery-powered Platinum shades ignore IR unless the remote also sends a short RF burst to wake them, which would explain why learning remotes fail. *Yes, by two tests* (2026-11-09): sealed in a foil tube that blocks its RF but lets its IR out, the original remote can't move the shade in IR mode, though it does when bare. And our clone's IR moves the shade only when the original remote is pressed at the same time (aimed away); alone, 0 of 20. See [Shade tests](docs/IR_PROTOCOL.md#shade-tests). The RF it sends is `ID 01 00 80` (sniffed 2026-11-11; spitcool's notes had recorded this frame without knowing its trigger).
-- **Can the clone send the wake itself?** *Yes* (2026-11-11): the clone's own `ID 01 00 80` followed by its IR moves the shade with no original remote, including stops. **The ID matters only for group commands** (2026-11-12): a made-up ID gets no group response (0 of 12), but its wake + IR still moves the shade. So point-and-press needs no paired ID; group control needs a paired ID. Next: more IR range (aim, LED power, beam width).
-- **Can the clone pair itself, with its own ID?** *Yes* (2026-11-12). Setup-mode group assignment sends `ID 30 <group> 80` (add) or `ID 31 <group> 80` (remove) with the normal OPEN / CLOSE IR aimed at the shade. The clone's `pair 4 add` with a made-up ID made the shade jog, and group commands with that ID then worked 10 of 10. So no original remote is needed at all. See [Pairing](docs/RF_PROTOCOL.md#pairing-group-assignment).
-- **IR behavior on hold:** *answered* (2026-11-07). One press is a burst of identical frames, 17.19 ms apart, for as long as the key is held: no toggle bit, no counter, no shade address. See [IR_PROTOCOL.md](docs/IR_PROTOCOL.md).
-- **Does the shade sleep?** *Yes* (2026-11-15). After a few seconds idle, a short press often fails, and the first press of a session needs the RF wake to keep coming for about 1–2 s. Once the shade is awake, a tap of the opposite arrow stops it. The handheld will therefore send wake + IR steps for as long as an arrow is held. See [IR_PROTOCOL.md](docs/IR_PROTOCOL.md).
-- **Still open:** why the weaker original remote sends a `00` tail after its wake, the shade's receptive window after an RF wake, and how long holding the opposite arrow takes to reverse a moving shade.
-
-### Reverse-engineering plan
-
-1. ✅ **Capture IR.** A TSOP38238 receiver records raw mark and space timings for every button in both modes, short press and held, several times each, to find any changing bits.
-2. ✅ **Replay IR.** Send the raw timings back at 40 kHz through a TSAL6200 940 nm LED and confirm a shade responds.
-3. **Screen the nRF24 modules.** The batch is probably clones, with a reported ~50% SPI failure rate, so every module gets tested. 2 Mbps is the rate that matters.
-4. **Prove the sniffer.** A second module (radio B) transmits known packets at the Platinum settings while the first receives (`beacon`). Without this, an empty sniff means nothing.
-5. ✅ **Sniff a group command** (positive control): group 1 + UP showed `ID 20 01 A1`, then the release tail. This also gave us our remote IDs.
-6. ✅ **Sniff an IR-mode press**, the RF wake-up experiment: `ID 01 00 80` while the arrow is held.
-7. **Fallbacks:** promiscuous sniffing (`promisc`) if the published settings catch nothing, or tapping the remote's own nRF24 SPI bus. Not needed so far.
-8. **Emulate.** Transmit with the original's timing: the wake before each IR command (✅ works), then group commands with held repeats and release packets (✅ works).
-9. **Build the handheld** (in progress: PCB and enclosure designed, see [docs/BRINGUP.md](docs/BRINGUP.md)): buttons with the remote's behaviour (group keys open a green window for the arrows), a red/green indicator LED, deep sleep, battery and enclosure.
+Open questions and the reverse-engineering plan: [docs/RESEARCH.md](docs/RESEARCH.md).
 
 ## Hardware
 
-Two targets. The **breadboard** was used for the reverse engineering and is what the pin map below describes:
+Two targets. The **breadboard** was used for the reverse engineering and is what the [pin map](docs/FIRMWARE.md#pin-map) describes:
 
 - **MCU:** ESP32-DevKitC with ESP32-WROOM-32D (PlatformIO `esp32dev`)
 - **IR receive:** TSOP38238 (38 kHz part, fine for a 40 kHz remote at close range)
@@ -95,75 +98,7 @@ Two targets. The **breadboard** was used for the reverse engineering and is what
 
 The **handheld PCB** (rev 1, designed and DRC-clean, not yet built) has an ESP32-WROOM-32E, two TSAL6200 IR LEDs on constant-current sinks, no IR receiver, the nRF24 module in a low-profile 2×4 socket (Samtec SLW-104-01-G-D, with the module's header pins trimmed), seven keys plus a recessed SETUP button and an A/B channel slider, a red/green indicator LED seen through a light pipe, a LiPo cell charged over USB-C, and a USB-serial bridge for flashing and debugging. It lives in a 3D-printed clamshell case. See [docs/HARDWARE.md](docs/HARDWARE.md) (spec), [hardware/README.md](hardware/README.md) (layout status), [docs/BOM.md](docs/BOM.md) and [hardware/enclosure/](hardware/enclosure/README.md).
 
-### Pin map
-
-| Function | GPIO | Notes |
-|---|---|---|
-| IR receive (TSOP OUT) | 14 | TSOP VS via 100 Ω, 100 nF decoupling |
-| IR transmit (NPN base) | 4 | via 1 kΩ; LED + 33 Ω from 5 V |
-| Button UP | 32 | active-high, 10 kΩ pull-down, RTC wake |
-| Button DOWN | 33 | active-high, 10 kΩ pull-down, RTC wake |
-| nRF24 SCK / MISO / MOSI | 18 / 19 / 23 | VSPI |
-| nRF24 CSN | 5 | |
-| nRF24 CE | 17 | |
-| nRF24 IRQ (optional) | 16 | |
-| Radio B SCK / MISO / MOSI | 25 / 26 / 27 | optional second nRF24 for loopback checks, on HSPI |
-| Radio B CSN / CE | 13 / 21 | |
-
-This is the breadboard (DevKitC). The handheld PCB uses a different map for the keys, slider, battery sense and LEDs: see [docs/HARDWARE.md, Pin map](docs/HARDWARE.md#pin-map-esp32-wroom-32e) and `include/pins.h` (`HD_BOARD_HANDHELD`, env `handheld`).
-
-Buttons are active-high so the original ESP32 can wake from deep sleep with `ext1` / `ESP_EXT1_WAKEUP_ANY_HIGH`.
-
-## Firmware
-
-PlatformIO + Arduino framework. Libraries: [IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266) 2.8.6 and [RF24](https://github.com/nRF24/RF24) 1.4.11 on `espressif32@6.9.0`.
-
-```
-pio run -t upload         # breadboard (esp32dev)
-pio device monitor        # 115200 baud
-pio run -e handheld       # handheld PCB profile (builds; untested on hardware)
-```
-
-The firmware version is shown at boot and in `help`. Type `help` in the monitor. Sending any line stops a running capture, scan or sniff, except a `#` comment.
-
-| Command | What it does |
-|---|---|
-| `ir [quiet]` | Capture IR; print the decoded HD frame summary (code, frames, duration) plus the raw `uint16_t rawData[]` (`quiet`: summary only) |
-| `send <up\|down\|bbbb> [ms]` | Repeat `seq` steps (RF wake, then HD frames at 40 kHz) for `ms` (default 1000). With `wake off`, IR alone. `up`/`down` are channel A; use `1001`/`1010` for B. Max 5000 ms for OPEN, 10000 otherwise |
-| Up / Down arrow keys | Send `up` / `down` (channel A) with the RF wake, at the prompt or during capture. Pattern set by `seq` |
-| `seq [on\|off\|rf\|gap\|ir <ms>]` | Arrow-key pattern. `on` (default, experimental): RF on ch 33, IR, RF on ch 52, IR, RF on ch 71, IR, with `rf` ms of wake per channel (default 50), a `gap` before each IR (0) and `ir` ms per IR step (50, three frames). `off`: one 450 ms wake on all channels, then one 500 ms IR burst |
-| `hold [on\|off\|first <ms>]` | Arrow keys send `seq` steps for as long as the key is held, and print the hold time. `first` is the release timeout before the keyboard's first repeat (default 700 ms). The Up arrow stops at 5000 ms |
-| `id [hex\|clear]` | Show or set the remote ID used in the wake frame (from a sniff). Saved in the ESP32's flash, not in the source |
-| `grp <1-4\|all> <up\|down> [ms]` | RF group command, as in green mode: `ID 20 <group> A1/A2` for `ms` (default 300, max 5000), then the `21`/`22` release tail for 330 ms, on ch 33/52/71. RF only, no aiming. DOWN works on the shades (2026-11-11); the DOWN codes come from spitcool's notes and haven't been sniffed by us |
-| `pair <1-4\|all> <add\|remove>` | Group assignment under the stored ID: setup frames (`ID 30\|31 GROUP 80`) interleaved with OPEN / CLOSE IR, using the `seq` timings. Aim at one shade's eye from a few inches. Wake the shade first, or retry |
-| `wake [ms\|on\|off]` | Send the RF wake (`ID 01 00 80` on ch 33/52/71) alone for `ms` (default 450), or turn the automatic wake before `send` / arrow keys on or off |
-| `# <note>` | Comment for the serial log. Doesn't stop a running capture, scan or sniff |
-| `play [slot\|last] [n] [gap_ms]` | Replay a capture at 40 kHz |
-| `save <slot>` / `list` / `dump [slot]` | Keep up to 8 captures in RAM |
-| `test [label]` | nRF24 self-test: register read-back per data rate → PASS/FAIL (needs 2 Mbps) |
-| `info` | Print the nRF24 register details |
-| `scan` | Carrier-detect sweep over channels 0–125 |
-| `sniff` | Receive with the current settings. Prints one line per run of identical packets: count, payload, decoded fields, span and packet gaps |
-| `beacon [n]` | Loopback check: radio B sends `n` packets (default 100) with the current settings; prints sent / received |
-| `hd` | Preset for the Platinum handheld (the default): ch 33, 2 Mbps, `E7E7E7`, CRC-16, 5 bytes. Use `ch 52` / `ch 71` for the other channels |
-| `promisc aa\|55` | Fallback preset for address-less sniffing; turns the duplicate filter on |
-| `ch`, `rate`, `aw`, `addr`, `crc`, `pl`, `filter`, `cfg` | Sniffer settings |
-| `btn` | Show button state (breadboard: UP and DOWN; handheld PCB: all keys, the A/B slider and the battery voltage) |
-| `led <r\|g\|both\|off>` | Drive the indicator LED (handheld PCB only) |
-| `pin <gpio> [ms]` | Logic probe: level, edge count and % low on a GPIO (default 3000 ms). Refuses the flash pins and the IR and nRF24 outputs |
-
-Source layout:
-
-```
-include/pins.h        pin maps (breadboard default; handheld PCB with HD_BOARD_HANDHELD)
-include/hw_config.h   what's present on each board (gates hardware tests)
-src/main.cpp          serial menu / dispatch
-src/ir_tools.*        IR capture, dump, replay
-src/rf_tools.*        nRF24 self-test, scanner, sniffer, loopback beacon
-lib/hdcore/           hardware-independent logic (HD IR frame codec, Platinum RF payloads, parsing,
-                      address order, dup filter, packet runs, arrow-key hold tracking)
-test/                 Tier 1 host tests (test_native_*) and Tier 2 device tests (test_device_*)
-```
+Pin map and firmware commands: [docs/FIRMWARE.md](docs/FIRMWARE.md). The handheld PCB uses a different pin map: see [docs/HARDWARE.md](docs/HARDWARE.md#pin-map-esp32-wroom-32e) and `include/pins.h`.
 
 ## Testing
 
