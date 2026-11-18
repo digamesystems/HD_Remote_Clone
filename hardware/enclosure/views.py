@@ -61,7 +61,7 @@ def pcb_constraints(m, p, info):
 
     parts = []                                           # footprints of placed parts (top view)
     for name in ("key switches", "ESP32", "nRF socket", "USB-C", "IR LEDs", "battery JST",
-                 "A/B switch", "indicator", "SETUP switch"):
+                 "A/B switch", "indicator LED", "SETUP switch"):
         bb = p[name].bounding_box()
         parts.append((name, bb))
 
@@ -88,7 +88,7 @@ def pcb_constraints(m, p, info):
     tags = {"ESP32": ("ESP32-WROOM-32E\n(antenna at edge)", "above"),
             "nRF socket": ("nRF24\nsocket", "above"), "USB-C": ("USB-C\n(1 mm recess)", "above"),
             "IR LEDs": ("IR\nLEDs", "inside"), "battery JST": ("JST", "below"),
-            "A/B switch": ("A/B", "above"), "indicator": ("LED", "above"),
+            "A/B switch": ("A/B", "above"), "indicator LED": ("LED", "above"),
             "SETUP switch": ("SETUP\n(underside)", "below")}
     for name, bb in parts:
         if name not in tags:
