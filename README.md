@@ -126,6 +126,29 @@ Copyright © 2026 John Price.
 
 Source files carry an `SPDX-License-Identifier` line. Third-party libraries keep their own licenses: [RF24](https://github.com/nRF24/RF24) (GPL-2.0) and [IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266) (LGPL-2.1). RF protocol facts credited to [spitcool/hd-platinum-rf](https://github.com/spitcool/hd-platinum-rf) are cited, not copied.
 
+## Related projects
+
+Found through [spitcool's CREDITS.md](https://github.com/spitcool/hd-platinum-rf/blob/main/CREDITS.md), which records the wider lineage in detail. Links checked 2026-11-18.
+
+**Have the Platinum App Bridge?** These control Platinum shades through the Bridge over your LAN (TCP port 522), with no radio hardware to build:
+
+- [node-hunterdouglas](https://github.com/exPHAT/node-hunterdouglas): JavaScript client, the earliest of these
+- [homebridge-hunterdouglas-platinum](https://github.com/schemers/homebridge-hunterdouglas-platinum): Apple HomeKit via Homebridge
+- [aio-powerrise-api](https://pypi.org/project/aio-powerrise-api/): asynchronous Python client
+- [smartthings-hunterdouglasplatinum](https://github.com/schwark/smartthings-hunterdouglasplatinum): SmartThings integration
+- [Platinum Shade Vera plug-in](https://community.ezlo.com/t/hunter-douglas-platinum-bridge-app/187439?page=3): Vera/Ezlo forum thread
+
+**RF research and tools:**
+
+- [spitcool/hd-platinum-rf](https://github.com/spitcool/hd-platinum-rf): SDR-based protocol research and an ESP32 bridge; the source of our RF air settings
+- [gr-nrf24-sniffer](https://github.com/kittennbfive/gr-nrf24-sniffer): GNU Radio nRF24 receiver for an SDR such as a HackRF; supports 2 Mbps and 3-byte addresses (its own docs call 3-byte addresses untested)
+- [gr-nordic](https://github.com/BastilleResearch/gr-nordic): GNU Radio Nordic ShockBurst receiver/transmitter (built around 5-byte addresses)
+- [NRF24_Sniffer](https://github.com/Yveaux/NRF24_Sniffer): promiscuous sniffing with an nRF24 module
+
+**Other Platinum devices** (FCC IDs; descriptions from spitcool's notes): [UXURC4U](https://fccid.io/UXURC4U) handheld remote, [UXURC4U2](https://fccid.io/UXURC4U2) handheld remote (ours), [UXURC4U3](https://fccid.io/UXURC4U3) later handheld remote, [UXUWS4U](https://fccid.io/UXUWS4U) wall switch. Only the UXURC4U2 has been tested with this project.
+
+**Not compatible:** Hunter Douglas says current PowerView remotes and accessories, such as the Pebble, use a different communication method from Platinum Technology products and can't control older shades ([FAQ](https://www.hunterdouglas.com/faqs/can-i-use-my-new-powerview-pebble-remote-to-operate-my-older-powerrise-shades)).
+
 ## References
 
 - [NRF24L01+ hack on Hunter Douglas shades](https://forum.arduino.cc/t/nrf24l01-hack-on-hunter-douglas-shades/676940) (Arduino forum)
