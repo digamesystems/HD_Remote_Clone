@@ -1,5 +1,9 @@
 # Hardware
 
+![Handheld board rev 1, top side: ESP32 module in the middle, nRF24 socket and USB-C at the left, key switches at the right, two IR LEDs on the right-hand edge](../docs/images/pcb/hd_remote_rev1_3d.png)
+
+*Rev 1 as ordered 2026-11-17: KiCad 3D render, not a photo. Top side, front (IR) end at the right. Some 3D models are stand-ins (the IR LEDs render green, the indicator white).*
+
 KiCad project for the handheld replacement remote: [`hd_remote/hd_remote.kicad_pro`](hd_remote/hd_remote.kicad_pro).
 
 - **Tool:** KiCad 10 (the files open in 9.0 or newer).

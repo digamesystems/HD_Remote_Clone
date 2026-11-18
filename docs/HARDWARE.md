@@ -244,6 +244,10 @@ Needed: 6 × 6 mm, 4 straight through-hole legs at **6.5 × 4.5 mm** (KiCad `SW_
 
 ## Layout notes
 
+![Rev 1 top side as ordered: ESP32 antenna at the bottom (−Y) edge, nRF24 socket and USB-C at the back (left), keys in the middle, IR LEDs at the front (right)](images/pcb/hd_remote_rev1_3d.png)
+
+*Rev 1 as ordered 2026-11-17 (KiCad 3D render, not a photo). Some 3D models are stand-ins: the IR LEDs render green, the indicator white.*
+
 - 2-layer board. Ground pour on the bottom (B.Cu) only; top-side GND pads reach it through stitching vias (the ESP32's exposed pad through the 12 vias built into its footprint). No pour under either antenna area. As routed (2026-11-14) the pour is one piece plus a ~15 mm² patch near SW202 that the VSYS and IR_TX bottom tracks enclose; it is tied to the main plane through SW202's GND pad and a via at (68.0, 63.5).
 - **ESP32 orientation (2026-11-13):** antenna end at the right-hand (−Y) board edge, holding the remote pointing away. The key GPIOs must be RTC pins, which all sit in the module's left pin column (pins 4–12), so that column has to face the keys; the SPI and UART pins (right column) then face the nRF24 socket and CP2102N at the back. With the antenna at the other edge, 14 key and SPI lines crossed each other round the module.
 - Keep the **ESP32 module's antenna area** clear of copper, per Espressif's guidelines.

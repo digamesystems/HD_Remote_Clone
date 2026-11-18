@@ -4,6 +4,10 @@
 |:---:|:---:|
 | Assembled (CAD render) | Exploded (CAD render) |
 
+![Handheld board rev 1, top side: ESP32 module in the middle, key switches at the right, two IR LEDs on the right-hand edge](docs/images/pcb/hd_remote_rev1_3d.png)
+
+*The board inside, rev 1 (KiCad render). More in [hardware/](hardware/README.md).*
+
 A DIY replacement for the handheld remote used with Hunter Douglas **Platinum Technology** motorized shades (the 2013-era system, before PowerView). It's built on an ESP32 with an IR LED/receiver and an nRF24L01+ 2.4 GHz radio.
 
 > Personal hobby project. Not affiliated with or endorsed by Hunter Douglas. "Hunter Douglas", "Platinum" and "PowerView" are their trademarks and are used here only to say what this works with.
