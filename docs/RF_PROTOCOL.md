@@ -1,5 +1,7 @@
 # HD Platinum RF protocol (2.4 GHz, nRF24)
 
+> **TL;DR** (summary checked 2026-11-18): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR.
+
 What the Platinum handheld remote sends over RF, from our sniffs of two remotes on 2026-11-11. For the IR side, and the shade tests that showed the shade needs RF alongside IR, see [IR_PROTOCOL.md](IR_PROTOCOL.md).
 
 The air settings come from prior work by [spitcool/hd-platinum-rf](https://github.com/spitcool/hd-platinum-rf) (`docs/rf-protocol.md`, which cites FCC filings, a community register dump and SDR captures). Our sniffs confirm them on our own remotes. The red-mode **wake frames**, and what they mean, are our own findings.

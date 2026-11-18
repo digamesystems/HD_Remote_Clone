@@ -1,5 +1,7 @@
 # HD Platinum IR protocol (point-and-press / red mode)
 
+> **TL;DR** (summary checked 2026-11-18): only the UP and DOWN arrows send IR, and only outside the green group window. A frame is a 2.75 ms header mark and space, then 4 pulse-distance bits (MSB first). Frames repeat back to back every 17.19 ms while the key is held, with no toggle bit, counter or shade address. Codes: channel A UP `0101`, DOWN `0110`; channel B UP `1001`, DOWN `1010`. The carrier is 40 kHz per the manual; the clone's 39.7 kHz works. **IR alone doesn't move a shade:** it also needs the RF wake frame `ID 01 00 80` ([RF_PROTOCOL.md](RF_PROTOCOL.md)), and a sleeping shade needs RF and IR together for about 1–2 s.
+
 Reverse engineered on 2026-11-07 from the original Platinum remote. The source of truth in code is [`lib/hdcore/src/hd_ir.h`](../lib/hdcore/src/hd_ir.h).
 
 | Status | |

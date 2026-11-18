@@ -1,5 +1,17 @@
 # Handheld board bring-up plan (rev 1)
 
+> **TL;DR** (summary checked 2026-11-18): first power-up of a rev 1 board in eight stages:
+> 1. unpowered checks
+> 2. USB power with a current limit
+> 3. serial and flashing
+> 4. keys and indicator
+> 5. IR
+> 6. the nRF24 module
+> 7. the battery
+> 8. the case
+>
+> Stop at the first failure, and log results per board at the end of this file. The checklists before the stages cover ordering and arrival.
+
 Written 2026-11-15, before the boards arrive, so the first power-up follows a plan rather than enthusiasm. Work through the stages in order and **stop at the first failure**: each stage assumes the ones before it passed. Record results in the log at the end (copy it per board; boards are numbered by hand on arrival).
 
 Background: [HARDWARE.md](HARDWARE.md) (spec, power path, sleep budget), [hardware/README.md](../hardware/README.md) (layout status), `include/pins.h` (pin map, checked against the schematic by `hardware/tools/check_pins.py`).
@@ -37,7 +49,7 @@ The boards don't need to wait for the enclosure test piece (noted 2026-11-16): e
 - [ ] **Light pipe:** test-fit a Bivar PLP2-250 in a printed 2.92 mm hole (try 2.85 / 2.95 / 3.05 mm on the next print); glue it if loose.
 - [ ] **IR current-sink breadboard test** (the *verify* in [HARDWARE.md](HARDWARE.md), IR transmitter; never run, confirmed 2026-11-16). Needs 2× 1N4148 and an NPN (PN2222A or 2N2222), 470 Ω, 100 kΩ, 3.3 Ω for R_E (and 4.7 Ω for the fallback test), a TSAL6200 (parts on the DigiKey list above). GPIO 4 → 470 Ω → base node; node → two diodes in series → GND, and → 100 kΩ → GND; emitter → R_E → GND; collector → LED cathode; LED anode → supply. `send up 3000`, scope across R_E (I = V_peak / R_E) and the base node (~1.3 V), at 3.3 V and 4.2 V LED supply. Pass: the two currents within ~10 % of each other, none above 200 mA. A 2N2222's Vbe differs from the BC817-40's, so this proves the regulation, not the board's exact current (stage 5).
 - [x] `python -I hardware/tools/check_pins.py` passes (pins.h matches the schematic; rechecked 2026-11-17).
-- [ ] `pio run -e handheld` builds.
+- [x] `pio run -e handheld` builds (2026-11-18, fw 0.9.4).
 
 ## Equipment
 

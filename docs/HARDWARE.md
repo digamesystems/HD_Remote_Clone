@@ -1,5 +1,16 @@
 # Handheld board: design spec
 
+> **TL;DR** (summary checked 2026-11-18): the spec for the rev 1 handheld board. It has:
+> - an ESP32-WROOM-32E
+> - one LiPo cell, charged over USB-C (MCP73831), with a power path and a 3.3 V LDO
+> - a CP2102N USB-serial bridge with auto-reset
+> - two TSAL6200 IR LEDs on BC817 current sinks, driven from GPIO 4
+> - an nRF24 module in a low-profile 2×4 socket
+> - 7 keys like the original, a recessed SETUP button and an A/B channel slider
+> - a red/green indicator LED
+>
+> Build status is in the [README](../README.md#status) and [BRINGUP.md](BRINGUP.md).
+
 **Status (2026-11-17):** the schematic and layout are complete (DRC and ERC clean; see [hardware/README.md](../hardware/README.md)) and the parts list is in [BOM.md](BOM.md). The board was ordered from JLCPCB on 2026-11-17 (5 assembled) and hasn't been built yet, so items marked *verify* still need a breadboard test, a datasheet check or the first board ([BRINGUP.md](BRINGUP.md)).
 
 The goal is a battery handheld that replaces the original Platinum remote. It sends point-and-press IR with our RF wake, and RF group commands, using the firmware developed on the DevKitC breadboard.
