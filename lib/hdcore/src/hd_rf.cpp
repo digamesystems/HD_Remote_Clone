@@ -75,6 +75,44 @@ void setupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool add, bool held,
   out[4] = held ? kActionWakeHeld : kActionWakeRelease;
 }
 
+void positionPayload(uint8_t id0, uint8_t id1, uint8_t mask, uint8_t pos, bool phase1,
+                     uint8_t out[kPayloadSize]) {
+  out[0] = id0;
+  out[1] = id1;
+  out[2] = phase1 ? kModePosPhase1 : kModePosPhase2;
+  out[3] = mask;
+  out[4] = pos;
+}
+
+int parsePosMask(const std::string& in) {
+  std::string s = in;
+  if (s.size() > 2 && s[0] == '0' && (s[1] | 0x20) == 'x') s = s.substr(2);
+  if (s.empty() || s.size() > 2) return -1;
+  int v = 0;
+  for (char c : s) {
+    int d;
+    if (c >= '0' && c <= '9') d = c - '0';
+    else if ((c | 0x20) >= 'a' && (c | 0x20) <= 'f') d = (c | 0x20) - 'a' + 10;
+    else return -1;
+    v = v * 16 + d;
+  }
+  return v == 0 ? -1 : v;
+}
+
+int parsePosition(const std::string& s) {
+  if (s.empty() || s.size() > 3) return -1;
+  int v = 0;
+  for (char c : s) {
+    if (c < '0' || c > '9') return -1;
+    v = v * 10 + (c - '0');
+  }
+  return v <= 255 ? v : -1;
+}
+
+bool positionTimingOk(uint32_t phase1Ms, uint32_t phase2Ms) {
+  return phase1Ms <= kPosMaxPhaseMs && phase2Ms <= kPosMaxPhaseMs && phase1Ms + phase2Ms > 0;
+}
+
 int parseGroup(const std::string& s) {
   if (s.size() == 1 && s[0] >= '1' && s[0] <= '4') return 1 << (s[0] - '1');
   if (s.size() == 3 && (s[0] | 0x20) == 'a' && (s[1] | 0x20) == 'l' && (s[2] | 0x20) == 'l')
@@ -84,6 +122,12 @@ int parseGroup(const std::string& s) {
 
 std::string describePayload(const uint8_t* p, size_t len) {
   if (len != kPayloadSize) return "";
+  char buf[64];
+  if (p[2] == kModePosPhase1 || p[2] == kModePosPhase2) {
+    snprintf(buf, sizeof(buf), "ID %02X%02X  mode %02X  mask %02X  pos %u", p[0], p[1], p[2],
+             p[3], (unsigned)p[4]);
+    return buf;
+  }
   const char* action = actionName(p[4]);
   bool setup = p[2] == kModeSetupAdd || p[2] == kModeSetupRemove;
   if (setup && (p[4] == kActionWakeHeld || p[4] == kActionWakeRelease)) {
@@ -91,7 +135,6 @@ std::string describePayload(const uint8_t* p, size_t len) {
     action = add ? (held ? "pair add held" : "pair add release")
                  : (held ? "pair remove held" : "pair remove release");
   }
-  char buf[64];
   snprintf(buf, sizeof(buf), "ID %02X%02X  mode %02X  group %s  %s", p[0], p[1], p[2],
            groupName(p[3]).c_str(), action);
   return buf;

@@ -35,6 +35,16 @@ enum : uint8_t {
   // OPEN / CLOSE code; it picks the shade, and this frame gives the ID + group.
   kModeSetupAdd = 0x30,
   kModeSetupRemove = 0x31,
+  // Absolute position (experimental). Layout from spitcool/hd-platinum-rf,
+  // docs/rf-protocol.md, "Position packets correlated with original-bridge
+  // commands - 2026-10-23": the Platinum bridge sends ID0 ID1 50 MASK POS for
+  // about 1.49 s, then ID0 ID1 32 MASK POS for about 0.30 s. MASK is one-hot
+  // (bridge: 1 << (group_field - 1), up to 0x40); POS is raw 0-255. Our shade
+  // test (2026-11-18): they work from a handheld-paired ID; MASK is the
+  // handheld group byte (01/02/04/08, bits combine); POS is absolute, 0 and
+  // 255 the two limits. A made-up ID gets no response.
+  kModePosPhase1 = 0x50,
+  kModePosPhase2 = 0x32,
 
   kGroupNone = 0x00,
   kGroupAll = 0xFF,  // groups 1-4 are one-hot 0x01, 0x02, 0x04, 0x08
@@ -64,6 +74,26 @@ void groupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool up, bool held,
 void setupPayload(uint8_t id0, uint8_t id1, uint8_t group, bool add, bool held,
                   uint8_t out[kPayloadSize]);
 
+// Bridge-timed phase lengths for position frames, and the cap per phase.
+constexpr uint32_t kPosPhase1Ms = 1490;
+constexpr uint32_t kPosPhase2Ms = 300;
+constexpr uint32_t kPosMaxPhaseMs = 2000;
+
+// A position frame (experimental): ID0 ID1 50|32 MASK POS. phase1: 50, else 32.
+void positionPayload(uint8_t id0, uint8_t id1, uint8_t mask, uint8_t pos, bool phase1,
+                     uint8_t out[kPayloadSize]);
+
+// Position-command mask: 1 or 2 hex digits (optional "0x"), nonzero. Any
+// nonzero byte is accepted (the bridge's are one-hot, up to 0x40). -1 if invalid.
+int parsePosMask(const std::string& s);
+
+// Position: decimal 0-255, digits only. -1 if invalid.
+int parsePosition(const std::string& s);
+
+// Phase lengths for a position command: each at most kPosMaxPhaseMs, and not
+// both zero (0 skips that phase).
+bool positionTimingOk(uint32_t phase1Ms, uint32_t phase2Ms);
+
 // A remote ID we're willing to generate: anything but 00 00 and FF FF.
 bool isUsableRemoteId(uint8_t id0, uint8_t id1);
 
@@ -81,7 +111,8 @@ std::string groupName(uint8_t group);
 // "wake release", or "?".
 const char* actionName(uint8_t action);
 // e.g. "ID 03C1  mode 20  group 1  UP held". Setup frames read "pair add held",
-// "pair remove release", etc. Empty unless len == kPayloadSize.
+// "pair remove release", etc. Position frames read
+// "ID 1234  mode 50  mask 08  pos 128". Empty unless len == kPayloadSize.
 std::string describePayload(const uint8_t* p, size_t len);
 
 }  // namespace rf

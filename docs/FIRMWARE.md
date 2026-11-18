@@ -1,6 +1,6 @@
 # Firmware and pin map
 
-> **TL;DR** (summary checked 2026-11-18 11:33): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
+> **TL;DR** (summary checked 2026-11-18 15:07): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
 
 One PlatformIO codebase runs on **two hardware targets**. Which one you get depends on the build environment you pick.
 
@@ -63,6 +63,7 @@ The firmware version is shown at boot and in `help`. Type `help` in the monitor.
 | `hold [on\|off\|first <ms>]` | Arrow keys send `seq` steps for as long as the key is held, and print the hold time. `first` is the release timeout before the keyboard's first repeat (default 700 ms). Either arrow stops at 5000 ms |
 | `id [hex\|new]` | Show the remote ID used in wake, group and setup frames; set it (e.g. an original remote's, from a sniff); or `new` for a fresh random one. Saved in the ESP32's flash, not in the source. A unit with none generates a random one at boot |
 | `grp <1-4\|all> <up\|down> [ms]` | RF group command, as in green mode: `ID 20 <group> A1/A2` for `ms` (default 300, max 5000), then the `21`/`22` release tail for 330 ms, on ch 33/52/71. RF only, no aiming. DOWN works on the shades (2026-11-11); the DOWN codes come from spitcool's notes and haven't been sniffed by us |
+| `pos <mask> <0-255> [ms50 ms32]` | **Experimental** (fw 0.9.7). Absolute-position frames as spitcool decoded them from the Platinum bridge: `ID 50 <mask> <pos>` for `ms50` (default 1490), then `ID 32 <mask> <pos>` for `ms32` (default 300), on ch 33/52/71, with the stored ID. `mask` is one hex byte (nonzero; the bridge's are one-hot, `01`–`40`), `pos` is decimal 0–255. Each phase max 2000 ms; `0` skips a phase. Works on our shades (2026-11-18): the mask is the handheld group byte, `01`–`08`, combinable; 0 and 255 are the two limits; the ID must be paired. See [RF_PROTOCOL.md](RF_PROTOCOL.md#absolute-position-experimental) |
 | `pair <1-4\|all> <add\|remove>` | Group assignment under the stored ID: setup frames (`ID 30\|31 GROUP 80`) interleaved with OPEN / CLOSE IR, using the `seq` timings. Aim at one shade's eye from a few inches. Wake the shade first, or retry |
 | `wake [ms\|on\|off]` | Send the RF wake (`ID 01 00 80` on ch 33/52/71) alone for `ms` (default 450), or turn the automatic wake before `send` / arrow keys on or off |
 | `# <note>` | Comment for the serial log. Doesn't stop a running capture, scan or sniff |

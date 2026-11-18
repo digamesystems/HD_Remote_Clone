@@ -1,6 +1,6 @@
 # HD Platinum RF protocol (2.4 GHz, nRF24)
 
-> **TL;DR** (summary checked 2026-11-18 11:33): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR.
+> **TL;DR** (summary checked 2026-11-18 15:07): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR.
 
 What the Platinum handheld remote sends over RF, from our sniffs of two remotes on 2026-11-11. For the IR side, and the shade tests that showed the shade needs RF alongside IR, see [IR_PROTOCOL.md](IR_PROTOCOL.md).
 
@@ -121,6 +121,50 @@ The same day, interleaving RF and IR (RF on one channel, IR, the next channel, I
 
 So RF group control works from our own radio. This also confirms, by the shades' response, the parts of the layout we hadn't sniffed: groups `02` / `04` / `08`, All = `FF`, and DOWN = `A2` / `22`. Trial counts weren't recorded. The household has four groups.
 
+**2026-11-18 (group 4, default `grp` timings; reported by John, log not committed):**
+
+- **A group command latches.** A ~0.63 s `grp` send (300 ms held + 330 ms tail) moved the shade from one limit to the other. So the 5 s cap on `grp` doesn't limit travel.
+- **The release tail isn't a stop.** The shade kept moving after the `21` / `22` tail.
+- **Travel times**, from the `RF group` line to John's Enter (add about 0.3–0.6 s for reaction): down 20.6, 20.8, 21.5 s (mean about 21.0 s); up 28.7, 26.6, 25.7 s (mean about 27.0 s). Up is about 25% slower. These are top-down/bottom-up shades, where DOWN opens.
+- **One miss:** at 14:51:03 a `grp 4 down` sent all its packets and the shade didn't move. About 1 miss in 35 group commands so far.
+- **Not tested yet:** whether an opposite group command stops a moving shade (the opposite IR arrow does). A timed preset would need it.
+
+## Absolute position (experimental)
+
+[spitcool/hd-platinum-rf](https://github.com/spitcool/hd-platinum-rf) has decoded position frames from the original **Platinum bridge** (`docs/rf-protocol.md`, "Position packets correlated with original-bridge commands — 2026-10-23"). They use the handheld's air settings (2 Mbps, `E7E7E7`, CRC-16, 5 bytes, no ack); only the payload differs. Layout per spitcool:
+
+| Byte | Meaning |
+|---|---|
+| 0–1 | ID (the bridge sends its room ID) |
+| 2 | `50` for about 1.49 s, then `32` for about 0.30 s |
+| 3 | one-hot shade mask (bridge: `1 << (group_field - 1)`, up to `40`) |
+| 4 | target position, raw 0–255 (`00`, `80`, `FF` seen) |
+
+spitcool saw these at 2433 and 2452 MHz, none at 2471. Whether a shade moves when they're replayed is **unverified** in their notes.
+
+The firmware's `pos <mask> <0-255> [ms50 ms32]` (fw 0.9.7) sends them with the stored ID, rotating ch 33/52/71 like `grp`, with spitcool's phase timings.
+
+**Shade test, 2026-11-18 (John; [log](../captures/rf_position_20261118.log)).** Clone only, no bridge, using the working remote's ID (a handheld group pairing, not a bridge room ID). Watched: the two group-4 shades (top-down/bottom-up).
+
+| Test | Result |
+|---|---|
+| `pos 08 255` / `pos 08 0` | both shades ran all the way up / all the way down |
+| `pos 08 128`, from the top and from the bottom | both stopped at the same middle point either way, at slightly different speeds |
+| `pos 08 128` with the shades already at 128 | no movement (twice) |
+| `pos 08 64` / `pos 08 192` | about a quarter / three quarters of the way up |
+| mask `01`, `02`, `04`, `08`, sums such as `06` | each bit is one handheld group (1, 2, 3, 4); a sum addresses those groups together. Group 4 responds to `08`, not `04` |
+| `id 1234` (made up), then `pos 08 …` | no response; back to the working remote's ID, works |
+
+So, on our shades:
+
+- **Position frames work from a handheld-paired ID.** No bridge or bridge room ID is needed.
+- **The position is absolute.** 0 is one limit (fully down here) and 255 the other (fully up), roughly linear in between. Repeating a command at the target doesn't move the shade, so resending is safe, and presets don't need to know where a shade starts.
+- **Each shade goes to the target on its own.** Shades of different speeds end up level.
+- **The mask is the handheld group byte** (`01`, `02`, `04`, `08`), and bits combine. spitcool's bridge masks run up to `40`; groups 5–7 don't exist on our handheld.
+- **The ID is checked**, as for group commands (the red-mode wake isn't checked).
+
+Not yet tested: "up" and "down" on a standard (bottom-up) shade, the shortest phase timings that work, whether the `32` phase is needed, a shade that's moving when a new position arrives, and the first command of the run (mask `04`), whose note said group 4 moved; John's later check showed group 4 doesn't respond to `04`, so that note is unresolved.
+
 ## Pairing (group assignment)
 
 **From the manual (p. 5):** group assignment is how a shade learns a remote. In setup mode (SETUP on the back, LED flashing green), you press a group key, aim at the shade from a few inches away and press OPEN to add the shade to that group, or CLOSE to remove it. The shade jogs to confirm, and SETUP again saves and exits. A shade can belong to several groups, so it stores (remote ID, group) entries. That fits our findings: both our remotes (different IDs) work, an unknown ID gets no group response, and the weak remote's ID works on some groups but not group 4.
@@ -163,6 +207,7 @@ The manual doesn't say how many remotes a shade can store. With `pair ... remove
 - `wake [ms]`: send the wake alone (default 450 ms, rotating ch 33/52/71).
 - `send` and the PC arrow keys: wake first, then IR (the arrow keys interleave them; see `seq`). `wake off` turns that off.
 - `grp <1-4|all> <up|down> [ms]`: a group command, held frames for `ms` (default 300, max 5000), then the release tail.
+- `pos <mask> <0-255> [ms50 ms32]`: experimental absolute-position frames (see [Absolute position](#absolute-position-experimental)).
 - `pair <1-4|all> <add|remove>`: group assignment with the stored ID, 3 steps (setup frames, then IR). Aim at one shade's sensor eye from a few inches. Wake the shade first (an arrow press) or repeat until it jogs.
 
 ## Open questions
@@ -173,6 +218,8 @@ The manual doesn't say how many remotes a shade can store. With `pair ... remove
 - How long does the shade stay receptive after the wake, and does the original send IR during or after the RF? (Measure with the analyzer: IR receiver OUT plus our module's IRQ during `sniff`.)
 - The shortest wake that works (needs a setting for the automatic wake length).
 - Sniff channels 52 and 71 to confirm the rotation.
+- ~~Do shades accept spitcool's bridge position frames from a handheld-paired ID?~~ Yes, and the position is absolute (2026-11-18; see [Absolute position](#absolute-position-experimental)). Still open: the shortest timings that work, and whether the `32` phase is needed.
+- Does an opposite group command stop a moving shade?
 - ~~Group commands from the clone~~ Done 2026-11-11 (see [Group commands from the clone](#group-commands-from-the-clone)). Still open: does a shorter hold or tail work, and how does a long hold behave (does the shade keep moving only while frames arrive)?
 
 ## Evidence
@@ -181,4 +228,5 @@ The manual doesn't say how many remotes a shade can store. With `pair ... remove
 |---|---|
 | [`captures/rf_sniff_20261111.log`](../captures/rf_sniff_20261111.log) | Three sniffs: the weak remote (group 1 + UP; red-mode presses) and the working remote (red UP tap, red DOWN hold, group 1 + UP). IDs redacted |
 | [`captures/rf_ir_setup_mode_20261112.log`](../captures/rf_ir_setup_mode_20261112.log) | Setup-mode group assignment: RF for add and remove, IR summaries, and the clone pairing result. ID redacted |
+| [`captures/rf_position_20261118.log`](../captures/rf_position_20261118.log) | Absolute-position frames from the clone (`pos`): serial lines for the first runs, John's notes for the rest. ID redacted |
 | [`captures/shade_timing_20261115.log`](../captures/shade_timing_20261115.log) | Clone shade timing tests, and the clone's pairing remove (section 7) |

@@ -233,6 +233,62 @@ void test_parse_group() {
   TEST_ASSERT_EQUAL(-1, rf::parseGroup("al"));
 }
 
+void test_position_payload_layout() {
+  // Layout per spitcool's bridge decode (ID made up): 50 phase, then 32 phase.
+  uint8_t p[5];
+  rf::positionPayload(0x12, 0x34, 0x08, 128, true, p);
+  const uint8_t first[5] = {0x12, 0x34, 0x50, 0x08, 0x80};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(first, p, 5);
+  rf::positionPayload(0x12, 0x34, 0x40, 255, false, p);
+  const uint8_t second[5] = {0x12, 0x34, 0x32, 0x40, 0xFF};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(second, p, 5);
+}
+
+void test_describe_position_frames() {
+  const uint8_t a[5] = {0x12, 0x34, 0x50, 0x08, 0x80};
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 50  mask 08  pos 128", rf::describePayload(a, 5).c_str());
+  const uint8_t b[5] = {0x12, 0x34, 0x32, 0x01, 0x00};
+  TEST_ASSERT_EQUAL_STRING("ID 1234  mode 32  mask 01  pos 0", rf::describePayload(b, 5).c_str());
+}
+
+void test_parse_pos_mask() {
+  TEST_ASSERT_EQUAL(0x08, rf::parsePosMask("08"));
+  TEST_ASSERT_EQUAL(0x08, rf::parsePosMask("8"));
+  TEST_ASSERT_EQUAL(0x40, rf::parsePosMask("0x40"));
+  TEST_ASSERT_EQUAL(0xFF, rf::parsePosMask("ff"));
+  TEST_ASSERT_EQUAL(0xAB, rf::parsePosMask("aB"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosMask("00"));   // no shade
+  TEST_ASSERT_EQUAL(-1, rf::parsePosMask("0"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosMask(""));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosMask("0x"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosMask("100"));  // more than one byte
+  TEST_ASSERT_EQUAL(-1, rf::parsePosMask("g1"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosMask("-8"));
+}
+
+void test_parse_position() {
+  TEST_ASSERT_EQUAL(0, rf::parsePosition("0"));
+  TEST_ASSERT_EQUAL(128, rf::parsePosition("128"));
+  TEST_ASSERT_EQUAL(255, rf::parsePosition("255"));
+  TEST_ASSERT_EQUAL(7, rf::parsePosition("007"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosition("256"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosition("1000"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosition(""));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosition("-1"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosition("12a"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePosition("0x10"));
+}
+
+void test_position_timing_caps() {
+  TEST_ASSERT_TRUE(rf::positionTimingOk(rf::kPosPhase1Ms, rf::kPosPhase2Ms));
+  TEST_ASSERT_TRUE(rf::positionTimingOk(2000, 2000));
+  TEST_ASSERT_TRUE(rf::positionTimingOk(1490, 0));  // skip the 32 phase
+  TEST_ASSERT_TRUE(rf::positionTimingOk(0, 300));
+  TEST_ASSERT_FALSE(rf::positionTimingOk(2001, 300));
+  TEST_ASSERT_FALSE(rf::positionTimingOk(1490, 2001));
+  TEST_ASSERT_FALSE(rf::positionTimingOk(0, 0));
+}
+
 void test_describe_needs_five_bytes() {
   const uint8_t p[6] = {0};
   TEST_ASSERT_EQUAL_STRING("", rf::describePayload(p, 4).c_str());
@@ -308,6 +364,11 @@ int main() {
   RUN_TEST(test_setup_payload_matches_sniff);
   RUN_TEST(test_describe_setup_frames);
   RUN_TEST(test_parse_group);
+  RUN_TEST(test_position_payload_layout);
+  RUN_TEST(test_describe_position_frames);
+  RUN_TEST(test_parse_pos_mask);
+  RUN_TEST(test_parse_position);
+  RUN_TEST(test_position_timing_caps);
   RUN_TEST(test_group_names);
   RUN_TEST(test_action_names);
   RUN_TEST(test_describe_needs_five_bytes);

@@ -286,6 +286,22 @@ bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs) {
   return true;
 }
 
+bool sendPosition(uint8_t mask, uint8_t pos, uint32_t phase1Ms, uint32_t phase2Ms) {
+  uint8_t p[hd::rf::kPayloadSize];
+  if (!prepareWake(p)) return false;  // radio setup; the payload is replaced below
+  hd::rf::positionPayload(remoteId[0], remoteId[1], mask, pos, true, p);
+  uint32_t n1 = rotateBurst(p, phase1Ms);
+  hd::rf::positionPayload(remoteId[0], remoteId[1], mask, pos, false, p);
+  uint32_t n2 = rotateBurst(p, phase2Ms);
+  Serial.printf("RF pos mask %02X -> %u: %lu x %02X %02X %02X %02X %02X (%lu ms), "
+                "then %lu x %02X %02X %02X %02X %02X (%lu ms)\n",
+                mask, (unsigned)pos, (unsigned long)n1, remoteId[0], remoteId[1],
+                hd::rf::kModePosPhase1, mask, pos, (unsigned long)phase1Ms, (unsigned long)n2,
+                remoteId[0], remoteId[1], hd::rf::kModePosPhase2, mask, pos,
+                (unsigned long)phase2Ms);
+  return true;
+}
+
 namespace {
 
 // Sends `p` on one channel for `ms`, at least one packet. Returns the count.

@@ -35,6 +35,11 @@ long sendWakeOn(uint8_t channel, uint32_t ms);
 // A1/A2 for `holdMs` (the arrow held), then the 21/22 release tail for
 // `tailMs`, rotating ch 33/52/71. group: 0x01/02/04/08 or 0xFF (All). RF only.
 bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs);
+// Blocking, experimental: absolute-position frames as spitcool decoded them
+// from the Platinum bridge: ID 50 MASK POS for `phase1Ms`, then ID 32 MASK POS
+// for `phase2Ms`, rotating ch 33/52/71, with the stored remote ID. Returns
+// false if no ID is set or no radio.
+bool sendPosition(uint8_t mask, uint8_t pos, uint32_t phase1Ms, uint32_t phase2Ms);
 // Blocking: setup-mode (group assignment) frames, ID 30|31 GROUP 80 (add: 30,
 // remove: 31), on one channel for `ms`, at least one packet. Prints nothing
 // on success. Returns the packet count, or -1 on error (no ID or no radio).

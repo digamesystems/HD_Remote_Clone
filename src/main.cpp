@@ -17,7 +17,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.6";
+constexpr const char* kFwVersion = "0.9.7";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -118,6 +118,10 @@ void help() {
       "                          wake / grp / pair (saved in flash; generated at first boot)\n"
       "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
       "                          (default 300, max 5000), then the release tail. No IR\n"
+      "  pos <mask> <0-255> [ms50 ms32]  EXPERIMENTAL absolute position (spitcool's bridge\n"
+      "                          decode): ID 50 MASK POS for ms50 (default 1490), then\n"
+      "                          ID 32 MASK POS for ms32 (default 300); max 2000 each.\n"
+      "                          mask: group bits 01-08, combinable. Stored (paired) id\n"
       "  pair <1-4|all> <add|remove>  group assignment with the stored id: setup frames\n"
       "                          (ID 30|31 GROUP 80) interleaved with OPEN|CLOSE IR, seq\n"
       "                          timings. Aim at one shade's eye from a few inches\n"
@@ -291,8 +295,8 @@ void handle(String cmdline) {
   cmdline.trim();
   if (cmdline.length() == 0) return;
 
-  auto parts = hd::tokenize(cmdline.c_str(), 4);
-  String tok[4];
+  auto parts = hd::tokenize(cmdline.c_str(), 5);  // pos takes 4 arguments
+  String tok[5];
   for (size_t i = 0; i < parts.size(); i++) tok[i] = parts[i].c_str();
   String& c = tok[0];
   c.toLowerCase();
@@ -331,6 +335,28 @@ void handle(String cmdline) {
     long ms = tok[3].length() ? tok[3].toInt() : kGroupHoldMs;
     if (group < 0 || !(up || tok[2] == "down") || ms <= 0 || (uint32_t)ms > kGroupMaxHoldMs) ok = false;
     else rf::sendGroup(group, up, ms, kGroupTailMs);
+  }
+  else if (c == "pos") {
+    int mask = hd::rf::parsePosMask(tok[1].c_str());
+    int pos = hd::rf::parsePosition(tok[2].c_str());
+    // Phase lengths: both or neither; digits only (toInt() reads "abc" as 0).
+    auto digits = [](const String& s) {
+      if (!s.length() || s.length() > 5) return false;
+      for (size_t i = 0; i < s.length(); i++)
+        if (!isDigit(s[i])) return false;
+      return true;
+    };
+    uint32_t ms1 = hd::rf::kPosPhase1Ms, ms2 = hd::rf::kPosPhase2Ms;
+    bool timesOk = true;
+    if (tok[3].length() || tok[4].length()) {
+      timesOk = digits(tok[3]) && digits(tok[4]);
+      if (timesOk) {
+        ms1 = tok[3].toInt();
+        ms2 = tok[4].toInt();
+      }
+    }
+    if (mask < 0 || pos < 0 || !timesOk || !hd::rf::positionTimingOk(ms1, ms2)) ok = false;
+    else rf::sendPosition(mask, pos, ms1, ms2);
   }
   else if (c == "pair") {
     int group = hd::rf::parseGroup(tok[1].c_str());

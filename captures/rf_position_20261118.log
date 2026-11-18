@@ -1,0 +1,55 @@
+# Absolute-position frames from the clone, 2026-11-18
+#
+# Firmware v0.9.7 (bring-up firmware, src/main.cpp), command
+# `pos <mask> <0-255>`: ID 50 MASK POS for 1490 ms, then ID 32 MASK POS for
+# 300 ms, rotating ch 33/52/71. Frame layout from spitcool/hd-platinum-rf
+# (docs/rf-protocol.md, "Position packets correlated with original-bridge
+# commands - 2026-10-23"), decoded there from the Platinum bridge.
+#
+# Clone ID: the working remote's (redacted as yy yy), which is paired to the
+# household's groups by handheld group assignment. No bridge involved.
+# Watched: the two group-4 shades (top-down/bottom-up). "# ..." lines are the
+# tester's (John's) notes. Timestamps are the PC's; each one marks when the
+# command was typed, so the gaps between commands are think time.
+
+## 1. Serial lines (copied from the monitor)
+
+15:09:27.122 > > pos 4 128
+15:10:28.083 > RF pos mask 04 -> 128: 4966 x yy yy 50 04 80 (1490 ms), then 1001 x yy yy 32 04 80 (300 ms)
+# the two blinds in grp 4 moved to the same position, albeit at slightly different speeds. About half way down.
+#   [Superseded by John's later check (section 2): group 4 does not respond to
+#    mask 04. Which shades moved here is unresolved; group 3, the bit's group,
+#    is in another room and wasn't watched.]
+
+15:10:28.099 > > pos 08 128
+15:11:03.462 > RF pos mask 08 -> 128: 4967 x yy yy 50 08 80 (1490 ms), then 1000 x yy yy 32 08 80 (300 ms)
+#No movement
+
+15:11:03.465 > > pos 08 128
+15:11:39.333 > RF pos mask 08 -> 128: 4966 x yy yy 50 08 80 (1490 ms), then 1000 x yy yy 32 08 80 (300 ms)
+#no movement
+
+15:11:39.350 > > pos 08 255
+15:12:03.539 > RF pos mask 08 -> 255: 4967 x yy yy 50 08 FF (1490 ms), then 1000 x yy yy 32 08 FF (300 ms)
+# both moved all the way up.
+
+15:12:03.544 > > pos 08 0
+15:12:32.352 > RF pos mask 08 -> 0: 4965 x yy yy 50 08 00 (1490 ms), then 1001 x yy yy 32 08 00 (300 ms)
+#both moved all the way down
+
+15:12:32.362 > > pos 08 128
+15:13:12.646 > RF pos mask 08 -> 128: 4968 x yy yy 50 08 80 (1490 ms), then 1000 x yy yy 32 08 80 (300 ms)
+#both moved back to the same middle location at slightly different speeds
+
+## 2. Later runs, reported by John in chat (serial lines not kept: the
+##    monitor window was restarted)
+
+# Mask: a bitmask of the handheld groups, group 1 = 01, 2 = 02, 3 = 04,
+#   4 = 08; combine by adding (e.g. 06 = groups 2 and 3, tried as pos 06 180).
+#   0 is one limit and 255 the opposite.
+# pos 04 0 moved shades (group 3's, per John's later answer); group 4
+#   responds to 08, not 04.
+# ID control: id 1234 (made up), pos 08 ...: no response. Back to the
+#   working remote's ID: works fine.
+# Linearity: pos 08 64 about a quarter of the way up; pos 08 192 about
+#   three quarters of the way up.
