@@ -41,9 +41,11 @@ constexpr uint8_t kCodeUpB = 0b1001;
 constexpr uint8_t kCodeDownB = 0b1010;
 
 // Holding OPEN for 6 s at a fully open shade clears its stops and motor limits
-// (Platinum manual p. 21), so OPEN sends stop short of that.
-constexpr uint32_t kMaxOpenSendMs = 5000;
-constexpr uint32_t kMaxSendMs = 10000;
+// (Platinum manual p. 21), so sends stop short of that. Both directions are
+// capped (decided 2026-11-18, John): on top-down/bottom-up shades DOWN is the
+// arrow that opens, and it isn't known whether the reset follows the OPEN code
+// or holding at the open limit.
+constexpr uint32_t kMaxSendMs = 5000;
 
 // "0101" etc.
 std::string codeToBits(uint8_t code);
@@ -51,7 +53,7 @@ std::string codeToBits(uint8_t code);
 int parseCode(const std::string& s);
 // "A UP", "A DOWN", "B UP", "B DOWN" or "?"
 const char* codeName(uint8_t code);
-// Longest allowed send for this code: kMaxOpenSendMs if its command bits are OPEN, else kMaxSendMs.
+// Longest allowed send for this code: kMaxSendMs, the same for every code.
 uint32_t maxSendMs(uint8_t code);
 
 // One frame: 10 entries, alternating mark/space, starting with the header mark.

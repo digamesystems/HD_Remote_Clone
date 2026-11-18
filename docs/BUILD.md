@@ -66,7 +66,7 @@ Things to know:
 - **Direction:** on top-down/bottom-up shades the arrows can be reversed (on ours, DOWN opens).
 - **Channel B:** shades listen on IR channel A by default. For a shade set to B, use `send 1001` (up) or `send 1010` (down).
 - **Range:** with our single LED, it's reliable at about 30 cm with the LED fixed in place. Farther away it works, but less reliably, and it depends on aim.
-- **Don't hold OPEN for 6 s at a fully open shade:** the manual says that resets its limits. `send` caps OPEN at 5 s for this reason.
+- **Don't hold OPEN for 6 s at a fully open shade:** the manual says that resets its limits. `send` caps every code at 5 s for this reason, in both directions, because on some shades DOWN is the one that opens.
 
 ## Group control (optional)
 
@@ -90,7 +90,7 @@ Design details: [HARDWARE.md](HARDWARE.md) (spec), [BOM.md](BOM.md) (parts), [ha
 |---|---|
 | `test` fails | Check the wiring and the 10 µF cap, keep SPI wires under ~15 cm, and try another module |
 | `send` says there's no ID | Set one with `id <hex>` |
-| Shade doesn't respond | Get closer, hold the LED still, aim straight at the sensor eye and press longer (2 s). Check the channel (A/B) |
+| Shade doesn't respond | Get closer, hold the LED still, aim straight at the sensor eye and press longer (2 s). Check the channel (A/B). If it still never responds, try another radio module: `test` only checks that the ESP32 can talk to it, not that it transmits |
 | `pair` gets no jog | Wake the shade first (move it with an arrow), then retry |
 | `grp` does nothing | The shade isn't paired to this ID or group: run `pair` again |
 

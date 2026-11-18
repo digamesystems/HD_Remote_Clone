@@ -17,7 +17,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.4";
+constexpr const char* kFwVersion = "0.9.5";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -103,7 +103,7 @@ void help() {
       " IR\n"
       "  ir [quiet]              IR capture: HD decode summary + raw (quiet: summary only)\n"
       "  send <up|down|bbbb> [ms]  seq steps (RF wake, IR) repeated for ms (default 1000;\n"
-      "                            up/down = channel A; max 5000 ms for OPEN, 10000 otherwise);\n"
+      "                            up/down = channel A; max 5000 ms, either direction);\n"
       "                            with wake off, IR alone for ms\n"
       "  Up/Down arrow keys      send up/down (works at the prompt or during capture); see seq\n"
       "  seq [on|off|rf|gap|ir <ms>]  arrow keys: RF ch33, IR, RF ch52, IR, RF ch71, IR\n"
@@ -176,7 +176,7 @@ void sendIr(uint8_t code, uint32_t ms) {
 // `send`: repeats the seq step (RF wake on one channel, gap, IR; channels 33,
 // 52, 71 in turn) for about `ms`, so the RF keeps coming for the whole press,
 // as with the real remote. Only whole steps that fit in `ms` are sent (at
-// least one), so the OPEN cap holds. With `wake off`, IR alone for `ms`.
+// least one), so the 5 s cap holds. With `wake off`, IR alone for `ms`.
 // Nov 15: one 450 ms wake followed by the IR was unreliable, and failed more
 // after a few seconds idle (the shade seems to sleep deeper).
 void runSend(uint8_t code, uint32_t ms) {
@@ -308,7 +308,7 @@ void handle(String cmdline) {
     long ms = tok[2].length() ? tok[2].toInt() : 1000;
     if (code < 0 || ms <= 0) ok = false;
     else if ((uint32_t)ms > hd::ir::maxSendMs(code))
-      Serial.printf("Not sent: limit for %s is %lu ms (OPEN held 6 s can reset a shade).\n",
+      Serial.printf("Not sent: limit for %s is %lu ms (held 6 s at the open limit can reset a shade).\n",
                     hd::ir::codeToBits(code).c_str(), (unsigned long)hd::ir::maxSendMs(code));
     else runSend(code, ms);
   }

@@ -39,8 +39,8 @@ const char* codeName(uint8_t code) {
   return "?";
 }
 
-uint32_t maxSendMs(uint8_t code) {
-  return (code & 0b11) == 0b01 ? kMaxOpenSendMs : kMaxSendMs;
+uint32_t maxSendMs(uint8_t /*code*/) {
+  return kMaxSendMs;
 }
 
 std::vector<uint16_t> encodeFrame(uint8_t code) {

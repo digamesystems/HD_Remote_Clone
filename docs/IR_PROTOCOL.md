@@ -72,7 +72,7 @@ In normal use, the arrows are the only keys that send IR (checked with the logic
 
 It's unknown what the shades do with the 12 unused codes, or whether setup procedures use any of them. Sending unused codes at a shade is a possible experiment, at our own risk.
 
-**Caution:** per the manual (p. 21), holding OPEN for 6 s while aimed at a fully open shade clears its stops and motor limits. A long IR send could do the same, so `send` limits OPEN codes to 5 s.
+**Caution:** per the manual (p. 21), holding OPEN for 6 s while aimed at a fully open shade clears its stops and motor limits. A long IR send could do the same, so `send` limits every code to 5 s (CLOSE included since fw 0.9.5, decided 2026-11-18 (John): on top-down/bottom-up shades DOWN is the arrow that opens, and it isn't known whether the reset follows the OPEN code or holding at the open limit).
 
 ### Up arrow, `0101`
 

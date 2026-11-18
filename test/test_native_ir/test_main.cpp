@@ -45,10 +45,11 @@ void test_code_names() {
 void test_max_send_limits() {
   TEST_ASSERT_EQUAL_UINT32(5000, maxSendMs(kCodeUp));
   TEST_ASSERT_EQUAL_UINT32(5000, maxSendMs(kCodeUpB));
-  TEST_ASSERT_EQUAL_UINT32(10000, maxSendMs(kCodeDown));
-  TEST_ASSERT_EQUAL_UINT32(10000, maxSendMs(kCodeDownB));
-  // The longest allowed OPEN must stay clear of the manual's 6 s reset hold.
-  uint32_t longestUs = framesForDuration(kMaxOpenSendMs) * kFramePeriodUs;
+  // CLOSE too: on top-down/bottom-up shades DOWN is the arrow that opens.
+  TEST_ASSERT_EQUAL_UINT32(5000, maxSendMs(kCodeDown));
+  TEST_ASSERT_EQUAL_UINT32(5000, maxSendMs(kCodeDownB));
+  // The longest allowed send must stay clear of the manual's 6 s reset hold.
+  uint32_t longestUs = framesForDuration(kMaxSendMs) * kFramePeriodUs;
   TEST_ASSERT_TRUE(longestUs < 6000000UL);
 }
 
