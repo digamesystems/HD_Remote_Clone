@@ -22,6 +22,7 @@ The protocols aren't documented, so the first phase was reverse engineering. Thi
 
 | Want to… | Go to |
 |---|---|
+| **Build one and control your shades** | **[docs/BUILD.md](docs/BUILD.md)** |
 | Understand the IR codes | [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) |
 | Understand the 2.4 GHz RF frames and pairing | [docs/RF_PROTOCOL.md](docs/RF_PROTOCOL.md) |
 | See what is still unknown | [docs/RESEARCH.md](docs/RESEARCH.md) |
