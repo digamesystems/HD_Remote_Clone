@@ -123,7 +123,7 @@ void help() {
       "                          ID 32 MASK POS for ms32 (default 300); max 2000 each.\n"
       "                          mask: group bits 01-08, combinable. Stored (paired) id\n"
       "  bedtime                 preset: pos 08 255, then pos 02 255\n"
-      "  waketime                preset: pos 08 0, pos 02 40, pos 05 255\n"
+      "  waketime                preset: pos 08 128, pos 02 40, pos 05 255\n"
       "  sunset                  preset: pos 01 100, then pos 04 50\n"
       "  pair <1-4|all> <add|remove>  group assignment with the stored id: setup frames\n"
       "                          (ID 30|31 GROUP 80) interleaved with OPEN|CLOSE IR, seq\n"
@@ -308,7 +308,7 @@ struct Preset {
 };
 constexpr Preset kPresets[] = {
     {"bedtime", {{0x08, 255}, {0x02, 255}}},
-    {"waketime", {{0x08, 0}, {0x02, 40}, {0x05, 255}}},
+    {"waketime", {{0x08, 128}, {0x02, 40}, {0x05, 255}}},
     {"sunset", {{0x01, 100}, {0x04, 50}}},
 };
 
