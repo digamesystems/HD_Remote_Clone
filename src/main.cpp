@@ -17,7 +17,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.7";
+constexpr const char* kFwVersion = "0.9.9";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -122,6 +122,9 @@ void help() {
       "                          decode): ID 50 MASK POS for ms50 (default 1490), then\n"
       "                          ID 32 MASK POS for ms32 (default 300); max 2000 each.\n"
       "                          mask: group bits 01-08, combinable. Stored (paired) id\n"
+      "  bedtime                 preset: pos 08 255, then pos 02 255\n"
+      "  waketime                preset: pos 08 0, pos 02 40, pos 05 255\n"
+      "  sunset                  preset: pos 01 100, then pos 04 50\n"
       "  pair <1-4|all> <add|remove>  group assignment with the stored id: setup frames\n"
       "                          (ID 30|31 GROUP 80) interleaved with OPEN|CLOSE IR, seq\n"
       "                          timings. Aim at one shade's eye from a few inches\n"
@@ -291,6 +294,28 @@ int parseSlot(const String& s) {
   return s.toInt();
 }
 
+// Position presets (John, 2026-11-18): each step is `pos <mask> <pos>` with
+// the default timings, sent in order. Group bits: 01, 02, 04, 08 = groups 1-4.
+// Up to 4 steps; unused slots are {0, 0} (mask 0 is never valid) and end it.
+struct PresetStep {
+  uint8_t mask, pos;
+};
+struct Preset {
+  const char* name;
+  PresetStep steps[4];
+};
+constexpr Preset kPresets[] = {
+    {"bedtime", {{0x08, 255}, {0x02, 255}}},
+    {"waketime", {{0x08, 0}, {0x02, 40}, {0x05, 255}}},
+    {"sunset", {{0x01, 100}, {0x04, 50}}},
+};
+
+const Preset* findPreset(const String& name) {
+  for (const Preset& p : kPresets)
+    if (name == p.name) return &p;
+  return nullptr;
+}
+
 void handle(String cmdline) {
   cmdline.trim();
   if (cmdline.length() == 0) return;
@@ -357,6 +382,11 @@ void handle(String cmdline) {
     }
     if (mask < 0 || pos < 0 || !timesOk || !hd::rf::positionTimingOk(ms1, ms2)) ok = false;
     else rf::sendPosition(mask, pos, ms1, ms2);
+  }
+  else if (const Preset* pr = findPreset(c)) {
+    for (const PresetStep& s : pr->steps)
+      if (!s.mask || !rf::sendPosition(s.mask, s.pos, hd::rf::kPosPhase1Ms, hd::rf::kPosPhase2Ms))
+        break;
   }
   else if (c == "pair") {
     int group = hd::rf::parseGroup(tok[1].c_str());
