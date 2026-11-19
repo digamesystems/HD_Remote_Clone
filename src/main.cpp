@@ -97,9 +97,9 @@ void runPair(uint8_t group, bool add) {
 }
 
 void help() {
-  Serial.printf("\n--------------------------------------------\n");
-  Serial.printf("HD Platinum remote bring-up firmware v%s\n", kFwVersion);
-  Serial.printf("--------------------------------------------\n");
+  Serial.printf("\n----------------------------------------------\n");
+  Serial.printf("|HD Platinum remote bring-up firmware v%s|\n", kFwVersion);
+  Serial.printf("----------------------------------------------\n");
   
   Serial.println(F(
       "Commands (any line except a # comment stops a running mode):\n\n"
@@ -527,7 +527,6 @@ void setup() {
 #endif
   randomSeed(esp_random());
   ir::begin();
-  Serial.printf("\nHD Platinum remote bring-up firmware v%s\n", kFwVersion);
   rf::begin();  // non-fatal if no module yet
   help();
   Serial.print("> ");
