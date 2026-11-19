@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-18): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-18 20:03): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -131,8 +131,8 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 - **PCB:** 2 layers, 145.4 × 40.4 mm, 1.6 mm FR4 TG135, green with white silkscreen, **OSP finish**, 1 oz copper, tented vias, 0.3 mm minimum via, flying-probe test, no mark on the board. Precision outline tolerance (±0.1 mm) is only offered with JLC's railed panel (an individually routed board must be at least 50 × 50 mm), and JLC removes the rails before delivery.
 - **Assembly:** 77 parts on 34 BOM lines. Hand-fitted, not in the BOM: J102, J401, SW501–SW508, D303, D304, D501, TP604–TP606. C403 and R401 are not fitted. The note to JLC says so and that the CPL rotations are already corrected.
 - **What the dry run found:** SW201 and SW202 (the same switch, KMR221NGLFS, C269272) had to share one BOM line or JLC wouldn't auto-select the part. JLC's models are rotated from KiCad's footprints: every SOT-23 needs +180, the SOT-23-5 and -6 parts −90, and U201 (ESP32 module) needs −90 and a 3.81 mm shift along its axis. These corrections are in `CPL_FIXES` in `make_jlc.py`. Every polarized part was checked against JLC's pin-1 marks on a fresh load, with no hand edits.
-- **After the board arrives:** follow the stages below. Expect JLC's own placement check (DFM) in Order History a few hours after payment, and watch email for questions.
-- **Still to do:** the DigiKey order (D501, light pipes, SLW sockets, optional loops), and solder the hand-fitted parts soon after the boards arrive, since OSP has a short shelf life.
+- **Engineering review (2026-11-18, John):** JLC's engineers asked to confirm the parts placement before production. "Show Revised Items" listed **0 revisions**, with 77 of 77 parts assembled and 0 unassembled, so the CPL's rotation fixes needed no change on their side. John answered "Yes, please proceed to production" and the confirmation shows Completed.
+- **After the board arrives:** follow the stages below, and solder the hand-fitted parts soon, since OSP has a short shelf life.
 
 ## Log
 
