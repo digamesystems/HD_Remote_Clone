@@ -30,6 +30,7 @@ The protocols aren't documented, so the first phase was reverse engineering. Thi
 | Understand the IR codes | [docs/IR_PROTOCOL.md](docs/IR_PROTOCOL.md) |
 | Understand the 2.4 GHz RF frames and pairing | [docs/RF_PROTOCOL.md](docs/RF_PROTOCOL.md) |
 | See what is still unknown | [docs/RESEARCH.md](docs/RESEARCH.md) |
+| See ideas beyond the stock remote | [docs/FEATURE_IDEAS.md](docs/FEATURE_IDEAS.md) |
 | Run the firmware, see the serial commands and pin map | [docs/FIRMWARE.md](docs/FIRMWARE.md) |
 | Wire the breadboard / nRF24 modules | [docs/WIRING.md](docs/WIRING.md) |
 | Build the handheld | [docs/HARDWARE.md](docs/HARDWARE.md) (spec), [hardware/](hardware/README.md) (PCB), [hardware/enclosure/](hardware/enclosure/README.md) (case), [docs/BOM.md](docs/BOM.md), [docs/BRINGUP.md](docs/BRINGUP.md), [docs/COSTS.md](docs/COSTS.md) |

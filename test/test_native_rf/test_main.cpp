@@ -289,6 +289,23 @@ void test_position_timing_caps() {
   TEST_ASSERT_FALSE(rf::positionTimingOk(0, 0));
 }
 
+void test_pa_levels() {
+  TEST_ASSERT_EQUAL(0, rf::parsePaLevel("min"));
+  TEST_ASSERT_EQUAL(1, rf::parsePaLevel("low"));
+  TEST_ASSERT_EQUAL(2, rf::parsePaLevel("HIGH"));
+  TEST_ASSERT_EQUAL(3, rf::parsePaLevel("max"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePaLevel(""));
+  TEST_ASSERT_EQUAL(-1, rf::parsePaLevel("mi"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePaLevel("maxx"));
+  TEST_ASSERT_EQUAL(-1, rf::parsePaLevel("2"));
+  TEST_ASSERT_EQUAL_STRING("high", rf::paLevelName(2));
+  TEST_ASSERT_EQUAL_STRING("?", rf::paLevelName(4));
+  TEST_ASSERT_EQUAL(-18, rf::paLevelGenuineDbm(0));
+  TEST_ASSERT_EQUAL(-6, rf::paLevelGenuineDbm(2));
+  TEST_ASSERT_EQUAL(0, rf::paLevelGenuineDbm(3));
+  TEST_ASSERT_EQUAL(99, rf::paLevelGenuineDbm(-1));
+}
+
 void test_describe_needs_five_bytes() {
   const uint8_t p[6] = {0};
   TEST_ASSERT_EQUAL_STRING("", rf::describePayload(p, 4).c_str());
@@ -369,6 +386,7 @@ int main() {
   RUN_TEST(test_parse_pos_mask);
   RUN_TEST(test_parse_position);
   RUN_TEST(test_position_timing_caps);
+  RUN_TEST(test_pa_levels);
   RUN_TEST(test_group_names);
   RUN_TEST(test_action_names);
   RUN_TEST(test_describe_needs_five_bytes);

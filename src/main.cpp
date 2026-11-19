@@ -141,6 +141,8 @@ void help() {
       "  promisc <aa|55>         fallback preset: 2-byte addr 00 AA / 00 55, no CRC, 32 B\n"
       "  ch <0-125> | rate <250k|1m|2m> | aw <2-5> | addr <hex, on-air order>\n"
       "  crc <0|1|2> | pl <1-32> | filter <on|off> | cfg\n"
+      "  pa [min|low|high|max]   TX power for wake/grp/pair/pos; no argument shows it\n"
+      "                          (high at boot = -6 dBm on a genuine nRF24L01+)\n"
       " Misc\n"
       "  btn                     show button state (PCB: all keys, A/B, VBAT)\n"
       "  led <r|g|both|off>      indicator LED (handheld PCB only)\n"
@@ -448,6 +450,10 @@ void handle(String cmdline) {
   else if (c == "aw") ok = rf::setAddressWidth(tok[1].toInt());
   else if (c == "addr") ok = rf::setAddress(tok[1]);
   else if (c == "crc") ok = rf::setCrc(tok[1].toInt());
+  else if (c == "pa") {
+    if (tok[1].length()) ok = rf::setPa(tok[1]);
+    if (ok) rf::printPa();
+  }
   else if (c == "pl") ok = rf::setPayloadSize(tok[1].toInt());
   else if (c == "filter") { tok[1].toLowerCase(); rf::setDupFilter(tok[1] != "off"); }
   else if (c == "cfg") rf::printConfig();

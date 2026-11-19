@@ -44,6 +44,10 @@ bool sendPosition(uint8_t mask, uint8_t pos, uint32_t phase1Ms, uint32_t phase2M
 // remove: 31), on one channel for `ms`, at least one packet. Prints nothing
 // on success. Returns the packet count, or -1 on error (no ID or no radio).
 long sendSetupOn(uint8_t group, bool add, uint8_t channel, uint32_t ms);
+// Transmit power for wake / grp / pair / pos: "min" | "low" | "high" | "max".
+// Applied at the next transmit; RAM only (high at boot). False if invalid.
+bool setPa(const String& name);
+void printPa();
 bool busy();  // a scan or sniff is running
 void poll();  // call from loop()
 

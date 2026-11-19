@@ -1,6 +1,6 @@
 # HD Platinum RF protocol (2.4 GHz, nRF24)
 
-> **TL;DR** (summary checked 2026-11-18 16:06): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
+> **TL;DR** (summary checked 2026-11-19): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
 
 What the Platinum handheld remote sends over RF, from our sniffs of two remotes on 2026-11-11. For the IR side, and the shade tests that showed the shade needs RF alongside IR, see [IR_PROTOCOL.md](IR_PROTOCOL.md).
 
@@ -45,13 +45,30 @@ Our receiver was a clone module marked `NRF24L01+` (see [WIRING.md](WIRING.md)),
 | Field | Values seen |
 |---|---|
 | `ID0 ID1` | The remote's ID. **Our two remotes have different IDs, and both move the shade**, so a shade accepts more than one remote. Treat an ID as private. It's redacted as `xx xx` / `yy yy` here |
-| `MODE` | `20` group command; `01` red-mode (IR) press; `30` setup-mode add (group assignment, OPEN); `31` setup-mode remove (CLOSE) |
+| `MODE` | `20` group command; `01` red-mode (IR) press; `30` setup-mode add (group assignment, OPEN); `31` setup-mode remove (CLOSE); `50` then `32` absolute position (the Platinum bridge's frames; there GROUP is a group mask and ACTION a position, see [Absolute position](#absolute-position-experimental)) |
 | `GROUP` | one-hot `01/02/04/08` for groups 1–4, `FF` All (from spitcool); `00` none. We sniffed `01`; the others work when the clone sends them |
 | `ACTION` | `A1` UP held, `21` UP release tail (sniffed); `A2` DOWN held, `22` DOWN release tail (from spitcool, and they work when the clone sends them); `80` held and `00` release tail, for both the red-mode wake and setup-mode frames |
 
 No counter or rolling code: every packet of a press is identical, and presses repeat the same payload.
 
 In both pairs, bit 7 is set while the key is held and cleared in the tail (`A1` → `21`, `80` → `00`). That's a pattern, not a confirmed meaning.
+
+### All known frames
+
+Every frame type we know of, in one place. "Works" means a shade responded when our clone sent it.
+
+| Frame | Meaning | Source | Status |
+|---|---|---|---|
+| `ID 01 00 80` while held; some remotes add a `00` tail | red-mode wake; the IR carries the command | our sniff | works from any ID (not checked) |
+| `ID 20 <group> A1`, then tail `21` | group UP | our sniff | works; ID checked |
+| `ID 20 <group> A2`, then tail `22` | group DOWN | spitcool | works; ID checked |
+| `ID 30 <group> 80` + OPEN IR | setup: add the shade that sees the IR to the group | our sniff | works (the clone pairs its own ID) |
+| `ID 31 <group> 80`, then tail `00` + CLOSE IR | setup: remove the shade from the group | our sniff | works |
+| `ID 50 <mask> <pos>` ~1.49 s, then `ID 32 <mask> <pos>` ~0.30 s | go to an absolute position (0 = fully down, 255 = fully up on our shades) | spitcool (Platinum bridge) | works from a handheld-paired ID; ID checked |
+
+`<group>` is one-hot (`01`, `02`, `04`, `08` = groups 1–4) or `FF` for All. A position `<mask>` uses the same bits, and they combine (`06` = groups 2 and 3).
+
+Not known: whether the A/B slider changes any frame, the duplicate-remote copy (manual p. 7), intermediate stop and express mode, and anything else the bridge sends.
 
 ## What each key press sends
 

@@ -79,6 +79,7 @@ The firmware version is shown at boot and in `help`. Type `help` in the monitor.
 | `hd` | Preset for the Platinum handheld (the default): ch 33, 2 Mbps, `E7E7E7`, CRC-16, 5 bytes. Use `ch 52` / `ch 71` for the other channels |
 | `promisc aa\|55` | Fallback preset for address-less sniffing; turns the duplicate filter on |
 | `ch`, `rate`, `aw`, `addr`, `crc`, `pl`, `filter`, `cfg` | Sniffer settings |
+| `pa [min\|low\|high\|max]` | Transmit power for wake, `send`, arrow keys, `grp`, `pair`, `pos` and the presets. With no argument, shows the current level. On a genuine nRF24L01+ the levels are −18 / −12 / −6 / 0 dBm; clones such as the Si24R1 map the register bits differently (our modules may be clones). RAM only: `high` at boot, about what the original remote sends |
 | `btn` | Show button state (breadboard: UP and DOWN; handheld PCB: all keys, the A/B slider and the battery voltage) |
 | `led <r\|g\|both\|off>` | Drive the indicator LED (handheld PCB only) |
 | `pin <gpio> [ms]` | Logic probe: level, edge count and % low on a GPIO (default 3000 ms). Refuses the flash pins and the IR and nRF24 outputs |

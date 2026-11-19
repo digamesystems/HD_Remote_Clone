@@ -19,6 +19,9 @@ namespace {
 
 RF24 radio(PIN_NRF_CE, PIN_NRF_CSN);
 bool radioOk = false;
+// Transmit power for wake, grp, pair and pos (`pa`). RAM only: high at boot.
+// PA_HIGH is -6 dBm on a genuine part, about what the original remote sends.
+rf24_pa_dbm_e txPa = RF24_PA_HIGH;
 
 // Defaults: the Platinum handheld (see hd_rf.h). `promisc` switches to the
 // address-less fallback.
@@ -237,7 +240,7 @@ bool prepareWake(uint8_t* p) {
   radio.setAddressWidth(hd::rf::kAddrWidth);
   radio.setCRCLength(RF24_CRC_16);
   radio.setPayloadSize(hd::rf::kPayloadSize);
-  radio.setPALevel(RF24_PA_HIGH);  // -6 dBm on a genuine part, about what the original sends
+  radio.setPALevel(txPa);  // see `pa`
   uint8_t reg[5] = {0};
   hd::onAirToRegister(hd::rf::kAddress, hd::rf::kAddrWidth, reg);
   radio.openWritingPipe(reg);
@@ -283,6 +286,19 @@ bool sendGroup(uint8_t group, bool up, uint32_t holdMs, uint32_t tailMs) {
                 up ? hd::rf::kActionUpHeld : hd::rf::kActionDownHeld, (unsigned long)holdMs,
                 (unsigned long)tail, up ? hd::rf::kActionUpRelease : hd::rf::kActionDownRelease,
                 (unsigned long)tailMs);
+  return true;
+}
+
+void printPa() {
+  Serial.printf("TX power: %s (%d dBm on a genuine nRF24L01+; clones such as the Si24R1 "
+                "map it differently)\n",
+                hd::rf::paLevelName(txPa), hd::rf::paLevelGenuineDbm(txPa));
+}
+
+bool setPa(const String& name) {
+  int level = hd::rf::parsePaLevel(name.c_str());
+  if (level < 0) return false;
+  txPa = static_cast<rf24_pa_dbm_e>(level);
   return true;
 }
 

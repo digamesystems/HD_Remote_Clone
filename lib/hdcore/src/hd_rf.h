@@ -102,6 +102,15 @@ bool isUsableRemoteId(uint8_t id0, uint8_t id1);
 // the caller draws again.
 bool remoteIdFromRandom(uint32_t r, uint8_t out[2]);
 
+// Transmit power names, numbered like RF24's rf24_pa_dbm_e (0 = MIN .. 3 = MAX).
+// "min" | "low" | "high" | "max" (any case) -> 0..3; -1 if invalid.
+int parsePaLevel(const std::string& s);
+// 0..3 -> "min", "low", "high", "max"; "?" otherwise.
+const char* paLevelName(int level);
+// Output power of a genuine nRF24L01+ at that level: -18, -12, -6, 0 dBm.
+// Clones (e.g. Si24R1) map the register bits differently. 99 if invalid.
+int paLevelGenuineDbm(int level);
+
 // "1".."4" -> 0x01, 0x02, 0x04, 0x08; "all" -> 0xFF (any case). -1 if invalid.
 int parseGroup(const std::string& s);
 

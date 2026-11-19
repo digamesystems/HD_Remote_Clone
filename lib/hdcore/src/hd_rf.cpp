@@ -113,6 +113,32 @@ bool positionTimingOk(uint32_t phase1Ms, uint32_t phase2Ms) {
   return phase1Ms <= kPosMaxPhaseMs && phase2Ms <= kPosMaxPhaseMs && phase1Ms + phase2Ms > 0;
 }
 
+namespace {
+const char* const kPaNames[4] = {"min", "low", "high", "max"};
+}  // namespace
+
+int parsePaLevel(const std::string& s) {
+  for (int i = 0; i < 4; i++) {
+    const char* n = kPaNames[i];
+    size_t len = 0;
+    while (n[len]) len++;
+    if (s.size() != len) continue;
+    bool same = true;
+    for (size_t k = 0; k < len; k++)
+      if ((s[k] | 0x20) != n[k]) same = false;
+    if (same) return i;
+  }
+  return -1;
+}
+
+const char* paLevelName(int level) {
+  return level >= 0 && level < 4 ? kPaNames[level] : "?";
+}
+
+int paLevelGenuineDbm(int level) {
+  return level >= 0 && level < 4 ? -18 + 6 * level : 99;
+}
+
 int parseGroup(const std::string& s) {
   if (s.size() == 1 && s[0] >= '1' && s[0] <= '4') return 1 << (s[0] - '1');
   if (s.size() == 3 && (s[0] | 0x20) == 'a' && (s[1] | 0x20) == 'l' && (s[2] | 0x20) == 'l')
