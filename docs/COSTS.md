@@ -17,7 +17,9 @@ What the prototypes actually cost to get into hand, per board and per case. Upda
 | 2026-11-17 | DigiKey | IR sink-test parts (diodes, PN2222A, resistors) | $3.76 | $1.09 | $0.91 | $5.76 | Development |
 | 2026-11-17 | Adafruit | Battery #1578 ×5 | $39.75 | $19.67 | $3.98 | $63.40 | Board batch (5), battery |
 | 2026-11-17 | Amazon | 2 Bridgold LED kits (10 TSAL6200 + 10 receivers) | $17.98 | $0.00 | $1.80 | $19.78 | Board batch (5) |
-| 2026-11-13 | JLC3DP | Enclosure test piece (7 parts) | $10.79 | $31.65 | $1.04 | $43.48 | Development (case) |
+| 2026-11-13 | JLC3DP | Enclosure test piece (7 parts) | $10.79 | $31.65 | $23.08 | $65.52 | Development (case) |
+
+The test piece's duties and tax are the $1.04 sales tax paid at checkout plus a $22.04 import duty that DHL billed on arrival (paid 2026-11-20, John). The checkout total ($43.48) didn't include it.
 
 JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales tax $16.58. The DigiKey order's shipping ($8.49), tariff ($3.73) and sales tax ($3.29) total $44.67 with the $29.16 of merchandise, split between its two lines by merchandise price.
 
@@ -34,9 +36,9 @@ JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales t
 | Batteries | $63.40 | $12.68 |
 | **Electronics plus battery** | **$408.07** | **$81.61** |
 
-**Case:** no case has been bought yet, so there is no per-case figure (see the estimate below). The test piece ($43.48 landed, of which $31.65 was shipping on $10.79 of parts) is development, not a case. Shipping dominates small JLC3DP orders, so a case order's cost per case will fall a lot if several cases, or the case with spare caps and slider knobs, go in one shipment. Record each case print order as a row above, then divide by the cases it makes.
+**Case:** no case has been bought yet, so there is no per-case figure (see the estimate below). The test piece ($65.52 landed: $10.79 of parts, $31.65 shipping, $23.08 duties and tax) is development, not a case. Shipping dominates small JLC3DP orders, so a case order's cost per case will fall a lot if several cases, or the case with spare caps and slider knobs, go in one shipment. Record each case print order as a row above, then divide by the cases it makes.
 
-**Development, not spread over the units:** IR sink-test parts $5.76; the test piece $43.48 (total $49.24).
+**Development, not spread over the units:** IR sink-test parts $5.76; the test piece $65.52 (total $71.28).
 
 **One-time costs inside the JLCPCB figure** (the same for 5 boards or 50): setup $25.75, stencil $8.27, engineering $4.00, feeder loading $52.70, together $90.72. A larger batch spreads them, and a second batch would repeat them.
 
@@ -61,7 +63,7 @@ Kept apart from the ledger and the summary above; none of it is counted there. R
 
 **Possible saving:** the caps and slider total about 3.9 cm³, or roughly $1.30 by volume, but cost $7.60 as eight separate parts at the minimum. Sending them as one file would bring one case's printing to about $16, a saving of about $6 per case (about $26–29 per case delivered in a batch of five). Whether JLC3DP accepts several loose bodies in one file hasn't been tried.
 
-**Not in these numbers:** finishing (dyed-black caps and slider; JLC3DP's dye pricing not checked), and any volume discount or size effect on the shells, which are larger than anything in the test piece. For an exact figure, upload the STLs to JLC3DP's quote page without ordering. The shipping figures are guesses from the test piece ($31.65 for 21 cm³).
+**Not in these numbers:** finishing (dyed-black caps and slider; JLC3DP's dye pricing not checked), and any volume discount or size effect on the shells, which are larger than anything in the test piece. For an exact figure, upload the STLs to JLC3DP's quote page without ordering. The shipping figures are guesses from the test piece ($31.65 for 21 cm³). **The delivered estimates above are too low:** they assumed only the checkout tax, but the test piece also drew a $22.04 import duty from DHL on arrival, about twice its merchandise value. How that duty scales with order value is unknown until a second shipment arrives; budget roughly $20–25 extra per shipment for now.
 
 ## Updating this file
 
