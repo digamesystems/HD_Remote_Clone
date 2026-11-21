@@ -83,9 +83,9 @@ CAP_PLAY = 0.3         # gap between the flange underside and the switch plunger
                        # on purpose (review 2026-11-13): MJF is +-0.3 mm per part, and shims under
                        # the board can only take the gap down, so start large and tune on the print
 ARROW_GAP = 0.6        # gap between the UP and DOWN halves of the arrow oval
-LEGEND_DEPTH = 0.8     # legends recessed into the cap tops; 0.8 so MJF's grain doesn't fill them
-                       # and the white paint has a clean channel (review 2026-11-13; was 0.4)
-LEGEND_SIZE_DIGIT, LEGEND_SIZE_WORD = 4.5, 4.0   # font sizes for 1-4 and ALL (were 4.0, 3.2)
+LEGEND_DEPTH = 1.0     # legends recessed into the cap tops. Test print: 0.8 read best of 0.4/0.6/0.8;
+                       # deepest and largest practical (decided 2026-11-21, John; was 0.8, before that 0.4)
+LEGEND_SIZE_DIGIT, LEGEND_SIZE_WORD = 5.5, 4.5   # font sizes for 1-4 and ALL (2026-11-21, John; were 4.5, 4.0)
 LEGENDS = {"1": "1", "2": "2", "3": "3", "4": "4", "ALL": "ALL"}
 IND_FROM_FRONT = 14.0   # bicolor indicator centre, mm from the front
 # Indicator (2026-11-15): Kingbright WP59EGW (5 mm red/green) seated flush on the board, seen
@@ -118,7 +118,7 @@ AB_NOTCH_PLAY = 0.15               # notch clearance each side of the actuator
 SETUP_FROM_FRONT, SETUP_Y, SETUP_HOLE_D = 22, -10, 1.6
 
 # --- IR LEDs: two 5 mm TSAL6200s lying flat on the PCB, pointing out of the front end ---
-LED_HOLE_D = 5.4       # 5 mm LED + clearance (placeholder; set from the test print)
+LED_HOLE_D = 5.2       # 5 mm LED + clearance: best of 5.2/5.4/5.6 on the test print (decided 2026-11-21, John)
 LED_PITCH = 12.0       # centre-to-centre spacing across the width, mm
 LED_Z = PCB_TOP_Z + 3.0  # LED axis: KiCad footprint LED_D5.0mm_Horizontal_..._Z3.0mm
 LED_PROUD = 1.5        # dome tips stand this far proud of the front face (the dome is 2.5 long)

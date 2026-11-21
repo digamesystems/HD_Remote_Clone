@@ -48,6 +48,19 @@ NRF_XTAL_H, NRF_XTAL_L, NRF_XTAL_W, NRF_XTAL_FROM_END, NRF_XTAL_Y = 3.5, 9.7, 4.
 NRF_L, NRF_W, NRF_HDR_FROM_END = 28.8, 14.9, 2.5
 NRF_BACK = NRF_HDR_D + NRF_HDR_FROM_END   # module's back end; antenna end points forward
 PCB_GAP = 0.3                          # board edge to the inside of the walls
+# Margin checks (candidate E, decided 2026-11-21, John, with keeping the case size): the test print
+# came out the same size or larger, so the 0.3 mm gap leaves >= ~0.25 mm worst case (README, Test piece).
+MIN_PCB_GAP = 0.3                      # board edge to the walls, measured on the model
+MIN_PART_CLEAR = 0.5                   # every real board part to the case, caps, slider, battery, pipe
+# Board parts allowed closer than MIN_PART_CLEAR: (STEP label prefix, object or None for all, minimum, why)
+CLEAR_EXCEPTIONS = [
+    ("hd_remote_PCB", None, 0.0, "the board itself: sits on the standoffs; edge gap checked on its own"),
+    ("LED_D5_0mm_Horizontal", "shells", 0.0, "IR LEDs: fitted in their front-wall holes"),
+    ("SW_PUSH_6mm_H13mm", "keycaps", 0.0, "key plungers under the caps: play checked on its own"),
+    ("SW_SPDT_PCM12", "A/B slider", 0.0, "A/B actuator in the slider's notch: checked on its own"),
+    ("ESP32-WROOM-32E", "shells", 0.2, "module edge on the board edge: takes the board-to-wall gap"),
+    ("JST_PH_S2B-PH-K", "shells", 0.2, "battery connector at the board's back edge: board-to-wall gap"),
+]
 POST_NOTCH_CLEAR = 1.0                 # board notch radius beyond the post radius
 PCB_HOLE_D, HEAD_D, HEAD_H, SCREW_L = 2.2, 3.8, 1.3, 6.0   # M2 board screws
 SW_PIN_X, SW_PIN_Y = 3.25, 2.25        # 6 mm tactile switch pins at (+-6.5/2, +-4.5/2)
@@ -93,8 +106,13 @@ INPUT_SOURCES = {
     "BATT_W": ("datasheet", "cell drawing 30 x 35 x 5; measure on arrival"),
     "AB_SW_BODY": ("datasheet", "C&K PCM12SMTR"), "AB_SW_ACT": ("guess", "actuator thickness 1.0"),
     "PIN_PROTRUDE": ("guess", "THT pin tips below the board (design allowance)"),
-    "SO_HOLE_D": ("test print", ""), "PILOT_D": ("test print", ""), "LED_HOLE_D": ("test print", ""),
-    "CAP_CLEAR": ("test print", ""), "CAP_PLAY": ("test print", ""), "PIPE_HOLE_D": ("test print", ""),
+    # test print, reported by John 2026-11-21 (README, Test piece)
+    "SO_HOLE_D": ("measured", "test print: M2 x 6 held well in the key fixture's 1.8 mm posts"),
+    "LED_HOLE_D": ("measured", "test print: 5.2 best of 5.2/5.4/5.6"),
+    "CAP_PLAY": ("measured", "test print: 0.3 worked well"),
+    "PILOT_D": ("measured", "test print: same 1.8 hole in a 6 mm post as the key fixture, M2 held well"),
+    "CAP_CLEAR": ("measured", "test print: the .3 cap moved freely and wasn't loose side to side"),
+    "PIPE_HOLE_D": ("test print", "not on the test piece: ream or test-fit on the case"),
 }
 
 
@@ -328,6 +346,11 @@ def check(m, p, info):
         ok(ov(part, shells) < 1e-6, f"{n} clears both shells")
     bad = [(a, b) for a, b in combinations(p, 2) if {a, b} not in ALLOWED and ov(p[a], p[b]) > 1e-6]
     ok(not bad, f"parts clear each other {bad or ''}")
+    # board edge to the walls, measured: the shells within the board's thickness (standoffs are below)
+    zb = m["Z0"] + m["PCB_BOT_Z"]
+    slab = Pos(0, 0, zb + 0.01) * Box(L + 2, W + 2, m["PCB_T"] - 0.02, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    edge_gap = p["PCB"].distance_to(shells & slab)
+    ok(edge_gap >= MIN_PCB_GAP - 0.01, f"board edge to the walls >= {MIN_PCB_GAP} mm ({edge_gap:.2f})")
 
     # key face
     def stadium(d, y, lx, wy, grow=0.0, r=None):
@@ -505,6 +528,32 @@ def check_board(m, p, board):
             out.append(("ok    " if ok else "FAIL  ") + msg)
     out.append(f"{'ok  ' if not fails else 'FAIL'}  real board: {len(solids)} parts checked against "
                f"the shells, keycaps, A/B slider, battery and light pipe")
+    # margin, not just overlap: every part at least MIN_PART_CLEAR from the case and the loose parts
+    near, nmin = [], 99.0
+    for s in solids:
+        label = getattr(s, "label", "") or "?"
+        sb = s.bounding_box()
+        for n, o in others.items():
+            b, g = obb[n], MIN_PART_CLEAR
+            if (sb.max.X < b.min.X - g or sb.min.X > b.max.X + g or sb.max.Y < b.min.Y - g
+                    or sb.min.Y > b.max.Y + g or sb.max.Z < b.min.Z - g or sb.min.Z > b.max.Z + g):
+                continue
+            want = MIN_PART_CLEAR
+            for prefix, obj, lo, _ in CLEAR_EXCEPTIONS:
+                if label.startswith(prefix) and obj in (None, "shells" if n.endswith("shell") else n):
+                    want = lo
+            if want <= 0:
+                continue
+            d = s.distance_to(o)
+            nmin = min(nmin, d)
+            if d < want - 0.005:
+                c = sb.center()
+                near.append(f"{label} at ({c.X:.1f}, {c.Y:.1f}) is {d:.2f} mm from the {n} (want >= {want})")
+    for msg in near:
+        fails.append(msg)
+        out.append("FAIL  " + msg)
+    out.append(f"{'ok  ' if not near else 'FAIL'}  real board parts >= {MIN_PART_CLEAR} mm from the case and "
+               f"loose parts, {len(CLEAR_EXCEPTIONS)} listed exceptions (closest checked {nmin:.2f})")
     return fails, out
 
 
