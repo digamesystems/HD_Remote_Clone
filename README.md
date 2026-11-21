@@ -2,9 +2,9 @@
 
 ![The handheld in black with grey keys: a rounded bar with the arrow oval, keys 1–4 and ALL near the front, and two IR LEDs at the tip](docs/images/enclosure/enclosure_render_black_grey.png)
 
-*The case, rendered in Blender as it would print in MJF nylon: a colour study (black shells, natural grey keys, unfilled legends), not the final finish.*
+*The case, rendered in Blender as it would print in MJF nylon: in the chosen finish: dyed-black shells, natural grey keys, unfilled legends.*
 
-| ![Assembled handheld: grey shells, black keys, two IR LEDs at the end](docs/images/enclosure/enclosure_finish.png) | ![Exploded view with both shells see-through, showing the PCB, keys and indicator](docs/images/enclosure/enclosure_exploded.png) |
+| ![Assembled handheld: black shells, grey keys, two IR LEDs at the end](docs/images/enclosure/enclosure_finish.png) | ![Exploded view with both shells see-through, showing the PCB, keys and indicator](docs/images/enclosure/enclosure_exploded.png) |
 |:---:|:---:|
 | Assembled (CAD render) | Exploded (CAD render) |
 

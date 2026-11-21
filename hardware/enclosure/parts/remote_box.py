@@ -174,7 +174,8 @@ LIP_GAPS = [(88, 108, -1),   # ESP32 antenna end at the -Y board edge (rotated 2
 BOSS_D = 6.0           # corner posts, touching both walls
 BOSS_INSET = WALL + BOSS_D / 2
 SCREW_CLEAR_D = 2.2    # M2 through the bottom post
-CB_D = 4.2             # counterbore for the head, from underneath
+CB_D = 4.0             # counterbore for the head, from underneath. 4.0 (was 4.2) for a 1.0 mm post
+                       # wall, JLC's minimum (decided 2026-11-21, John); the M2 heads measure 3.2 x 1.3
 CB_TOP_BELOW_SPLIT = 3.0  # counterbore stops this far below the split (screw-head seat)
 PILOT_D, PILOT_DEPTH = 1.8, 6.0   # pilot in the top boss (placeholder; test print). M2 x 8
 # Post centres: with small corners, in the corner touching both walls; with corners big enough to
@@ -199,6 +200,11 @@ POST_RELIEF_H = 7.0
 # (CB_D, which reaches up to the board top) leaves only 0.2 mm of skin between it and the flat. That
 # skin carries no load: the screw clamps through the post above the counterbore's ledge.
 POST_RELIEF_BELOW = 1.0
+# Window instead of skin (decided 2026-11-21, John: cut through): below the screw-head seat, a deeper
+# flat POST_WINDOW_D from the axis opens the counterbore's side, from the relief's bottom to
+# POST_WINDOW_BELOW_SEAT under the seat, so the seat itself stays whole. Replaces a thin skin that
+# might not print.
+POST_WINDOW_D, POST_WINDOW_BELOW_SEAT = 1.7, 0.2
 
 
 def _battery_ribs():
@@ -306,6 +312,12 @@ with BuildPart() as body:
                      align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
             Cylinder(SCREW_CLEAR_D / 2, SPLIT - Z0 + 0.2,
                      align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
+    # window through the relief side of the J102 post's counterbore (see POST_WINDOW_D)
+    _win_z0 = Z0 + PCB_BOT_Z - POST_RELIEF_BELOW
+    _win_z1 = SPLIT - CB_TOP_BELOW_SPLIT - POST_WINDOW_BELOW_SEAT
+    _win_x = 2 * (BOSS_D ** 2 / 4 - POST_WINDOW_D ** 2) ** 0.5 + 0.2     # the post's chord there
+    with Locations((-POST_X, -POST_Y + POST_WINDOW_D + 1.0, _win_z0)):
+        Box(_win_x, 2.0, _win_z1 - _win_z0, align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
         with Locations((x, y, SPLIT)):
             Cylinder(PILOT_D / 2, PILOT_DEPTH, align=(Align.CENTER, Align.CENTER, Align.MIN),
                      mode=Mode.SUBTRACT)
@@ -379,8 +391,8 @@ def _cap(sk_body, sk_flange, at, legend=None, arrow=None):
     return part, recess
 
 
-# Finish (agreed 2026-11-13): grey shells, dyed-black caps and A/B knob, legends recessed and
-# filled with white paint (wipe in, scrape the cap top clean).
+# Finish (decided 2026-11-21, John; replaces grey shells and black caps of 2026-11-13): dyed-black
+# shells, natural grey caps and A/B knob, legends recessed and left unfilled.
 caps, legend_fill = {}, {}
 ad, ay, al, aw = KEY_HOLES["ARROWS"]
 mid_x = L / 2 - ad

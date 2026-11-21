@@ -114,7 +114,7 @@ INPUT_SOURCES = {
     "CAP_PLAY": ("measured", "test print: 0.3 worked well"),
     "PILOT_D": ("measured", "test print: same 1.8 hole in a 6 mm post as the key fixture, M2 held well"),
     "CAP_CLEAR": ("measured", "test print: the .3 cap moved freely and wasn't loose side to side"),
-    "PIPE_HOLE_D": ("test print", "not on the test piece: ream or test-fit on the case"),
+    "PIPE_HOLE_D": ("datasheet", "Bivar PLP2: 2.92; ream or a touch of glue on the first case (John 2026-11-21)"),
 }
 
 
@@ -127,7 +127,8 @@ def input_warnings():
             out.append(f"WARNING: {len(items)} input(s) are '{kind}':\n  " + "\n  ".join(items))
     return out
 
-FINISH = {"shell": "#8a8a88", "key": "#2a2a2a", "legend": "#f4f4f0", "indicator": "#d8e8d0",
+# Finish (decided 2026-11-21, John): dyed-black shells, natural grey keys and slider, legends unfilled
+FINISH = {"shell": "#262626", "key": "#8a8a88", "legend": None, "indicator": "#d8e8d0",
           "ir": "#9fb4d8", "metal": "#c0c0c0"}
 
 
@@ -485,6 +486,13 @@ def check(m, p, info):
     post = (bottom + top) & (Pos(px, py, zb + 5) * Box(8, 8, 10))
     jst_gap = p["battery JST"].distance_to(post)
     ok(jst_gap >= 0.8, f"battery connector clears its corner post >= 0.8 mm ({jst_gap:.2f})")
+    wall = (m["BOSS_D"] - m["CB_D"]) / 2
+    ok(wall >= 1.0 - 1e-6, f"corner post wall round the counterbore >= 1.0 mm, JLC's minimum ({wall:.2f})")
+    ok(m["CB_D"] - HEAD_D >= 0.6, f"screw head clears its counterbore ({(m['CB_D'] - HEAD_D) / 2:.2f} mm per side)")
+    win = (m["CB_D"] / 2) ** 2 - m["POST_WINDOW_D"] ** 2
+    ok(win > 0, f"J102 post: the flat opens a window into the counterbore, no thin skin "
+       f"({2 * max(win, 0) ** 0.5:.1f} mm wide)")
+    ok(m["POST_WINDOW_BELOW_SEAT"] > 0, "J102 post: the window stops below the screw-head seat")
     ok(m["POST_RELIEF_BELOW"] >= 1.0,
        f"post relief runs >= 1 mm below the top of the board's standoffs ({m['POST_RELIEF_BELOW']:.1f})")
     ribs, cell = m["batt_ribs"], p["battery"]
@@ -628,7 +636,8 @@ def show_assembly(m, p, explode, top_alpha, bottom_alpha, finish, reset_camera=F
                 continue
             objs.append(p[n].moved(up) if n in lifted else p[n]); names.append(n); colors.append(col)
             alphas.append(1.0)
-        objs.append(fill.moved(up)); names.append("legend fill"); colors.append(FINISH["legend"]); alphas.append(1.0)
+        if FINISH["legend"]:
+            objs.append(fill.moved(up)); names.append("legend fill"); colors.append(FINISH["legend"]); alphas.append(1.0)
         ocp_vscode.show(*objs, names=names, colors=colors, alphas=alphas, metalness=0.0, roughness=0.9,
                         **_camera(reset_camera))
         return
