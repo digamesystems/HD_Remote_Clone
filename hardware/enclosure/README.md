@@ -90,6 +90,34 @@ After the board is assembled (see `docs/HARDWARE.md`, Board assembly):
 5. Set the A/B switch on the board to A. Drop the keycaps (flanges down) and the A/B slider (knob at A) into the top shell from inside.
 6. Lower the top shell onto the bottom: the slider's rounded foot lands on the board with its notch round the switch actuator (the rounding guides it on). Turn it over, check the slider moves A to B and back, and fit the four M2 case screws from underneath.
 
+## Before ordering the cases (checklist, 2026-11-21)
+
+What stands between now and a case order. Items are open unless ticked; the recommendations are Claude's, not decisions.
+
+**Decisions for John**
+- [ ] **Finish:** black shells with natural grey keys and slider (rendered 2026-11-21), or the recorded grey shells with black keys; legend fill or none (the unfilled 1.0 mm legends read well in the render, on grey caps).
+- [ ] **Order before or after a fitted board.** Recommended: after. The boards are due about 2026-11-27 to 30, and one fitted board settles most of the measurements below; a case printed from the model alone risks a second order (about $55 or more each once shipping and duty are added).
+- [ ] **Quantity and shipments.** Estimates in `docs/COSTS.md`: one case about $56–64 delivered, five in one shipment about $32–35 each, plus about $20–25 per shipment in DHL duty (the test piece's).
+
+**Design items still open**
+- [ ] **South-west post relief** (open item below): the 0.2 mm skin. Two-step flat, lower screw seat with M2 × 10, or cut through on purpose.
+- [ ] **Corner post tubes, 0.9 mm** round the counterbore, under JLC's 1.0 mm minimum wall: accept the warning or thicken them.
+- [ ] **A/B hard stop:** the switch's own end stops still take the push at full travel; the slot could be made the stop instead.
+- [ ] **nRF24 hold-down rib** under the key face, against drops: now or later.
+- [ ] **Light pipe hole:** not on the test piece. Ream it to fit on the first case, or add a small coupon (2.85 / 2.95 / 3.05 mm holes, about $0.95) to the order.
+
+**Measurements from parts arriving** (they replace the inputs `assembly.py` lists as guesses)
+- [ ] **PCB outline and thickness** against 145.4 × 40.4 × 1.6 mm: the last fit-margin check (Fit margins, below).
+- [ ] **Battery cell and plug** (Adafruit #1578, due 2026-11-25): the cell's size for the ribs, the plug's envelope (`PLUG_L`).
+- [x] **M2 screw heads:** **3.2 mm** across, **1.3 mm** tall (measured by John, 2026-11-21; `HEAD_D`, `HEAD_H`), well under the 4.2 mm counterbore.
+- [ ] **On the first fitted board:** THT pin protrusion below the board (`PIN_PROTRUDE`), the IR LED tip positions after bending, the A/B actuator's thickness (`AB_SW_ACT`), and the solder on SW509's mounting tabs beside the slider's foot.
+
+**Preparing the order**
+- [ ] Apply what's decided, rerun `python assembly.py --board out/hd_remote_board.step`: all checks pass, and no guess left that a check depends on.
+- [ ] Export STL and STEP from a tagged commit and check the meshes are watertight. Expect JLC's "< 0.8 mm wall" warning on the engraved legends; it's harmless (the test piece had it).
+- [ ] Get a JLC3DP quote for the real parts to replace the estimates. Try uploading the caps and slider as one file (about $6 a case less, if JLC accepts it).
+- [ ] Record the order in `docs/COSTS.md` and in this README.
+
 ## Test piece: `parts/test_piece.py`
 
 One small MJF print that replaces the model's placeholder values with measured ones. All sizes come from `remote_box.py`, so the samples test what the case uses. `python parts/test_piece.py --export` runs its checks (23) and writes STL and STEP files to `out/` (not committed; rerun to regenerate). Order in **MJF PA12, natural grey**, the case material. **First print ordered 2026-11-13 from JLC3DP** (STLs exported from commit `76482ef`; all seven meshes checked watertight).

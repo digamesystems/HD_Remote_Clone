@@ -63,7 +63,7 @@ CLEAR_EXCEPTIONS = [
     ("JST_PH_S2B-PH-K", "shells", 0.2, "battery connector at the board's back edge: board-to-wall gap"),
 ]
 POST_NOTCH_CLEAR = 1.0                 # board notch radius beyond the post radius
-PCB_HOLE_D, HEAD_D, HEAD_H, SCREW_L = 2.2, 3.8, 1.3, 6.0   # M2 board screws
+PCB_HOLE_D, HEAD_D, HEAD_H, SCREW_L = 2.2, 3.2, 1.3, 6.0   # M2 board screws (head 3.2 x 1.3 measured, John)
 SW_PIN_X, SW_PIN_Y = 3.25, 2.25        # 6 mm tactile switch pins at (+-6.5/2, +-4.5/2)
 MIN_WEB = 2.0                          # thinnest key-face material allowed between openings
 MIN_USB_ROUTING = 3.0                  # USB signal pads to the nearest nRF socket pin pad
@@ -98,7 +98,8 @@ INPUT_SOURCES = {
     "NRF_PARTS_H": ("guess", "chip-area parts; the crystal is taller and measured"),
     # other parts
     "ESP_L": ("datasheet", "WROOM-32E 18 x 25.5 x 3.1"), "ESP_ANT": ("guess", "antenna zone length"),
-    "HEAD_D": ("guess", "M2 pan head 3.8 x 1.3: measure the screws"),
+    "HEAD_D": ("measured", "John 2026-11-21: HanTof M2 pan head 3.2 mm"),
+    "HEAD_H": ("measured", "John 2026-11-21: HanTof M2 pan head 1.3 mm"),
     "SW_PIN_X": ("datasheet", "Same Sky TS02, 6.5 x 4.5 pitch"),
     "JST_H": ("datasheet", "JST PH catalogue p.3"),
     "PLUG_L": ("guess", "battery plug envelope 6.0 x 4.5: measure the cell's plug"),
