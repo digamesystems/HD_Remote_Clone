@@ -25,6 +25,7 @@ follow the layout explored on 2026-11-13 (see README.md) and should be replaced 
 STEP export once the PCB is laid out.
 """
 import argparse
+import math
 import re
 import sys
 from itertools import combinations
@@ -274,23 +275,40 @@ def build_parts(m):
     p["A/B switch"] = (Pos(sw_x, 0, top) * Box(bx, by, bh, align=(Align.CENTER, Align.CENTER, Align.MIN))
                        + Pos(sw_x - bx / 2 - ax_ / 2, pos_a, top + bh / 2 - ah / 2)
                        * Box(ax_, ay_w, ah, align=(Align.CENTER, Align.CENTER, Align.MIN)))
+    # Slider (board-riding version, decided 2026-11-21, John): the drive
+    # block reaches down to the board and slides on it, so downward pressure goes into the board, not
+    # the switch. The plate under the face only stops it lifting out; it has AB_FACE_PLAY of room.
     kl, kw = m["AB_KNOB_L"], m["AB_KNOB_W"]
-    knob = extrude(Plane.XY.offset(face_under) * Pos(sw_x, pos_a) * RectangleRounded(kl, kw, kl / 2 - 0.01),
-                   amount=m["TOP_T"] + 1.0)
-    plate = Pos(sw_x, pos_a, face_under) * Box(kl + 4, kw + 4, 1.0, align=(Align.CENTER, Align.CENTER, Align.MAX))
-    # Drive block (2026-11-14, replaces a thin stem with two 1.2 x 1.6 mm prongs, which were fragile):
-    # one solid block down from the plate, with a notch cut up into its bottom face that takes the
-    # actuator. The walls either side of the notch are the block's full thickness and 1.5 mm wide.
+    x0, x1, pt = m["AB_PLATE_X0"], m["AB_PLATE_X1"], m["AB_PLATE_T"]
+    plate_top = face_under - m["AB_FACE_PLAY"]
+    knob = extrude(Plane.XY.offset(plate_top) * Pos(sw_x - m["AB_KNOB_SHIFT"], pos_a) * RectangleRounded(kl, kw, kl / 2 - 0.01),
+                   amount=face_under - plate_top + m["TOP_T"] + 1.0)
+    plate = Pos(sw_x + (x0 + x1) / 2, pos_a, plate_top) * Box(
+        x1 - x0, m["AB_PLATE_W"], pt, align=(Align.CENTER, Align.CENTER, Align.MAX))
+    # Drive block: one solid block from the plate down to the board, with a notch cut up into its
+    # foot that takes the actuator; the foot's edges are rounded so it glides over the mask and trace.
     blk_t, blk_w = m["AB_BLOCK_T"], m["AB_BLOCK_W"]
     blk_x = sw_x - bx / 2 - 0.2 - blk_t / 2          # 0.2 mm behind the switch body, growing back
-    blk_top, blk_bot = face_under - 1.0, top + bh / 2 - ah / 2 + 0.2
+    blk_top, blk_bot = plate_top - pt, top
     block = Pos(blk_x, pos_a, blk_top) * Box(
         blk_t, blk_w, blk_top - blk_bot, align=(Align.CENTER, Align.CENTER, Align.MAX))
     notch_w = ay_w + 2 * m["AB_NOTCH_PLAY"]
-    notch_top = top + bh / 2 + ah / 2 + 0.3          # 0.3 mm above the actuator's top
+    notch_top = top + bh / 2 + ah / 2 + m["AB_NOTCH_ROOF"]
     notch = Pos(blk_x, pos_a, blk_bot - 0.1) * Box(
         blk_t + 0.2, notch_w, notch_top - blk_bot + 0.1, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    p["A/B slider"] = knob + plate + block - notch
+    block = block - notch
+    # round every bottom edge of both teeth, inside the notch too: glides over the board, and the
+    # inner rounding is a lead-in that guides the notch onto the actuator when the case closes
+    block = fillet(block.edges().group_by(Axis.Z)[0], radius=m["AB_FOOT_R"])
+    p["A/B slider"] = knob + plate + block
+    # the switch's four mounting tabs (KiCad SW_SPDT_PCM12, rotated -90 on the board): the back pair
+    # sits beside the block's path, with solder fillets on them
+    tabs = [(dx, sy * 3.65) for dx in (-1.43, 0.78) for sy in (-1, 1)]
+    p["A/B switch"] = p["A/B switch"] + Part(children=[
+        Pos(sw_x + dx, dy, top) * Box(0.8, 1.0, 0.3, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        for dx, dy in tabs])
+    ab_info = {"notch_top": notch_top, "board_top": top, "act_top": top + bh / 2 + ah / 2,
+               "act_bot": top + bh / 2 - ah / 2, "tabs": [(sw_x + dx, dy) for dx, dy in tabs]}
 
     # SETUP: 5 mm tactile switch on the board's underside, plunger down
     p["SETUP switch"] = Pos(fx(m["SETUP_FROM_FRONT"]), m["SETUP_Y"], bot) * Box(
@@ -317,12 +335,12 @@ def build_parts(m):
     info = {"usb_rear_d": L / 2 - usb_rear, "usb_sh_front_x": usb_sh_front,
             "board_back_x": -L / 2 + WALL + PCB_GAP, "hdr_d": hdr_d, "nrf_top": nrf_top,
             "led_pad_d": led_pad_d, "sw_x": sw_x, "body": (bx, by, bh),
-            "ind_led_tip": led_tip, "pipe_bottom": pipe_bottom}
+            "ind_led_tip": led_tip, "pipe_bottom": pipe_bottom, "ab": ab_info}
     return p, info
 
 
 # parts that touch or pass through each other by design
-ALLOWED = [{"key switches", "PCB"}, {"A/B switch", "PCB"}, {"SETUP switch", "PCB"},
+ALLOWED = [{"key switches", "PCB"}, {"A/B switch", "PCB"}, {"A/B slider", "PCB"}, {"SETUP switch", "PCB"},
            {"indicator LED", "PCB"}, {"keycaps", "key switches"},
            {"battery leads", "battery plug"}, {"battery leads", "battery"}]
 
@@ -411,6 +429,30 @@ def check(m, p, info):
     s, nudge = p["A/B slider"], m["AB_NOTCH_PLAY"] + 0.05
     ok(ov(s, act) < 1e-6 and all(ov(s, act.moved(Location((0, d, 0)))) > 1e-6 for d in (nudge, -nudge)),
        f"A/B notch holds the actuator (play {m['AB_NOTCH_PLAY']} mm each side)")
+    # board-riding slider: foot on the board, clear of the switch's mounting tabs, still engaged lifted
+    ab = info["ab"]
+    for dy, end in ((0, "A"), (m["AB_TRAVEL"], "B")):
+        s_ = p["A/B slider"].moved(Location((0, dy, 0)))
+        near = min(s_.distance_to(Pos(x, y, ab["board_top"]) * Box(
+            0.8, 1.0, 0.3, align=(Align.CENTER, Align.CENTER, Align.MIN))) for x, y in ab["tabs"])
+        ok(near >= m["AB_TAB_CLEAR"] - 0.005, f"A/B foot clears the switch's mounting-tab pads at the {end} end "
+           f"({near:.2f} mm; want >= {m['AB_TAB_CLEAR']})")
+    # support pad under the foot: centred under it, clear of the switch's locating-peg holes
+    px, py = m["AB_PAD_XY"]
+    foot_x = info["sw_x"] - m["AB_KNOB_SHIFT"]
+    ok(abs(px - foot_x) < 0.01 and abs(py) < 0.01, "A/B support pad centred under the slider's foot")
+    peg = min(((px - (info["sw_x"] - 0.33)) ** 2 + (py - sy * 1.5) ** 2) ** 0.5 for sy in (-1, 1))
+    peg_gap = peg - m["PAD_D"] / 2 - 0.45
+    ok(peg_gap >= 0.5, f"A/B support pad clear of the switch's locating-peg holes ({peg_gap:.2f} mm)")
+    pad = Pos(px, py, m["FLOOR_TOP"]) * Cylinder(m["PAD_D"] / 2, m["PAD_H"], align=(Align.CENTER, Align.CENTER, Align.MIN))
+    ok(ov(pad, bottom) > pad.volume - 0.01 and ov(pad, p["PCB"]) < 1e-6,
+       f"A/B support pad is part of the bottom shell, {m['PAD_SHORT']} mm under the board")
+    roof = ab["notch_top"] - ab["act_top"]
+    ok(roof >= 0.5, f"A/B notch roof clear of the actuator's top ({roof:.2f} mm)")
+    lifted = p["A/B slider"].moved(Location((0, 0, m["AB_FACE_PLAY"])))
+    ok(ov(lifted, top) < 1e-3 and all(ov(lifted, act.moved(Location((0, d, 0)))) > 1e-6
+                                      for d in (nudge, -nudge)),
+       f"A/B notch still holds the actuator with the slider lifted against the face ({m['AB_FACE_PLAY']} mm)")
 
     # end walls: openings on the flat part, USB pads on the board, routing room, heights
     flat = W / 2 - m["CORNER_R"]

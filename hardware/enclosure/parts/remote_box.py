@@ -68,7 +68,7 @@ SWITCHES = {"UP": (42, 0), "DOWN": (58, 0), "1": (42, 14), "2": (42, -14),
             "3": (58, 14), "4": (58, -14), "ALL": (74, 0)}
 KEY_XY = [(L / 2 - d, y) for d, y in SWITCHES.values()]
 # Openings in the key face, all fully rounded: name -> (from front, y, length along X, width along Y)
-KEY_HOLES = {"ARROWS": (50, 0, 34, 14), "1": (42, 14, 8, 8), "2": (42, -14, 8, 8),
+KEY_HOLES = {"ARROWS": (50.15, 0, 33.7, 14), "1": (42, 14, 8, 8), "2": (42, -14, 8, 8),
              "3": (58, 14, 8, 8), "4": (58, -14, 8, 8), "ALL": (74, 0, 8, 16)}
 # Corner radius per key (cap outline; the hole adds CAP_CLEAR). Keys not listed are fully rounded
 # (stadium). Keys 1-4 are rounded squares, not circles (2026-11-15): a round cap in a round hole
@@ -104,13 +104,34 @@ PIPE_GAP_MIN, PIPE_GAP_MAX = 0.5, 1.5   # pipe end to LED dome: clear of toleran
 AB_FROM_FRONT = 26
 AB_TRAVEL = 1.5        # = the switch's travel (the slider moves 1:1)
 AB_KNOB_W, AB_KNOB_L = 8.0, 3.6   # knob in the slot: across the width, along the length
-AB_SLOT = (AB_FROM_FRONT, 0, AB_KNOB_L + 0.6, AB_KNOB_W + AB_TRAVEL + 0.6)  # from front, y, X, Y
 AB_SW_BODY = (2.8, 6.7, 1.4)      # along X, across Y, height. C&K PCM12SMTR datasheet (I-44): 6.7 long, 1.4 tall
 AB_SW_ACT = (1.5, 1.3, 1.0)       # actuator: sticks out 1.5, 1.3 wide (datasheet); thickness 1.0 a guess
 # Slider drive (2026-11-14): a solid block with a notch for the actuator, not a two-prong fork.
-AB_BLOCK_T, AB_BLOCK_W = 2.4, 4.6  # along X (grows toward the back); across Y, inside the switch body
+AB_BLOCK_T, AB_BLOCK_W = 2.4, 4.0  # along X (grows toward the back); across Y (4.6 until 2026-11-21: narrowed
+                                   # to clear the switch's mounting tabs now that the foot is on the board)
 # (6.7 mm) at both ends of travel, so it misses the switch's mounting legs at the body ends
 AB_NOTCH_PLAY = 0.15               # notch clearance each side of the actuator
+# Board-riding slider (decided 2026-11-21, John): the drive
+# block reaches down and slides on the board's solder mask (crossing only the AB_SW trace), so
+# downward pressure on the knob goes into the board, never the switch. One part; nothing else holds
+# it. X offsets are from the switch centre, + toward the front.
+AB_PLATE_X0, AB_PLATE_X1 = -5.0, 1.5   # slider plate along X (covers the drive block, clears the arrow cap)
+AB_PLATE_W, AB_PLATE_T = AB_KNOB_W + 4.0, 1.0   # plate across Y, and thickness
+AB_FACE_PLAY = 0.5                 # plate top below the face underside: the case stack-up's tolerance
+AB_FOOT_R = 0.4                    # rounding on the foot's bottom edges, to glide over mask and trace
+AB_NOTCH_ROOF = 0.6                # notch roof above the actuator's top: never rests on the actuator
+AB_TAB_CLEAR = 0.3                 # foot to the switch's mounting-tab pads, minimum (solder stays on
+                                   # the pad and wets up the leg; it doesn't spread over the mask)
+# Knob, slot and plate centred over the drive block, not the switch body (decided 2026-11-21, John):
+# knob, block and foot form one straight column, so a press goes straight down into the
+# board instead of rocking the slider. The arrow oval's front end gave up 0.3 mm for the 2 mm web
+# (ARROWS was (50, 0, 34, 14)); the slot moved 2.8 mm toward the back.
+AB_KNOB_SHIFT = AB_SW_BODY[0] / 2 + 0.2 + AB_BLOCK_T / 2   # knob behind the switch centre (= block centre)
+AB_SLOT = (AB_FROM_FRONT + AB_KNOB_SHIFT, 0, AB_KNOB_L + 0.6, AB_KNOB_W + AB_TRAVEL + 0.6)  # from front, y, X, Y
+# Support pad under the slider's foot (2026-11-21, John), like the key pads: a press goes knob ->
+# foot -> board -> pad -> floor. The board's underside there is clear (nearest: the switch's
+# locating-peg holes, 2.7 mm from the pad's centre to their edges; tented vias 3.95 mm).
+AB_PAD_XY = (L / 2 - AB_FROM_FRONT - AB_KNOB_SHIFT, 0.0)
 # SETUP: pinhole in the floor (as on the original's back), over a 5 mm tactile switch mounted on
 # the board's underside, plunger down. Paperclip travels ~4.5 mm. 10 mm right of centre
 # (2026-11-13, PCB placement): on the centre line its through-hole pins land on the A/B switch's
@@ -239,7 +260,7 @@ with BuildPart() as body:
     add(batt_ribs)
 
     # support pads under the key switches
-    with Locations(*[(x, y, FLOOR_TOP) for x, y in KEY_XY]):
+    with Locations(*[(x, y, FLOOR_TOP) for x, y in KEY_XY + [AB_PAD_XY]]):
         Cylinder(PAD_D / 2, PAD_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
     # IR LED holes through the front wall, with outside countersinks

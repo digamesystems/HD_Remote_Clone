@@ -145,6 +145,7 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 - **Engineering review (2026-11-18, John):** JLC's engineers asked to confirm the parts placement before production. "Show Revised Items" listed **0 revisions**, with 77 of 77 parts assembled and 0 unassembled, so the CPL's rotation fixes needed no change on their side. John answered "Yes, please proceed to production" and the confirmation shows Completed.
 - **Production (status reported by John, 2026-11-21):** in production since 2026-11-18 07:04 (manufacturing data for the PCB and the SMT job finished that afternoon); in the factory since 2026-11-19, **estimated finish 2026-11-21 16:55** (JLC's time). Not shipped yet.
 - **Hand-fitted parts (DigiKey, ordered 2026-11-17):** in transit by FedEx Ground, **estimated delivery Tuesday 2026-11-24** (status reported by John, 2026-11-21), so they should be on hand before the boards.
+- **Batteries (Adafruit #1578 ×5, ordered 2026-11-17):** on the way by UPS, **estimated delivery Wednesday 2026-11-25** (status reported by John, 2026-11-21). On arrival, measure a cell and its plug for the case (battery ribs, `PLUG_L`) and meter each plug's polarity (stage 7).
 - **After the board arrives:** follow the stages below, and solder the hand-fitted parts soon, since OSP has a short shelf life.
 
 ## Log

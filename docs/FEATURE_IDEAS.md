@@ -37,3 +37,12 @@ Raised by John (2026-11-21), after the first renders: the current case is a good
 - **Starting points:** the test print's finish and fit results carry over (enclosure README, Test piece), as do `assembly.py`'s fit checks, which would catch a shape that no longer clears the board.
 - **Constraints a new shape has to keep:** the IR LEDs and USB-C on flat stretches of the end walls, the 2 mm minimum walls for MJF, the board's outline and screw holes (or a new board), and the split at the IR LED axis.
 - **Tools:** a Blender render script (on trial, not in the repo yet) makes it quick to compare shapes and colours before printing.
+
+## A/B switch turned around on a later board
+
+Raised by John (2026-11-21), while moving the A/B knob over its drive block: on rev 1 the knob ends up about 2 mm from the arrow oval, because SW509's actuator points toward the back (the arrows) and the knob sits over the actuator. The rev 1 case shortens the arrow oval 0.3 mm (decided 2026-11-21, John) to keep the 2 mm minimum between the two openings. Not for rev 1, whose boards are made.
+
+- **Rotate SW509 180°** so its actuator points toward the front (the indicator). The drive block and knob then sit in front of the switch, moving away from the arrows by roughly 5–6 mm (estimate). Reroute AB_SW to match.
+- **Move R509 and R510** to give the drive block and its support pad more room around the switch.
+- **Case:** move the slot, knob and support pad to the new actuator position, and give the arrow oval back its full length.
+- **Firmware:** the rotation reverses which slider position reads as A, so swap them in the firmware or its settings. Which position is A is already to be confirmed at rev 1 bring-up.
