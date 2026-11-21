@@ -29,3 +29,11 @@ Ideas for the clone that go beyond what the stock Platinum remote does. **Nothin
 
 - **Which slider position is A** on the handheld PCB (GPIO 14), to be confirmed at bring-up.
 - **Does the stock slider change any RF frame?** Sniff with the switch on B.
+
+## A swoopier case for a later revision
+
+Raised by John (2026-11-21), after the first renders: the current case is a good first cut, but a later release could have a more sculpted, "swoopier" shape. Not for prototype 1.
+
+- **Starting points:** the test print's finish and fit results carry over (enclosure README, Test piece), as do `assembly.py`'s fit checks, which would catch a shape that no longer clears the board.
+- **Constraints a new shape has to keep:** the IR LEDs and USB-C on flat stretches of the end walls, the 2 mm minimum walls for MJF, the board's outline and screw holes (or a new board), and the split at the IR LED axis.
+- **Tools:** a Blender render script (on trial, not in the repo yet) makes it quick to compare shapes and colours before printing.
