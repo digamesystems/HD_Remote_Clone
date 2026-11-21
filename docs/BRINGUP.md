@@ -41,7 +41,7 @@ The boards don't need to wait for the enclosure test piece (noted 2026-11-16): e
   - [x] **DigiKey, ordered 2026-11-17 (John):** J401 socket 612-SLW-104-01-G-D-ND ×10; D501 Kingbright WP59EGW 754-1232-ND ×10 (not "1747631", which is DigiKey's product ID); Bivar PLP2-250 light pipes 492-1153-ND ×15 (the fit test uses four hole sizes); J102 JST S2B-PH-K-S 455-1719-ND ×10.
   - [x] **DigiKey, sink-test parts, same order:** 1N4148 1N4148FS-ND ×10, PN2222A PN2222AFS-ND ×5, 470 Ω 470QBK-ND ×10, 100 kΩ 13-CFR-25JB-52-100K-ND ×10, 3.3 Ω 3.3QBK-ND ×10 (R_E as on the board), 4.7 Ω 4.7QBK-ND ×10 (the fallback, about 110 mA). This replaces the two 6.8 Ω in parallel below. The DigiKey order total was $44.67 (subtotal $29.16, shipping $8.49, tariff $3.73, sales tax $3.29), all ten lines in stock, FedEx Ground.
   - [x] **Batteries, ordered 2026-11-17 (John):** Adafruit #1578 ×5 at $7.95 each ($39.75; UPS Ground $19.67, tax $3.98, total $63.40). Meter each plug's polarity before connecting (stage 7); the red wire should be + and land on J102 pin 1.
-  - Already on hand: the 13 mm key switches (100, ordered 2026-11-13), the BOJACK 5 mm switches for SETUP, the nRF24 modules, and the M2 case screws. TP604–TP606 loops are optional.
+  - The 13 mm key switches (100, ordered 2026-11-13) are on the way (John, 2026-11-21); his BOJACK 13 mm switches are the backup if they're late. Already on hand: the BOJACK 5 mm switches for SETUP, the nRF24 modules, and the M2 case screws. TP604–TP606 loops are optional.
 
 ## Before the boards arrive
 
@@ -50,6 +50,17 @@ The boards don't need to wait for the enclosure test piece (noted 2026-11-16): e
 - [ ] **IR current-sink breadboard test** (the *verify* in [HARDWARE.md](HARDWARE.md), IR transmitter; never run, confirmed 2026-11-16). Needs 2× 1N4148 and an NPN (PN2222A or 2N2222), 470 Ω, 100 kΩ, 3.3 Ω for R_E (and 4.7 Ω for the fallback test), a TSAL6200 (parts on the DigiKey list above). GPIO 4 → 470 Ω → base node; node → two diodes in series → GND, and → 100 kΩ → GND; emitter → R_E → GND; collector → LED cathode; LED anode → supply. `send up 3000`, scope across R_E (I = V_peak / R_E) and the base node (~1.3 V), at 3.3 V and 4.2 V LED supply. Pass: the two currents within ~10 % of each other, none above 200 mA. A 2N2222's Vbe differs from the BC817-40's, so this proves the regulation, not the board's exact current (stage 5).
 - [x] `python -I hardware/tools/check_pins.py` passes (pins.h matches the schematic; rechecked 2026-11-17).
 - [x] `pio run -e handheld` builds (2026-11-18, fw 0.9.4).
+
+## Board handling (OSP finish)
+
+The boards have an OSP finish: a thin organic coating that keeps the bare copper pads solderable. Humidity, heat and handling wear it down, and the top-side SMT reflow at JLC has already used up part of it. These are recommendations (Claude, 2026-11-21), not decisions:
+
+- [ ] **Have desiccant ready before the boards arrive:** zip bags or an airtight box, fresh silica-gel packs, and optionally a humidity indicator card.
+- [ ] **Leave the boards in JLC's sealed bag** (normally vacuum-sealed with desiccant) until you're ready to solder.
+- [ ] **Hold boards by the edges.** Fingerprint oils and salts damage OSP faster than air does.
+- [ ] **Fit the first board soon after arrival.** The hand-fitted parts are due first (DigiKey 2026-11-24), so nothing should hold it up.
+- [ ] **Reseal the rest** after opening, in a zip bag or box with fresh desiccant. Store at room temperature, not in a fridge: condensation on the way out does more harm than room air.
+- **Expect hand soldering to be forgiving.** Guidance to solder within a day or two after the first reflow is written for a second reflow pass, which relies on the paste's weak flux. An iron with flux copes with a partly worn coating, so a few weeks should be fine. If a pad looks dull or the solder won't wet it, add flux (a flux pen or no-clean gel) before adding heat.
 
 ## Equipment
 
@@ -132,6 +143,8 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 - **Assembly:** 77 parts on 34 BOM lines. Hand-fitted, not in the BOM: J102, J401, SW501–SW508, D303, D304, D501, TP604–TP606. C403 and R401 are not fitted. The note to JLC says so and that the CPL rotations are already corrected.
 - **What the dry run found:** SW201 and SW202 (the same switch, KMR221NGLFS, C269272) had to share one BOM line or JLC wouldn't auto-select the part. JLC's models are rotated from KiCad's footprints: every SOT-23 needs +180, the SOT-23-5 and -6 parts −90, and U201 (ESP32 module) needs −90 and a 3.81 mm shift along its axis. These corrections are in `CPL_FIXES` in `make_jlc.py`. Every polarized part was checked against JLC's pin-1 marks on a fresh load, with no hand edits.
 - **Engineering review (2026-11-18, John):** JLC's engineers asked to confirm the parts placement before production. "Show Revised Items" listed **0 revisions**, with 77 of 77 parts assembled and 0 unassembled, so the CPL's rotation fixes needed no change on their side. John answered "Yes, please proceed to production" and the confirmation shows Completed.
+- **Production (status reported by John, 2026-11-21):** in production since 2026-11-18 07:04 (manufacturing data for the PCB and the SMT job finished that afternoon); in the factory since 2026-11-19, **estimated finish 2026-11-21 16:55** (JLC's time). Not shipped yet.
+- **Hand-fitted parts (DigiKey, ordered 2026-11-17):** in transit by FedEx Ground, **estimated delivery Tuesday 2026-11-24** (status reported by John, 2026-11-21), so they should be on hand before the boards.
 - **After the board arrives:** follow the stages below, and solder the hand-fitted parts soon, since OSP has a short shelf life.
 
 ## Log
