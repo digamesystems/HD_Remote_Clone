@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 
+#include "handheld.h"
 #include "hd_ir.h"
 #include "hd_rf.h"
 #include "hold_tracker.h"
@@ -17,7 +18,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.10";
+constexpr const char* kFwVersion = "0.9.11";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -106,6 +107,8 @@ void help() {
       " USER COMMANDS\n"
       " -------------\n\n"
       "  Up/Down arrow keys      send up/down (works at the prompt or during capture); see seq\n"
+      "  1-4 (empty line)        group key 1-4: opens the green window (6.5 s); arrow keys\n"
+      "                          pressed in it send that group's command, like grp\n"
       "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
       "                          (default 300, max 5000), then the release tail. No IR\n"
       "  pos <mask> <0-255> [ms50 ms32]  EXPERIMENTAL absolute position (spitcool's bridge\n"
@@ -276,14 +279,64 @@ void runHold(uint8_t code) {
                 otherKey ? ", ended by another key" : "");
 }
 
+// Handheld behaviour (lib/hdcore handheld.h), driven from the laptop until the
+// boards' keys are wired: digits 1-4 on an empty command line are group keys 1-4
+// (open the green window), and the arrow keys follow the window like the real
+// remote's arrows. On the handheld build the LED shows it too.
+hd::ui::Handheld ui;
+bool windowShown = false;
+
+// Drives the LED only when the handheld's LED state changes, so the bring-up
+// `led` command still works in between.
+void showLed(hd::ui::Led led) {
+  static hd::ui::Led shown = hd::ui::Led::Off;
+  if (led == shown) return;
+  shown = led;
+#if defined(HD_BOARD_HANDHELD)
+  digitalWrite(PIN_LED_RED, led == hd::ui::Led::Red ? HIGH : LOW);
+  digitalWrite(PIN_LED_GREEN, led == hd::ui::Led::Green ? HIGH : LOW);
+#endif
+}
+
+void groupKey(int n) {
+  static const hd::ui::Key kKeys[4] = {hd::ui::Key::G1, hd::ui::Key::G2, hd::ui::Key::G3,
+                                       hd::ui::Key::G4};
+  ui.press(kKeys[n - 1], millis());
+  ui.release(kKeys[n - 1], millis());
+  windowShown = true;
+  showLed(ui.update(millis()).led);
+  Serial.printf("\nGroup %d: green window open %lu ms; arrow keys send group %d commands\n> ", n,
+                (unsigned long)hd::ui::Config().windowMs, n);
+}
+
+// Called from loop(): reports the window closing and keeps the LED in step.
+void pollUi() {
+  const hd::ui::Output o = ui.update(millis());
+  showLed(o.led);
+  const bool green = o.led == hd::ui::Led::Green;
+  if (windowShown && !green) {
+    Serial.print("\nGroup window closed: arrow keys back to red mode (wake + IR)\n> ");
+    Serial.print(line);
+  }
+  windowShown = green;
+}
+
 // One burst per key press. A held key repeats, and those repeats pile up during
 // the blocking send, so discard input until it goes quiet. That also drops any
 // partial escape sequence, which would otherwise land in the command line.
 void sendArrow(uint8_t code) {
   Serial.println();
-  if (holdMode) runHold(code);
+  const bool up = code == hd::ir::kCodeUp;
+  const hd::ui::Key k = up ? hd::ui::Key::Up : hd::ui::Key::Down;
+  ui.press(k, millis());
+  const hd::ui::Output o = ui.update(millis());
+  showLed(o.led);  // red for red mode, green for a group command
+  if (o.tx == hd::ui::Tx::Group) {
+    rf::sendGroup(o.group, up, kGroupHoldMs, kGroupTailMs);  // like `grp <n> up|down`
+  } else if (holdMode) runHold(code);
   else if (seq.on) runSeq(code);
   else sendIr(code, kArrowBurstMs);
+  ui.release(k, millis());
   uint32_t lastInput = millis();
   while (millis() - lastInput < kArrowQuietMs) {
     if (Serial.available()) {
@@ -540,6 +593,10 @@ void loop() {
     if (key == hd::KeyEvent::Down) { sendArrow(hd::ir::kCodeDown); continue; }
     if (key == hd::KeyEvent::Consumed) continue;
     if (ch == '\r') continue;
+    if (line.length() == 0 && ch >= '1' && ch <= '4') {  // group key; digits inside a command still type
+      groupKey(ch - '0');
+      continue;
+    }
     // Echo input: terminals like `pio device monitor` don't echo locally, and
     // the echo also records each command in serial logs.
     if (ch == '\b' || ch == 0x7F) {
@@ -567,6 +624,7 @@ void loop() {
     }
   }
 
+  pollUi();
   if (mode == Mode::IrCapture) ir::pollCapture();
   else if (mode == Mode::RfBusy) {
     rf::poll();
