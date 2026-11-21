@@ -17,7 +17,11 @@ What the prototypes actually cost to get into hand, per board and per case. Upda
 | 2026-11-17 | DigiKey | IR sink-test parts (diodes, PN2222A, resistors) | $3.76 | $1.09 | $0.91 | $5.76 | Development |
 | 2026-11-17 | Adafruit | Battery #1578 ×5 | $39.75 | $19.67 | $3.98 | $63.40 | Board batch (5), battery |
 | 2026-11-17 | Amazon | 2 Bridgold LED kits (10 TSAL6200 + 10 receivers) | $17.98 | $0.00 | $1.80 | $19.78 | Board batch (5) |
+| 2026-11-15 | Amazon | M2/M2.5/M3 pan-head self-tapping screws, 1200-piece assortment | $8.49 | $0.00 | $0.85 | $9.34 | Case batch (5), hardware |
+| 2026-11-13 | DigiKey | Key switches TS02-66-130-BK-160-SCR-D ×100 | $10.33 | $8.49 | $3.27 | $22.09 | Board batch (5) |
 | 2026-11-13 | JLC3DP | Enclosure test piece (7 parts) | $10.79 | $31.65 | $23.08 | $65.52 | Development (case) |
+
+The key-switch order's duties and tax are a $2.03 tariff and $1.24 sales tax. Its 100 switches cover the 5 boards (8 each) with 60 spare, and one went into the test piece's key fixture; as spares, all of it is charged to the batch.
 
 The test piece's duties and tax are the $1.04 sales tax paid at checkout plus a $22.04 import duty that DHL billed on arrival (paid 2026-11-20, John). The checkout total ($43.48) didn't include it.
 
@@ -32,11 +36,12 @@ JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales t
 | JLCPCB, PCB and assembly | $285.98 | $57.20 |
 | DigiKey, hand-fitted parts (with spares) | $38.91 | $7.78 |
 | Amazon, IR LED kits (10 LEDs, 10 spare receivers) | $19.78 | $3.96 |
-| **Electronics** | **$344.67** | **$68.93** |
+| DigiKey, key switches (100, with spares) | $22.09 | $4.42 |
+| **Electronics** | **$366.76** | **$73.35** |
 | Batteries | $63.40 | $12.68 |
-| **Electronics plus battery** | **$408.07** | **$81.61** |
+| **Electronics plus battery** | **$430.16** | **$86.03** |
 
-**Case:** no case has been bought yet, so there is no per-case figure (see the estimate below). The test piece ($65.52 landed: $10.79 of parts, $31.65 shipping, $23.08 duties and tax) is development, not a case. Shipping dominates small JLC3DP orders, so a case order's cost per case will fall a lot if several cases, or the case with spare caps and slider knobs, go in one shipment. Record each case print order as a row above, then divide by the cases it makes.
+**Case:** no case print has been ordered yet, so there is no per-case figure (see the estimate below). Hardware bought so far: the screw assortment, $9.34 landed, charged to the case batch (each case uses 4 board screws and 4 case screws, so the assortment covers many more than five; as spares, all of it counts). Proposed charge (Claude); change it if the screws should count as development stock. The test piece ($65.52 landed: $10.79 of parts, $31.65 shipping, $23.08 duties and tax) is development, not a case. Shipping dominates small JLC3DP orders, so a case order's cost per case will fall a lot if several cases, or the case with spare caps and slider knobs, go in one shipment. Record each case print order as a row above, then divide by the cases it makes.
 
 **Development, not spread over the units:** IR sink-test parts $5.76; the test piece $65.52 (total $71.28).
 
