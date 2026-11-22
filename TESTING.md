@@ -15,6 +15,7 @@ These run on the PC with Unity and the MSYS2 gcc compiler, and take seconds. The
 | `test_native_parse` | serial command tokenizing, hex parsing, data-rate parsing, arrow-key escape-sequence parsing, hold tracking (taps, key repeats, release) |
 | `test_native_rf` | nRF24 on-air ↔ register address byte order, sniffer duplicate filter, Platinum RF payload decoding, packet runs (counts, gaps, idle flush, `micros()` wrap) |
 | `test_native_ir` | HD IR frame encode/decode: layout, period, round trip of all 16 codes, decoding of real captured frames (including phase-shifted and truncated ones) |
+| `test_native_handheld` | handheld key logic (`handheld.h`): group bytes, the 10 s green window (restart, takeover by another group, expiry), red-mode arrows with the A/B channel, group commands with the minimum hold and release tail, the 5 s cap, setup mode (group, add/remove, timeout), LED states, idle, key debouncing |
 
 **Rule:** logic that can run without hardware goes in `lib/hdcore/`, with a Tier 1 test, rather than in `src/`. This includes protocol encoding, IR frame analysis and state machines.
 

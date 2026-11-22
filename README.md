@@ -65,9 +65,9 @@ Commands and pin map: [docs/FIRMWARE.md](docs/FIRMWARE.md).
 | RF wake frame for IR (`ID 01 00 80`) | ✅ sniffed from both remotes, see [RF_PROTOCOL.md](docs/RF_PROTOCOL.md) |
 | RF transmit emulation | ✅ red-mode wake (`wake`, `send`) and group commands (`grp`): groups 1–4 and All, up and down (2026-11-11); group pairing under the clone's own ID (`pair`, 2026-11-12) |
 | Handheld PCB (KiCad, [hardware/](hardware/README.md)) | ✅ schematic and layout complete, DRC/ERC clean; ordered from JLCPCB 2026-11-17: 5 assembled boards; first power-up plan in [docs/BRINGUP.md](docs/BRINGUP.md) |
-| Enclosure (3D-printed clamshell, [hardware/enclosure/](hardware/enclosure/README.md)) | ✅ modelled, fit checks pass against the board; test print ordered 2026-11-13, not yet received |
+| Enclosure (3D-printed clamshell, [hardware/enclosure/](hardware/enclosure/README.md)) | ✅ modelled, fit checks pass against the board; test print arrived 2026-11-20 and its values are in the model; the case order waits for the first board's measurements |
 | Firmware pin profile for the PCB (`pio run -e handheld`) | ✅ builds (2026-11-14); untested on hardware |
-| Final remote: button UX, indicator LED, deep sleep, enclosure | 🔲 next |
+| Final remote: button UX, indicator LED, deep sleep, enclosure | ⏳ key logic written and host-tested, and running on the breadboard through the laptop keys (fw 0.9.11–0.9.12); real keys, LED patterns and deep sleep wait for the boards |
 
 ## Technical approach
 ### What the original remote does
@@ -102,7 +102,7 @@ Two targets. The **breadboard** was used for the reverse engineering and is what
 - **IR transmit:** TSAL6200 LED driven by an NPN transistor (2N2222) at ~100 mA pulses
 - **RF:** nRF24L01+ module with a PCB antenna, 3.3 V supply and a 10 µF cap at the module
 
-The **handheld PCB** (rev 1, designed and DRC-clean, not yet built) has an ESP32-WROOM-32E, two TSAL6200 IR LEDs on constant-current sinks, no IR receiver, the nRF24 module in a low-profile 2×4 socket (Samtec SLW-104-01-G-D, with the module's header pins trimmed), seven keys plus a recessed SETUP button and an A/B channel slider, a red/green indicator LED seen through a light pipe, a LiPo cell charged over USB-C, and a USB-serial bridge for flashing and debugging. It lives in a 3D-printed clamshell case. See [docs/HARDWARE.md](docs/HARDWARE.md) (spec), [hardware/README.md](hardware/README.md) (layout status), [docs/BOM.md](docs/BOM.md) and [hardware/enclosure/](hardware/enclosure/README.md).
+The **handheld PCB** (rev 1, DRC-clean; ordered 2026-11-17, in assembly at JLCPCB, not yet received) has an ESP32-WROOM-32E, two TSAL6200 IR LEDs on constant-current sinks, no IR receiver, the nRF24 module in a low-profile 2×4 socket (Samtec SLW-104-01-G-D, with the module's header pins trimmed), seven keys plus a recessed SETUP button and an A/B channel slider, a red/green indicator LED seen through a light pipe, a LiPo cell charged over USB-C, and a USB-serial bridge for flashing and debugging. It lives in a 3D-printed clamshell case. See [docs/HARDWARE.md](docs/HARDWARE.md) (spec), [hardware/README.md](hardware/README.md) (layout status), [docs/BOM.md](docs/BOM.md) and [hardware/enclosure/](hardware/enclosure/README.md).
 
 Pin map and firmware commands: [docs/FIRMWARE.md](docs/FIRMWARE.md). The handheld PCB uses a different pin map: see [docs/HARDWARE.md](docs/HARDWARE.md#pin-map-esp32-wroom-32e) and `include/pins.h`.
 

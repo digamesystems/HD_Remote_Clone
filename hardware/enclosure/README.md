@@ -1,10 +1,10 @@
 # Enclosure (3D-printed)
 
-> **TL;DR** (summary checked 2026-11-18): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
+> **TL;DR** (summary checked 2026-11-22): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
-Status (2026-11-16): `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes (the indicator through a light pipe), a lip, battery ribs and the A/B slider drive. `assembly.py` checks the case against the real board's STEP export (`--board`; 72 checks pass) and against placeholder models of the parts the board has no model for. The dimensions those checks depend on are labelled measured, datasheet, guess or test print (`INPUT_SOURCES` in `assembly.py`), and every run lists the guesses. The first test print (JLC3DP, ordered 2026-11-13) arrived 2026-11-20; its results are under Test piece.
+Status (2026-11-22): `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes (the indicator through a light pipe), a lip, battery ribs and the A/B slider (since 2026-11-21 one part that rides on the board, see Decisions). `assembly.py` checks the case against the real board's STEP export (`--board`; 76 checks pass) and against placeholder models of the parts the board has no model for. The dimensions those checks depend on are labelled measured, datasheet, guess or test print (`INPUT_SOURCES` in `assembly.py`), and every run lists the guesses. The first test print (JLC3DP, ordered 2026-11-13) arrived 2026-11-20; its results are under Test piece.
 
 ## Decisions
 
@@ -112,7 +112,7 @@ What stands between now and a case order. Items are open unless ticked; the reco
 **Measurements from parts arriving** (they replace the inputs `assembly.py` lists as guesses)
 - [ ] **PCB outline and thickness** against 145.4 × 40.4 × 1.6 mm: the last fit-margin check (Fit margins, below).
 - [ ] **Battery cell and plug** (Adafruit #1578, due 2026-11-25): the cell's size for the ribs, the plug's envelope (`PLUG_L`).
-- [x] **M2 screw heads:** **3.2 mm** across, **1.3 mm** tall (measured by John, 2026-11-21; `HEAD_D`, `HEAD_H`), well under the 4.2 mm counterbore.
+- [x] **M2 screw heads:** **3.2 mm** across, **1.3 mm** tall (measured by John, 2026-11-21; `HEAD_D`, `HEAD_H`), 0.4 mm clear in the 4.0 mm counterbore.
 - [ ] **On the first fitted board:** THT pin protrusion below the board (`PIN_PROTRUDE`), the IR LED tip positions after bending, the A/B actuator's thickness (`AB_SW_ACT`), and the solder on SW509's mounting tabs beside the slider's foot.
 
 **Preparing the order**

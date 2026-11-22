@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-18 20:03): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-22): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -143,7 +143,7 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 - **Assembly:** 77 parts on 34 BOM lines. Hand-fitted, not in the BOM: J102, J401, SW501–SW508, D303, D304, D501, TP604–TP606. C403 and R401 are not fitted. The note to JLC says so and that the CPL rotations are already corrected.
 - **What the dry run found:** SW201 and SW202 (the same switch, KMR221NGLFS, C269272) had to share one BOM line or JLC wouldn't auto-select the part. JLC's models are rotated from KiCad's footprints: every SOT-23 needs +180, the SOT-23-5 and -6 parts −90, and U201 (ESP32 module) needs −90 and a 3.81 mm shift along its axis. These corrections are in `CPL_FIXES` in `make_jlc.py`. Every polarized part was checked against JLC's pin-1 marks on a fresh load, with no hand edits.
 - **Engineering review (2026-11-18, John):** JLC's engineers asked to confirm the parts placement before production. "Show Revised Items" listed **0 revisions**, with 77 of 77 parts assembled and 0 unassembled, so the CPL's rotation fixes needed no change on their side. John answered "Yes, please proceed to production" and the confirmation shows Completed.
-- **Production (status reported by John, 2026-11-21):** in production since 2026-11-18 07:04 (manufacturing data for the PCB and the SMT job finished that afternoon); in the factory since 2026-11-19, **estimated finish 2026-11-21 16:55** (JLC's time). Not shipped yet.
+- **Production (status reported by John, 2026-11-22):** in production since 2026-11-18 07:04 (manufacturing data for the PCB and the SMT job finished that afternoon). The bare PCBs went into JLC's factory on 2026-11-19, estimated to finish 2026-11-21 16:55. Since 2026-11-22 05:20 the assembly (SMT) job has been running in JLCPCB Factory No. 2, **estimated finish 2026-11-24 20:00** (JLC's time). Not shipped yet.
 - **Hand-fitted parts (DigiKey, ordered 2026-11-17):** in transit by FedEx Ground, **estimated delivery Tuesday 2026-11-24** (status reported by John, 2026-11-21), so they should be on hand before the boards.
 - **Batteries (Adafruit #1578 ×5, ordered 2026-11-17):** on the way by UPS, **estimated delivery Wednesday 2026-11-25** (status reported by John, 2026-11-21). On arrival, measure a cell and its plug for the case (battery ribs, `PLUG_L`) and meter each plug's polarity (stage 7).
 - **After the board arrives:** follow the stages below, and solder the hand-fitted parts soon, since OSP has a short shelf life.

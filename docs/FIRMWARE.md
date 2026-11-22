@@ -1,6 +1,6 @@
 # Firmware and pin map
 
-> **TL;DR** (summary checked 2026-11-18 15:07): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
+> **TL;DR** (summary checked 2026-11-22): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
 
 One PlatformIO codebase runs on **two hardware targets**. Which one you get depends on the build environment you pick.
 
@@ -9,7 +9,7 @@ One PlatformIO codebase runs on **two hardware targets**. Which one you get depe
 | **Breadboard** | `esp32dev` (default) | An ESP32-DevKitC wired to an IR receiver, an IR LED and an nRF24 module. This is where the reverse engineering was done and where the firmware is tested. | Working |
 | **Handheld PCB, rev 1** | `handheld` | The custom remote board (ESP32-WROOM-32E, keys, A/B slider, indicator LED, no IR receiver). | Builds. Not yet run on hardware (boards ordered 2026-11-17) |
 
-**What this firmware is today.** It is a serial-menu toolkit (type `help` in the monitor): IR capture and replay, nRF24 self-test, scan and sniff, and commands that drive shades directly (`send`, `grp`, `pair`). It is not yet the finished handheld firmware. The remote's button behaviour (group window, hold-to-send arrows, deep sleep) is the next phase and isn't written.
+**What this firmware is today.** It is a serial-menu toolkit (type `help` in the monitor): IR capture and replay, nRF24 self-test, scan and sniff, and commands that drive shades directly (`send`, `grp`, `pair`). It is not yet the finished handheld firmware. The remote's key logic (group window, red/green arrows, setup mode, the 5 s cap, debouncing) is written and host-tested in [`lib/hdcore/src/handheld.h`](../lib/hdcore/src/handheld.h) (fw 0.9.11), and the breadboard's laptop keys 1–4 and arrows already run through it. Still to write: reading the PCB's real keys, the LED's PWM patterns, and deep sleep. They wait for the boards.
 
 **How the targets are switched.** The `handheld` environment sets a compile-time flag, `-DHD_BOARD_HANDHELD`. Two headers then select what differs:
 
@@ -94,6 +94,7 @@ src/main.cpp          serial menu / dispatch
 src/ir_tools.*        IR capture, dump, replay
 src/rf_tools.*        nRF24 self-test, scanner, sniffer, wake / group / setup frames
 lib/hdcore/           hardware-independent logic (HD IR frame codec, Platinum RF payloads, parsing,
-                      address order, dup filter, packet runs, arrow-key hold tracking)
+                      address order, dup filter, packet runs, arrow-key hold tracking,
+                      handheld key logic and debouncing)
 test/                 Tier 1 host tests (test_native_*) and Tier 2 device tests (test_device_*)
 ```
