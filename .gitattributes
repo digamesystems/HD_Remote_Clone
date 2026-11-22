@@ -1,0 +1,3 @@
+# Git hooks run under sh, which fails on CRLF line endings: keep them LF on
+# every checkout, whatever core.autocrlf says.
+scripts/hooks/* text eol=lf
