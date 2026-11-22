@@ -1,0 +1,60 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Refuses a push if anything being pushed contains a private remote ID.
+#
+# The IDs are not in the repo (it's public). They are read from
+# .git/private-ids, one ID per line as two hex bytes ("ab cd"); blank lines
+# and lines starting with # are ignored. Without that file the hook warns
+# and lets the push through.
+#
+# Install once per clone:  git config core.hooksPath scripts/hooks
+# Bypass (only if a hit is a false positive): git push --no-verify
+
+ids_file="$(git rev-parse --git-dir)/private-ids"
+if [ ! -f "$ids_file" ]; then
+    echo "pre-push: no $ids_file, ID redaction check skipped" >&2
+    exit 0
+fi
+
+# Build one extended regex covering the spellings an ID can take:
+# "abcd", "ab cd", "ab:cd", "ab-cd", "0xab 0xcd", "0xab, 0xcd" and decimal "171 205".
+pattern=""
+while read -r a b _; do
+    case "$a" in ''|'#'*) continue ;; esac
+    da=$(printf '%d' "0x$a") || exit 1
+    db=$(printf '%d' "0x$b") || exit 1
+    # The ID must stand alone: no letter, digit or hyphen on either side, so
+    # part numbers and KiCad UUIDs (8-4-4-4-12 hex) don't trigger it.
+    p="(^|[^0-9a-z-])(0x)?$a[ :,-]{0,2}(0x)?$b([^0-9a-z-]|$)|(^|[^0-9.])$da[ ,]+$db([^0-9.]|$)"
+    pattern="${pattern:+$pattern|}$p"
+done < "$ids_file"
+[ -z "$pattern" ] && exit 0
+
+zero=0000000000000000000000000000000000000000
+status=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+    [ "$local_sha" = "$zero" ] && continue   # deleting a ref
+    if [ "$remote_sha" = "$zero" ]; then
+        range="$local_sha --not --remotes"
+    else
+        range="$remote_sha..$local_sha"
+    fi
+    # Files as pushed.
+    if git grep -I -i -n -E -e "$pattern" "$local_sha" -- >/dev/null 2>&1; then
+        echo "pre-push: private ID in files at $local_ref:" >&2
+        git grep -I -i -l -E -e "$pattern" "$local_sha" -- | sed 's/^/  /' >&2
+        status=1
+    fi
+    # Lines added by, and messages of, every commit being pushed (catches an
+    # ID added in one commit and removed in a later one). Tags included.
+    hits=$(git log -p --format='commit %h%n%B' $range 2>/dev/null |
+        grep -i -E -e "$pattern" | grep -v -E '^-' | head -5)
+    if [ -n "$hits" ]; then
+        echo "pre-push: private ID in commits being pushed to $remote_ref" >&2
+        echo "  (matching lines not shown; run: git log -p $range)" >&2
+        status=1
+    fi
+done
+[ $status -ne 0 ] && echo "pre-push: push refused. Redact as xx xx / yy yy." >&2
+exit $status

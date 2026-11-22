@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Runs on every push and pull request: Tier 1 native tests, firmware builds
+# for the breadboard and the handheld PCB, and the repo's check scripts.
+# Not here: Tier 2 (needs the board) and check_pins.py (needs KiCad's
+# kicad-cli); run those locally.
+name: checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+      - run: pip install platformio
+      - name: Tier 1 native tests
+        run: pio test -e native
+      - name: Build breadboard firmware
+        run: pio run -e esp32dev
+      - name: Build handheld firmware
+        run: pio run -e handheld
+
+  repo-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # check_tldr.py uses git blame and history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Footprint overrides
+        run: python -I hardware/tools/check_fp_overrides.py
+      - name: TL;DR staleness (advisory)
+        continue-on-error: true
+        run: python -I hardware/tools/check_tldr.py
