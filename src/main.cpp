@@ -13,12 +13,13 @@
 #include "parse.h"
 #include "pins.h"
 #include "rf_tools.h"
+#include "tx_scheduler.h"
 
 namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.12";
+constexpr const char* kFwVersion = "0.9.13";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -81,11 +82,6 @@ void runInterleaved(const String& label, uint8_t code, RfStep rfStep) {
   Serial.printf("  (total %lu ms)\n", (unsigned long)(millis() - t0));
 }
 
-// Arrow keys with seq on: wake frames interleaved with the IR.
-void runSeq(uint8_t code) {
-  runInterleaved("Seq", code, [](uint8_t ch) { return rf::sendWakeOn(ch, seq.rfMs); });
-}
-
 // Group assignment, as the remote does it in setup mode (SETUP, group key, then
 // OPEN to add or CLOSE to remove, aimed at the shade): setup frames ID 30|31
 // GROUP 80 interleaved with the OPEN / CLOSE IR code (channel A). The IR picks
@@ -106,9 +102,12 @@ void help() {
       "Commands (any line except a # comment stops a running mode):\n\n"
       " USER COMMANDS\n"
       " -------------\n\n"
-      "  Up/Down arrow keys      send up/down (works at the prompt or during capture); see seq\n"
+      "  Up/Down arrow keys      the handheld's arrows, via its key logic and TX scheduler:\n"
+      "                          red mode = wake + IR steps (see seq); in a group window,\n"
+      "                          the group command + tail. A tap is 300 ms; hold on to\n"
+      "                          send while the key repeats. Prints a summary per press\n"
       "  1-4 (empty line)        group key 1-4: opens the green window (10 s); arrow keys\n"
-      "                          pressed in it send that group's command, like grp\n"
+      "                          pressed in it send that group's command\n"
       "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
       "                          (default 300, max 5000), then the release tail. No IR\n"
       "  pos <mask> <0-255> [ms50 ms32]  EXPERIMENTAL absolute position (spitcool's bridge\n"
@@ -133,9 +132,10 @@ void help() {
       "  seq [on|off|rf|gap|ir <ms>]  arrow keys: RF ch33, IR, RF ch52, IR, RF ch71, IR\n"
       "                          (on, default: rf 50, gap 0, ir 50) or wake + one 500 ms\n"
       "                          IR burst (off)\n"
-      "  hold [on|off|first <ms>]  arrow keys send seq steps while held and print the\n"
-      "                          hold time (first: release timeout before the keyboard's\n"
-      "                          first repeat, default 700). Either arrow stops at 5000 ms\n"
+      "  hold [on|off|first <ms>]  on: arrow keys send while the key repeats (release =\n"
+      "                          repeats stop; first: wait for the keyboard's first repeat,\n"
+      "                          default 700). off (default): each press is a 300 ms tap.\n"
+      "                          Either way the arrows stop at 5000 ms\n"
       "  wake [ms|on|off]       send the RF wake alone (default 450 ms), or turn the\n"
       "                          automatic wake before send / arrow keys on or off\n"
       "  play [slot|last] [n] [gap_ms]  replay at 40 kHz (default last, 1x, 40 ms)\n"
@@ -225,59 +225,14 @@ void runSend(uint8_t code, uint32_t ms) {
                 packets, (unsigned long)(millis() - t0));
 }
 
-// Hold mode: an arrow key sends seq steps for as long as it's held, like the
-// real remote, and reports the hold time. For timing how long the shade takes
-// to respond: hold until the blind does what you want, then let go.
+// Hold mode: an arrow key counts as held for as long as the keyboard repeats
+// it, like the real remote's key, and the hold time is reported. A terminal
+// sends no key-up, so the release is inferred from the repeats stopping. With
+// hold off, every arrow press is a tap of kTapMs.
 bool holdMode = false;
 uint32_t holdFirstGapMs = 700;          // > keyboard repeat delay (Windows default ~500 ms)
 constexpr uint32_t kHoldRepeatGapMs = 200;  // > one step (~100 ms) + repeat interval (~33 ms)
-
-void runHold(uint8_t code) {
-  hd::HoldTracker hold(holdFirstGapMs, kHoldRepeatGapMs);
-  const hd::KeyEvent mine =code == hd::ir::kCodeUp ? hd::KeyEvent::Up : hd::KeyEvent::Down;
-  const uint32_t stepMs = (autoWake ? seq.rfMs + seq.gapMs : 0) + seq.irMs;
-  const uint32_t capMs = hd::ir::maxSendMs(code);
-  uint32_t t0 = millis();
-  hold.press(t0);
-  int steps = 0;
-  long packets = 0;
-  bool otherKey = false, capped = false;
-  // Key repeats queue up while a step blocks; check between RF and IR as well
-  // as after each step, so a repeat is timed to within ~50 ms.
-  auto drain = [&] {
-    while (Serial.available()) {
-      hd::KeyEvent k = keys.feed(Serial.read());
-      if (k == mine) hold.repeat(millis());
-      else if (k != hd::KeyEvent::Consumed) otherKey = true;
-    }
-  };
-  for (;;) {
-    if (autoWake) {
-      long n = rf::sendWakeOn(hd::rf::kChannels[steps % 3], seq.rfMs);
-      if (n < 0) return;  // no ID or no radio; reason already printed
-      packets += n;
-      if (seq.gapMs) delay(seq.gapMs);
-      drain();
-    }
-    ir::sendCode(code, seq.irMs, true);
-    steps++;
-    drain();
-    uint32_t now = millis();
-    if (otherKey || hold.released(now)) break;
-    if (now - t0 + stepMs > capMs) { capped = true; break; }
-  }
-  uint32_t total = millis() - t0;
-  Serial.printf("Hold %s %s: ", code == hd::ir::kCodeUp ? "UP" : "DOWN",
-                hd::ir::codeToBits(code).c_str());
-  if (hold.repeats())
-    Serial.printf("held %lu ms (%lu key repeats)", (unsigned long)hold.heldMs(),
-                  (unsigned long)hold.repeats());
-  else
-    Serial.printf("tap (no key repeats: released within %lu ms)", (unsigned long)holdFirstGapMs);
-  Serial.printf(", sent %d steps in %lu ms, %ld wake packets%s%s\n", steps, (unsigned long)total,
-                packets, capped ? ", STOPPED at the send limit" : "",
-                otherKey ? ", ended by another key" : "");
-}
+constexpr uint32_t kTapMs = 300;  // hold off: released this long after the press (3 RF+IR cycles)
 
 // Handheld behaviour (lib/hdcore handheld.h), driven from the laptop until the
 // boards' keys are wired: digits 1-4 on an empty command line are group keys 1-4
@@ -321,22 +276,123 @@ void pollUi() {
   windowShown = green;
 }
 
-// One burst per key press. A held key repeats, and those repeats pile up during
-// the blocking send, so discard input until it goes quiet. That also drops any
-// partial escape sequence, which would otherwise land in the command line.
+// Transmit scheduler (lib/hdcore tx_scheduler.h): turns the handheld logic's
+// output into short RF / IR steps, as the handheld firmware will.
+hd::tx::Scheduler txs;
+
+struct ArrowStats {
+  hd::ui::Tx kind = hd::ui::Tx::None;  // what the press started as
+  uint8_t group = 0;
+  uint32_t rfSteps = 0, irSteps = 0, heldMs = 0, tailMs = 0;
+  long packets = 0;
+  uint32_t worstOverrunMs = 0;  // longest a step ran past its nominal length
+};
+
+// Runs one arrow press through the handheld logic and the scheduler, step by
+// step, until there's nothing left to send (the group tail included). The
+// release comes from the key repeats (hold on) or after kTapMs (hold off).
+void runArrow(uint8_t code) {
+  const bool up = code == hd::ir::kCodeUp;
+  const hd::ui::Key k = up ? hd::ui::Key::Up : hd::ui::Key::Down;
+  const hd::KeyEvent mine = up ? hd::KeyEvent::Up : hd::KeyEvent::Down;
+  hd::tx::Config& c = txs.config();
+  c.rfMs = seq.rfMs;
+  c.gapMs = seq.gapMs;
+  c.irMs = seq.irMs;
+  c.wake = autoWake;
+  uint8_t id[2];
+  rf::getRemoteId(id);  // sendStep reports a missing ID
+  txs.setId(id[0], id[1]);
+  txs.reset();
+
+  hd::HoldTracker hold(holdFirstGapMs, kHoldRepeatGapMs);
+  const uint32_t t0 = millis();
+  ui.press(k, t0);
+  hold.press(t0);
+  ArrowStats st;
+  bool released = false, otherKey = false, capped = false, failed = false;
+  for (;;) {
+    while (Serial.available()) {  // key repeats queue up during a step
+      hd::KeyEvent e = keys.feed(Serial.read());
+      if (e == mine) hold.repeat(millis());
+      else if (e != hd::KeyEvent::Consumed) otherKey = true;
+    }
+    uint32_t now = millis();
+    if (!released && (otherKey || (holdMode ? hold.released(now) : now - t0 >= kTapMs))) {
+      ui.release(k, now);
+      released = true;
+    }
+    const hd::ui::Output o = ui.update(now);
+    showLed(o.led);
+    if (st.kind == hd::ui::Tx::None) {
+      st.kind = o.tx;
+      st.group = o.group;
+    }
+    const hd::tx::Step s = txs.next(o);
+    if (s.kind == hd::tx::StepKind::None) {
+      if (released) break;
+      capped = true;  // still held, but the 5 s cap has stopped it
+      delay(1);
+      continue;
+    }
+    const uint32_t start = millis();
+    if (s.kind == hd::tx::StepKind::Rf) {
+      long n = rf::sendStep(s.payload, s.channel, s.ms);
+      if (n < 0) { failed = true; break; }  // no ID or no radio; reason already printed
+      st.packets += n;
+      st.rfSteps++;
+      if (s.payload[2] == hd::rf::kModeGroup) (s.payload[4] & 0x80 ? st.heldMs : st.tailMs) += s.ms;
+    } else if (s.kind == hd::tx::StepKind::Ir) {
+      ir::sendCode(s.irCode, s.ms, true);
+      st.irSteps++;
+    } else {
+      delay(s.ms);
+    }
+    const uint32_t took = millis() - start;
+    if (took > s.ms && took - s.ms > st.worstOverrunMs) st.worstOverrunMs = took - s.ms;
+  }
+  if (failed) {
+    if (!released) ui.release(k, millis());
+    txs.reset();
+    return;
+  }
+  const uint32_t total = millis() - t0;
+
+  Serial.printf("Arrow %s, ", up ? "UP" : "DOWN");
+  if (st.kind == hd::ui::Tx::Group)
+    Serial.printf("group %s: A%c %lu ms, tail %lu ms, %ld packets rotating ch 33/52/71",
+                  hd::rf::groupName(st.group).c_str(), up ? '1' : '2', (unsigned long)st.heldMs,
+                  (unsigned long)st.tailMs, st.packets);
+  else
+    Serial.printf("red %s%s: %lu RF steps (%ld wake packets), %lu IR steps",
+                  hd::ir::codeToBits(code).c_str(), autoWake ? "" : " (wake off)",
+                  (unsigned long)st.rfSteps, st.packets, (unsigned long)st.irSteps);
+  if (!holdMode) Serial.printf("; tap (%lu ms)", (unsigned long)kTapMs);
+  else if (hold.repeats())
+    Serial.printf("; held %lu ms (%lu key repeats)", (unsigned long)hold.heldMs(),
+                  (unsigned long)hold.repeats());
+  else
+    Serial.printf("; tap (no key repeats within %lu ms)", (unsigned long)holdFirstGapMs);
+  Serial.printf("; total %lu ms, worst step overrun %lu ms%s%s\n", (unsigned long)total,
+                (unsigned long)st.worstOverrunMs, capped ? ", STOPPED at the 5 s limit" : "",
+                otherKey ? ", ended by another key" : "");
+}
+
+// One arrow press. A held key repeats, and the repeats left over at the end are
+// discarded until input goes quiet. That also drops any partial escape
+// sequence, which would otherwise land in the command line.
 void sendArrow(uint8_t code) {
   Serial.println();
   const bool up = code == hd::ir::kCodeUp;
   const hd::ui::Key k = up ? hd::ui::Key::Up : hd::ui::Key::Down;
-  ui.press(k, millis());
-  const hd::ui::Output o = ui.update(millis());
-  showLed(o.led);  // red for red mode, green for a group command
-  if (o.tx == hd::ui::Tx::Group) {
-    rf::sendGroup(o.group, up, kGroupHoldMs, kGroupTailMs);  // like `grp <n> up|down`
-  } else if (holdMode) runHold(code);
-  else if (seq.on) runSeq(code);
-  else sendIr(code, kArrowBurstMs);
-  ui.release(k, millis());
+  if (seq.on || ui.update(millis()).led == hd::ui::Led::Green) {
+    runArrow(code);  // the handheld path; the group window ignores `seq off`
+  } else {  // seq off: the old pattern, one wake on all channels, then one IR burst
+    ui.press(k, millis());
+    showLed(ui.update(millis()).led);
+    sendIr(code, kArrowBurstMs);
+    ui.release(k, millis());
+  }
   uint32_t lastInput = millis();
   while (millis() - lastInput < kArrowQuietMs) {
     if (Serial.available()) {
@@ -477,10 +533,12 @@ void handle(String cmdline) {
     else if (tok[1] == "first" && v >= 100 && v <= 2000) holdFirstGapMs = v;
     else if (tok[1].length()) ok = false;
     if (ok)
-      Serial.printf("Hold mode %s: arrow keys send seq steps while held (release = no key "
-                    "repeat for %lu ms before the first repeat, %lu ms after)\n",
-                    holdMode ? "on" : "off", (unsigned long)holdFirstGapMs,
-                    (unsigned long)kHoldRepeatGapMs);
+      if (holdMode)
+        Serial.printf("Hold mode on: arrow keys send while held (release = no key repeat for "
+                      "%lu ms before the first repeat, %lu ms after)\n",
+                      (unsigned long)holdFirstGapMs, (unsigned long)kHoldRepeatGapMs);
+      else
+        Serial.printf("Hold mode off: each arrow press is a %lu ms tap\n", (unsigned long)kTapMs);
   }
   else if (c == "id") {
     tok[1].toLowerCase();

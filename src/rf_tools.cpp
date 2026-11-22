@@ -340,6 +340,19 @@ long sendWakeOn(uint8_t channel, uint32_t ms) {
   return burstOn(p, channel, ms);
 }
 
+long sendStep(const uint8_t* payload, uint8_t channel, uint32_t ms) {
+  uint8_t p[hd::rf::kPayloadSize];
+  if (!prepareWake(p)) return -1;  // radio setup only; the caller's payload is sent
+  if (channel) return burstOn(payload, channel, ms);
+  return rotateBurst(payload, ms);
+}
+
+bool getRemoteId(uint8_t out[2]) {
+  out[0] = remoteId[0];
+  out[1] = remoteId[1];
+  return haveRemoteId;
+}
+
 long sendSetupOn(uint8_t group, bool add, uint8_t channel, uint32_t ms) {
   uint8_t p[hd::rf::kPayloadSize];
   if (!prepareWake(p)) return -1;  // radio setup; the payload is replaced below
