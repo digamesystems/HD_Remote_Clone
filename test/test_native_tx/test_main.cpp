@@ -211,6 +211,22 @@ void test_group_hold_sends_until_release_then_tail() {
   TEST_ASSERT_UINT32_WITHIN(20, 330, t.tailMs);
 }
 
+// The 5 s cap (decided 2026-11-18, John) on a group press, through the
+// scheduler: A2 stops at 5 s while the key is still held, the tail follows,
+// and nothing more goes out until the key is released.
+void test_group_hold_capped_at_5s_then_tail() {
+  ui::Handheld h;
+  Scheduler s = sched();
+  h.press(ui::Key::G2, 0);
+  h.release(ui::Key::G2, 50);
+  h.press(ui::Key::Down, 1000);
+  Totals t = run(h, s, ui::Key::Down, 1000, 9000);  // held 8 s
+  TEST_ASSERT_UINT32_WITHIN(20, 5000, t.heldMs);
+  TEST_ASSERT_UINT32_WITHIN(20, 330, t.tailMs);
+  TEST_ASSERT_EQUAL_UINT32(0, t.irMs);
+  TEST_ASSERT_UINT32_WITHIN(40, 1000 + 5000 + 330, t.endMs);  // silent from then to release
+}
+
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_none_sends_nothing);
@@ -225,5 +241,6 @@ int main(int, char**) {
   RUN_TEST(test_red_hold_capped_at_5s);
   RUN_TEST(test_group_tap_sends_minimum_hold_then_tail);
   RUN_TEST(test_group_hold_sends_until_release_then_tail);
+  RUN_TEST(test_group_hold_capped_at_5s_then_tail);
   return UNITY_END();
 }

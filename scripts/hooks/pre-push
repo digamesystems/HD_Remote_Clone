@@ -48,7 +48,9 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     fi
     # Lines added by, and messages of, every commit being pushed (catches an
     # ID added in one commit and removed in a later one). Tags included.
-    hits=$(git log -p --format='commit %h%n%B' $range 2>/dev/null |
+    # Messages are indented 4 spaces (%w) so a "- " bullet in a message isn't
+    # dropped with the diff's deleted lines by the grep -v '^-' below.
+    hits=$(git log -p --format='commit %h%n%w(0,4,4)%B' $range 2>/dev/null |
         grep -i -E -e "$pattern" | grep -v -E '^-' | head -5)
     if [ -n "$hits" ]; then
         echo "pre-push: private ID in commits being pushed to $remote_ref" >&2
