@@ -9,7 +9,9 @@
 // Behaviour copies the original Platinum remote as observed (see CLAUDE.md and
 // docs/RF_PROTOCOL.md):
 // - Group keys 1-4 and ALL send nothing. Each press opens (or restarts) a green
-//   window, about 6.5 s on our remote (the manual says 5 s).
+//   window: 10 s (decided 2026-11-21, John; the original's is ~6.5 s on our
+//   remote, 5 s in the manual). A different group key inside the window takes
+//   over, and the new group gets the full window.
 // - An arrow pressed inside the window sends the group command
 //   (ID 20 GROUP A1/A2) while held, then the release tail (21/22, ~330 ms).
 // - An arrow pressed outside the window is red mode: wake frames (ID 01 00 80)
@@ -51,7 +53,7 @@ struct Output {
 };
 
 struct Config {
-  uint32_t windowMs = 6500;        // green window after a group key (measured on our remote)
+  uint32_t windowMs = 10000;       // green window after a group key (decided 2026-11-21, John; original ~6.5 s)
   uint32_t groupMinHeldMs = 300;   // a tapped arrow still sends A1/A2 this long (assumed: = `grp` default)
   uint32_t groupTailMs = 330;      // release tail length (measured)
   uint32_t maxSendMs = 5000;       // cap on any one arrow transmission (decided 2026-11-18, John)

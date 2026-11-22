@@ -18,7 +18,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.11";
+constexpr const char* kFwVersion = "0.9.12";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -107,7 +107,7 @@ void help() {
       " USER COMMANDS\n"
       " -------------\n\n"
       "  Up/Down arrow keys      send up/down (works at the prompt or during capture); see seq\n"
-      "  1-4 (empty line)        group key 1-4: opens the green window (6.5 s); arrow keys\n"
+      "  1-4 (empty line)        group key 1-4: opens the green window (10 s); arrow keys\n"
       "                          pressed in it send that group's command, like grp\n"
       "  grp <1-4|all> <up|down> [ms]  RF group command (green mode): held frames for ms\n"
       "                          (default 300, max 5000), then the release tail. No IR\n"

@@ -6,6 +6,8 @@
 
 using namespace hd::ui;
 
+static const uint32_t kW = Config().windowMs;  // the green window (10 s)
+
 void setUp() {}
 void tearDown() {}
 
@@ -63,9 +65,9 @@ void test_group_key_alone_sends_nothing_and_lights_green() {
   Output o = h.update(10);
   TEST_ASSERT_EQUAL(Tx::None, o.tx);
   TEST_ASSERT_EQUAL(Led::Green, o.led);
-  TEST_ASSERT_FALSE(h.idle(6499));
-  assertIdleOut(h.update(6500));  // window over
-  TEST_ASSERT_TRUE(h.idle(6500));
+  TEST_ASSERT_FALSE(h.idle(kW - 1));
+  assertIdleOut(h.update(kW));  // window over
+  TEST_ASSERT_TRUE(h.idle(kW));
 }
 
 void test_arrow_in_window_sends_group_then_tail() {
@@ -100,12 +102,16 @@ void test_tapped_group_arrow_still_sends_minimum() {
   TEST_ASSERT_EQUAL(Tx::None, h.update(730).tx);
 }
 
+void test_window_is_10s() {
+  TEST_ASSERT_EQUAL_UINT32(10000, kW);  // decided 2026-11-21 (John)
+}
+
 void test_group_key_restarts_window_and_changes_group() {
   Handheld h;
   h.press(Key::G1, 0);
-  h.press(Key::G4, 5000);
-  h.press(Key::Up, 11000);  // 6 s after the second key: still open
-  Output o = h.update(11000);
+  h.press(Key::G4, 8000);         // inside group 1's window: group 4 takes over
+  h.press(Key::Up, 8000 + kW - 1);  // past group 1's window, inside group 4's fresh one
+  Output o = h.update(8000 + kW - 1);
   TEST_ASSERT_EQUAL(Tx::Group, o.tx);
   TEST_ASSERT_EQUAL_HEX8(0x08, o.group);
 }
@@ -120,26 +126,26 @@ void test_all_key_group_ff() {
 void test_arrow_after_window_is_red() {
   Handheld h;
   h.press(Key::G1, 0);
-  h.press(Key::Up, 6500);
-  TEST_ASSERT_EQUAL(Tx::Wake, h.update(6500).tx);
+  h.press(Key::Up, kW);
+  TEST_ASSERT_EQUAL(Tx::Wake, h.update(kW).tx);
 }
 
 void test_group_command_outlives_window_while_held() {
   Handheld h;
   h.press(Key::G1, 0);
-  h.press(Key::Up, 6400);
-  TEST_ASSERT_EQUAL(Tx::Group, h.update(6400).tx);
-  TEST_ASSERT_EQUAL(Tx::Group, h.update(8000).tx);  // window closed, command carries on
-  TEST_ASSERT_EQUAL(Led::Green, h.update(8000).led);
+  h.press(Key::Up, kW - 100);
+  TEST_ASSERT_EQUAL(Tx::Group, h.update(kW - 100).tx);
+  TEST_ASSERT_EQUAL(Tx::Group, h.update(kW + 1500).tx);  // window closed, command carries on
+  TEST_ASSERT_EQUAL(Led::Green, h.update(kW + 1500).led);
 }
 
 void test_arrow_does_not_restart_window_by_default() {
   Handheld h;
   h.press(Key::G1, 0);
-  h.press(Key::Up, 6000);
-  h.release(Key::Up, 6200);
-  h.press(Key::Up, 7000);  // after the window, measured from the group key
-  TEST_ASSERT_EQUAL(Tx::Wake, h.update(7000).tx);
+  h.press(Key::Up, kW - 1000);
+  h.release(Key::Up, kW - 800);
+  h.press(Key::Up, kW + 500);  // after the window, measured from the group key
+  TEST_ASSERT_EQUAL(Tx::Wake, h.update(kW + 500).tx);
 }
 
 void test_arrow_restarts_window_when_configured() {
@@ -147,10 +153,10 @@ void test_arrow_restarts_window_when_configured() {
   c.arrowRestartsWindow = true;
   Handheld h(c);
   h.press(Key::G1, 0);
-  h.press(Key::Up, 6000);
-  h.release(Key::Up, 6200);
-  h.press(Key::Up, 7000);
-  TEST_ASSERT_EQUAL(Tx::Group, h.update(7000).tx);
+  h.press(Key::Up, kW - 1000);
+  h.release(Key::Up, kW - 800);
+  h.press(Key::Up, kW + 500);
+  TEST_ASSERT_EQUAL(Tx::Group, h.update(kW + 500).tx);
 }
 
 void test_red_arrow_capped_at_5s() {
@@ -274,6 +280,7 @@ int main(int, char**) {
   RUN_TEST(test_group_key_alone_sends_nothing_and_lights_green);
   RUN_TEST(test_arrow_in_window_sends_group_then_tail);
   RUN_TEST(test_tapped_group_arrow_still_sends_minimum);
+  RUN_TEST(test_window_is_10s);
   RUN_TEST(test_group_key_restarts_window_and_changes_group);
   RUN_TEST(test_all_key_group_ff);
   RUN_TEST(test_arrow_after_window_is_red);
