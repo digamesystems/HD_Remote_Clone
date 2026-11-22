@@ -1,6 +1,6 @@
 # Firmware and pin map
 
-> **TL;DR** (summary checked 2026-11-22): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
+> **TL;DR** (summary checked 2026-11-22 11:21): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
 
 One PlatformIO codebase runs on **two hardware targets**. Which one you get depends on the build environment you pick.
 
