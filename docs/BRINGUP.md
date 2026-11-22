@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-22): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-22 13:16): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -75,6 +75,7 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 ## Stage 1: unpowered checks (no battery, no nRF24 module)
 
 1. Visual: solder bridges on U102 (CP2102N QFN) and U201's castellations; D303/D304 and D501 orientation (square pad = cathode for the TSAL6200s); J102 and J401 seated.
+   - **J101 USB-C** (fitted by JLC; added 2026-11-22): present, seated flat with both locating posts in their holes, and overhanging the edge as designed. Its four shell pegs go through plated slots (pads `SH`): look at both sides of the board for solder filling all four, since they carry the plug's insertion and pull forces, not the 16 SMD signal pads. How JLC solders them isn't known. If any is dry or only partly filled, hand-solder it before stage 2. With the meter: shell to GND (TP604) reads near 0 Ω.
 2. Resistance to GND (TP604): **VBUS (TP603)**, **VSYS (TP102)**, **+3V3 (TP602)**, **VBAT (TP601)**. None should read a short (a few ohms). Expect kilohms or more; +3V3 may read lower through the ESP32 and caps, but not near zero.
 3. VBUS to VSYS should show D102's diode drop on the diode range in one direction only.
 
