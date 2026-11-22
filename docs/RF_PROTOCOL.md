@@ -146,6 +146,12 @@ So RF group control works from our own radio. This also confirms, by the shades'
 - **One miss:** at 14:51:03 a `grp 4 down` sent all its packets and the shade didn't move. About 1 miss in 35 group commands so far.
 - **Not tested yet:** whether an opposite group command stops a moving shade (the opposite IR arrow does). A timed preset would need it.
 
+**2026-11-21, hand around the radio (reported by John, log not committed).** Purpose: to see whether a hand gripping the handheld's case would badly limit its range. On the breadboard clone (fw 0.9.12), John closed his hand all the way around the nRF24 module (PCB antenna, `pa high`) and sent group key + arrow from more than 50 ft away, through an intervening wall. **The blinds still responded.** Trial counts weren't recorded.
+
+- **Our reading (not measured):** a rough link budget leaves margin for this. The radio sends at about −6 dBm, and an nRF24 at 2 Mbps hears down to about −82 dBm. Free-space loss at 15 m and 2.4 GHz is about 64 dB, and a wall costs perhaps 3–10 dB, which still leaves some 5–15 dB. A hand typically costs something like 10–20 dB.
+- **Caveat:** on the breadboard the jumper wires and the DevKitC's ground also radiate a little, and the hand didn't cover them. The handheld PCB's layout differs, so recheck once a case is assembled.
+- **Implication:** a hand on the case is unlikely to limit normal in-house use. A hand also isn't an RF shield for tests: as with IR, blocking RF needs a verified foil enclosure (see [IR_PROTOCOL.md](IR_PROTOCOL.md), Shade tests).
+
 ## Absolute position (experimental)
 
 [spitcool/hd-platinum-rf](https://github.com/spitcool/hd-platinum-rf) has decoded position frames from the original **Platinum bridge** (`docs/rf-protocol.md`, "Position packets correlated with original-bridge commands — 2026-10-23"). They use the handheld's air settings (2 Mbps, `E7E7E7`, CRC-16, 5 bytes, no ack); only the payload differs. Layout per spitcool:

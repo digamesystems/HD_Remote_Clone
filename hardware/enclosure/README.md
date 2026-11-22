@@ -256,7 +256,7 @@ Generated from the model by `views.py` into [`docs/images/enclosure/`](../../doc
 | | |
 |---|---|
 | ![Assembled, black shells and grey keys](../../docs/images/enclosure/enclosure_finish.png) | ![Exploded, both shells see-through](../../docs/images/enclosure/enclosure_exploded.png) |
-| Finished look: natural-grey MJF shells, dyed-black keys, white-filled legends | Exploded: top shell (with keycaps and A/B slider) lifted 30 mm |
+| Finished look: black-dyed MJF shells, natural-grey keys, unfilled legends | Exploded: top shell (with keycaps and A/B slider) lifted 30 mm |
 
 **PCB constraints** (top view, front end at the right): board outline, case-post notches, battery-lead notch, standoff holes with screw-head keep-outs, part positions, and keep-outs on the underside.
 
