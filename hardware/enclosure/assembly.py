@@ -112,7 +112,7 @@ INPUT_SOURCES = {
     "SO_HOLE_D": ("measured", "test print: M2 x 6 held well in the key fixture's 1.8 mm posts"),
     "LED_HOLE_D": ("measured", "test print: 5.2 best of 5.2/5.4/5.6"),
     "CAP_PLAY": ("measured", "test print: 0.3 worked well"),
-    "PILOT_D": ("measured", "test print: same 1.8 hole in a 6 mm post as the key fixture, M2 held well"),
+    "PILOT_D": ("measured", "test piece: 1.8 bit well; 2.0 too easy, 1.6 slipped (2026-11-22)"),
     "CAP_CLEAR": ("measured", "test print: the .3 cap moved freely and wasn't loose side to side"),
     "PIPE_HOLE_D": ("datasheet", "Bivar PLP2: 2.92; ream or a touch of glue on the first case (John 2026-11-21)"),
 }

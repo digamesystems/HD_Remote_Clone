@@ -48,7 +48,7 @@ PCB_TOP_Z = PCB_BOT_Z + PCB_T
 # Board standoffs, with their own M2 screws through the board.
 # PCB needs 4 holes here (2.2 mm for M2) with a ~5.5 mm keep-out for the screw head.
 SO_D = 5.0             # standoff diameter, mm
-SO_HOLE_D = 1.8        # pilot hole (placeholder for an M2 self-tapper; set from the test print)
+SO_HOLE_D = 1.8        # pilot hole for an M2 self-tapper (decided 2026-11-22, John, from the test piece)
 SO_X = L / 2 - 14      # +-X position
 SO_Y = W / 2 - 7       # +-Y position
 SO_H = PCB_BOT_Z - WALL  # floor top to board underside: the board sits on them
@@ -177,7 +177,7 @@ SCREW_CLEAR_D = 2.2    # M2 through the bottom post
 CB_D = 4.0             # counterbore for the head, from underneath. 4.0 (was 4.2) for a 1.0 mm post
                        # wall, JLC's minimum (decided 2026-11-21, John); the M2 heads measure 3.2 x 1.3
 CB_TOP_BELOW_SPLIT = 3.0  # counterbore stops this far below the split (screw-head seat)
-PILOT_D, PILOT_DEPTH = 1.8, 6.0   # pilot in the top boss (placeholder; test print). M2 x 8
+PILOT_D, PILOT_DEPTH = 1.8, 6.0   # pilot in the top boss (1.8 decided 2026-11-22, John). M2 x 8
 # Post centres: with small corners, in the corner touching both walls; with corners big enough to
 # matter, on the corner's diagonal, touching the curved inner wall.
 _arc = CORNER_R - WALL - BOSS_D / 2          # inner-arc centre to post centre, along the diagonal
