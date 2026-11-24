@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-22 13:16): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-24): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -9,6 +9,8 @@
 > 6. the nRF24 module
 > 7. the battery
 > 8. the case
+>
+> After stage 8, a first user trial with a non-developer.
 >
 > Stop at the first failure, and log results per board at the end of this file. The checklists before the stages cover ordering and arrival.
 
@@ -41,7 +43,7 @@ The boards don't need to wait for the enclosure test piece (noted 2026-11-16): e
   - [x] **DigiKey, ordered 2026-11-17 (John):** J401 socket 612-SLW-104-01-G-D-ND ×10; D501 Kingbright WP59EGW 754-1232-ND ×10 (not "1747631", which is DigiKey's product ID); Bivar PLP2-250 light pipes 492-1153-ND ×15 (the fit test uses four hole sizes); J102 JST S2B-PH-K-S 455-1719-ND ×10.
   - [x] **DigiKey, sink-test parts, same order:** 1N4148 1N4148FS-ND ×10, PN2222A PN2222AFS-ND ×5, 470 Ω 470QBK-ND ×10, 100 kΩ 13-CFR-25JB-52-100K-ND ×10, 3.3 Ω 3.3QBK-ND ×10 (R_E as on the board), 4.7 Ω 4.7QBK-ND ×10 (the fallback, about 110 mA). This replaces the two 6.8 Ω in parallel below. The DigiKey order total was $44.67 (subtotal $29.16, shipping $8.49, tariff $3.73, sales tax $3.29), all ten lines in stock, FedEx Ground.
   - [x] **Batteries, ordered 2026-11-17 (John):** Adafruit #1578 ×5 at $7.95 each ($39.75; UPS Ground $19.67, tax $3.98, total $63.40). Meter each plug's polarity before connecting (stage 7); the red wire should be + and land on J102 pin 1.
-  - The 13 mm key switches (100, ordered 2026-11-13) are on the way (John, 2026-11-21); his BOJACK 13 mm switches are the backup if they're late. Already on hand: the BOJACK 5 mm switches for SETUP, the nRF24 modules, and the M2 case screws. TP604–TP606 loops are optional.
+  - The 13 mm key switches (100, ordered 2026-11-13) **arrived 2026-11-24** (reported by John); his BOJACK 13 mm switches stay as spares. Already on hand: the BOJACK 5 mm switches for SETUP, the nRF24 modules, and the M2 case screws. TP604–TP606 loops are optional.
 
 ## Before the boards arrive
 
@@ -50,6 +52,7 @@ The boards don't need to wait for the enclosure test piece (noted 2026-11-16): e
 - [ ] **IR current-sink breadboard test** (the *verify* in [HARDWARE.md](HARDWARE.md), IR transmitter; never run, confirmed 2026-11-16). Needs 2× 1N4148 and an NPN (PN2222A or 2N2222), 470 Ω, 100 kΩ, 3.3 Ω for R_E (and 4.7 Ω for the fallback test), a TSAL6200 (parts on the DigiKey list above). GPIO 4 → 470 Ω → base node; node → two diodes in series → GND, and → 100 kΩ → GND; emitter → R_E → GND; collector → LED cathode; LED anode → supply. `send up 3000`, scope across R_E (I = V_peak / R_E) and the base node (~1.3 V), at 3.3 V and 4.2 V LED supply. Pass: the two currents within ~10 % of each other, none above 200 mA. A 2N2222's Vbe differs from the BC817-40's, so this proves the regulation, not the board's exact current (stage 5).
 - [x] `python -I hardware/tools/check_pins.py` passes (pins.h matches the schematic; rechecked 2026-11-17).
 - [x] `pio run -e handheld` builds (2026-11-18, fw 0.9.4).
+- [ ] **Keys on the breadboard** (proposed 2026-11-24, with the new 6 × 6 mm switches): shake out the handheld's key handling before the boards arrive. Wire UP and DOWN to GPIO 32 and 33, active high with 10 kΩ pull-downs (the breadboard map in `include/pins.h` already has them), and set the breadboard's `HW_BUTTONS = true` in `include/hw_config.h`. Exercise press, hold until the shade moves, and tap to stop or reverse. A group key (ALL or G4) needs a free GPIO added to the breadboard map first.
 
 ## Board handling (OSP finish)
 
@@ -135,6 +138,21 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 2. Keys through the top shell: every key clicks, none stuck; the A/B slider moves the switch both ways.
 3. Repeat stage 4's `btn` check closed up.
 
+## After bring-up: first user trial
+
+Added to the plan 2026-11-24 (John). Once a board passes stage 8 and runs the handheld firmware (arrow keys, group keys, and the A/B presets if they're implemented by then), hand it to a non-developer in the household for everyday use. A user who isn't a developer is less patient with quirks and finds the UX problems that matter sooner than more bench testing would.
+
+How (proposed):
+- Hand it over with at most a one-line explanation, and don't coach. What the user does unprompted is the data.
+- Note what happens in the log row below: what worked, what confused, what was ignored.
+- Optional firmware aid (proposed, not built): a small key-press log (key, hold time, timestamp) kept on the board and dumped over USB afterwards, so long holds, repeated presses and unused keys show up without instrumenting the shades.
+
+What to watch for (proposed):
+- **Wake delay.** A sleeping shade needs about 1–2 s of press before it responds ([IR_PROTOCOL.md](IR_PROTOCOL.md), 2026-11-15 section). Does a quick tap fail, and then does the user press again, hold, or give up? If taps fail, the firmware can send the wake sequence for a minimum time on any press.
+- **Stop and reverse.** The current design is hold until the shade moves, then tap to stop or reverse. Does that feel natural, or does the user expect press-and-hold?
+- **IR or group mode.** IR needs line of sight; group (RF) mode doesn't. Which one gets used without prompting?
+- **Handling.** Grip, key feel, whether the indicator is noticed, and battery life between charges.
+
 ## Order log
 
 **JLCPCB order placed 2026-11-17 (John): 5 PCBs, 5 assembled (standard PCBA, top side).** **Order total $285.98.** Merchandise $165.89: PCB $17.69 (including $8.69 for the ±0.1 mm outline tolerance) and PCBA $148.20 (setup $25.75, stencil $8.27, components $54.45, feeder loading $52.70, SMT assembly $3.21, packaging $0.51, depaneling and edge-rail removal $3.31). On top of that: shipping $37.92, customs duties and taxes $58.07, duty and tax disbursement fee $7.52 and sales tax $16.58, none of which were in the quote. About $57 per delivered board, before the hand-fitted DigiKey parts. Status after payment: file review (10–60 minutes in business hours), plus an advanced-option review on the PCBA.
@@ -144,8 +162,9 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 - **Assembly:** 77 parts on 34 BOM lines. Hand-fitted, not in the BOM: J102, J401, SW501–SW508, D303, D304, D501, TP604–TP606. C403 and R401 are not fitted. The note to JLC says so and that the CPL rotations are already corrected.
 - **What the dry run found:** SW201 and SW202 (the same switch, KMR221NGLFS, C269272) had to share one BOM line or JLC wouldn't auto-select the part. JLC's models are rotated from KiCad's footprints: every SOT-23 needs +180, the SOT-23-5 and -6 parts −90, and U201 (ESP32 module) needs −90 and a 3.81 mm shift along its axis. These corrections are in `CPL_FIXES` in `make_jlc.py`. Every polarized part was checked against JLC's pin-1 marks on a fresh load, with no hand edits.
 - **Engineering review (2026-11-18, John):** JLC's engineers asked to confirm the parts placement before production. "Show Revised Items" listed **0 revisions**, with 77 of 77 parts assembled and 0 unassembled, so the CPL's rotation fixes needed no change on their side. John answered "Yes, please proceed to production" and the confirmation shows Completed.
-- **Production (status reported by John, 2026-11-22):** in production since 2026-11-18 07:04 (manufacturing data for the PCB and the SMT job finished that afternoon). The bare PCBs went into JLC's factory on 2026-11-19, estimated to finish 2026-11-21 16:55. Since 2026-11-22 05:20 the assembly (SMT) job has been running in JLCPCB Factory No. 2, **estimated finish 2026-11-24 20:00** (JLC's time). Not shipped yet.
-- **Hand-fitted parts (DigiKey, ordered 2026-11-17):** in transit by FedEx Ground, **estimated delivery Tuesday 2026-11-24** (status reported by John, 2026-11-21), so they should be on hand before the boards.
+- **Production (status reported by John, 2026-11-22):** in production since 2026-11-18 07:04 (manufacturing data for the PCB and the SMT job finished that afternoon). The bare PCBs went into JLC's factory on 2026-11-19, estimated to finish 2026-11-21 16:55. Since 2026-11-22 05:20 the assembly (SMT) job has been running in JLCPCB Factory No. 2, **estimated finish 2026-11-24 20:00** (JLC's time).
+- **Shipped (reported by John, 2026-11-23):** the boards have left JLCPCB, **expected to arrive 2026-11-27**.
+- **Hand-fitted parts (DigiKey, ordered 2026-11-17):** in transit by FedEx Ground, **estimated delivery Tuesday 2026-11-24** (status reported by John, 2026-11-21). **Arrived 2026-11-23** (reported by John), ahead of the boards.
 - **Batteries (Adafruit #1578 ×5, ordered 2026-11-17):** on the way by UPS, **estimated delivery Wednesday 2026-11-25** (status reported by John, 2026-11-21). On arrival, measure a cell and its plug for the case (battery ribs, `PLUG_L`) and meter each plug's polarity (stage 7).
 - **After the board arrives:** follow the stages below, and solder the hand-fitted parts soon, since OSP has a short shelf life.
 
@@ -161,3 +180,4 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 | 6 nRF24 | | |
 | 7 Battery | | run mA / sleep µA: |
 | 8 In the case | | |
+| User trial | | |
