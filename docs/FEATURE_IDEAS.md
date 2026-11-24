@@ -20,7 +20,7 @@ Ideas for the clone that go beyond what the stock Platinum remote does. **Nothin
 - **SETUP (pairing):** only in A, so the group keys have one meaning during pairing.
 - **Indicator LED:** a distinct pattern while a preset is sending (for example blinking green). Each step takes about 1.8 s on air, and the pattern also shows which mode the remote is in.
 - **Repeating is safe.** Positions are absolute, and a shade already at its target doesn't move. The remote gets no confirmation from the shades, so "press again if one didn't move" is a reasonable answer.
-- **Editing presets:** stored in flash and edited over USB serial, so changing one needs no rebuild.
+- **Editing presets:** stored in flash and edited over USB serial, so changing one needs no rebuild. A phone page with sliders is proposed below ([Web interface](#web-interface-and-an-always-on-bridge)).
 - **Testable before the boards arrive:** the key-to-action logic can live in `lib/hdcore/` with host tests.
 
 **Alternative considered (Claude):** keep the slider stock and run a key's preset on a long press (about 1 s). It costs no switch position, but it's less discoverable, and a slow tap could fire it by accident. The switch, with the setting above, is the recommended option.
@@ -46,3 +46,61 @@ Raised by John (2026-11-21), while moving the A/B knob over its drive block: on 
 - **Move R509 and R510** to give the drive block and its support pad more room around the switch.
 - **Case:** move the slot, knob and support pad to the new actuator position, and give the arrow oval back its full length.
 - **Firmware:** the rotation reverses which slider position reads as A, so swap them in the firmware or its settings. Which position is A is already to be confirmed at rev 1 bring-up.
+
+## Web interface and an always-on bridge
+
+Raised by John (2026-11-24): a web interface for the device, used both to control the shades from a phone and to configure presets ("move the sliders until the shades are in the right place, then save the configuration to a preset"). Then: an always-on bridge could be just an ESP32 DevKit, an nRF24 module and USB power, since the breadboard already reaches shades across the house, and a bridge without an external antenna makes a cleaner installation. Then: much of this can be tested on one of the five rev 1 boards with a separate firmware build that ignores most of the handheld's hardware.
+
+### Where a web page can run
+
+- **Handheld (proposed, Claude): a setup page on demand only.** The handheld's sleep budget is about 15 µA ([HARDWARE.md](HARDWARE.md)), and Wi-Fi that stays reachable draws roughly 100 mA, so an always-on page would empty the cell in about a day. Instead, a key combination starts a Wi-Fi access point with a setup page that turns itself off after a few minutes idle. Uses: editing the A/B presets, group names, pairing management (behind a confirmation; never Master Reset), the user-trial key log ([BRINGUP.md](BRINGUP.md), first user trial), battery voltage and firmware version, and firmware updates over Wi-Fi (the default partition table already has a second app slot for this).
+- **Bridge (proposed, Claude): everyday phone control.** A wall-powered device that uses RF only: group commands, absolute position and pairing all work from a paired ID with no line of sight ([RF_PROTOCOL.md](RF_PROTOCOL.md)). It would offer a page with a button set and a position slider per group, schedules and scenes, and later a REST or MQTT interface for Home Assistant or an ESPHome component.
+- **One web module for both** (proposed): the page and the preset storage live in `lib/`, so the handheld's setup mode and the bridge share them.
+
+### Presets set with sliders
+
+How it would work (proposed, Claude):
+
+- **The shades only receive; they never report position, so the slider is the commanded position.** That's enough because position frames are absolute and a shade already at its target doesn't move (RF_PROTOCOL, 2026-11-18). Saving a preset stores the slider values, and replaying it works from wherever the shades are.
+- **Send on slider release, not while dragging.** Each `pos` command takes about 1.8 s on air.
+- **Save to a key:** e.g. "save to B → G2", stored in NVS. The stored format is the same short list of `pos <mask> <position>` steps as in the A/B preset idea above, so the phone page replaces serial editing without changing anything else.
+- **Label positions as open and closed** in each shade's terms, set once, not as raw 0–255. Our arrows are reversed and 0 is fully down.
+- **Granularity is per group, not per shade.** Position frames address a group mask, so all shades in a group go to the same place. Shades that need different heights need different groups, and the handheld has four plus ALL.
+
+### Bridge hardware
+
+- **Minimum (John's suggestion):** ESP32 DevKit + nRF24 module + USB power. The breadboard's wiring and pin map already do this; add 10 µF (or more) at the module's VCC and GND.
+- **Prefer no external antenna** (John): a plain module in a plastic box, if the margin test below passes. Notes (Claude): mount it away from metal (TV, metal shelf, the router); put the ESP32's and the nRF24's antennas at opposite ends of the box, ideally at right angles, with no copper under either one. Separation gives most of what cross-polarization would; indoors, reflections limit the polarization gain to a few dB.
+- **If the margin falls short (Claude):** a PA+LNA module (same 2×4 header and pinout). Unshielded PA boards are known to self-oscillate or underperform at high power: prefer a shielded one (e.g. EBYTE E01-2G4M27D) or shield it with insulated, grounded foil. Start at a low PA setting. Peak current is about 115 mA, so use a solid supply and a larger capacitor. A u.FL version with an internal flex antenna keeps the clean look. The LNA also helps if the bridge listens for far-away handhelds (below).
+- **Its own ID (Claude):** pair the bridge under its own ID alongside the handheld's, so either can be removed without touching the other. Pairing capacity per shade is unknown, so pair only the groups it needs.
+- **Listening (Claude, idea):** while idle the nRF24 can sniff the remotes' frames, as `sniff` does, so the bridge can track what the handhelds do. Absolute positions and full open/close give exact state; arrow presses only give an approximate one. Whether sniffing and sending share one module cleanly is untested.
+- **A later dedicated board** (Claude, only if a bridge proves worthwhile): ESP32 module + nRF24 with both antennas at board edges, USB-C, nothing else. Much simpler than the handheld.
+
+### Wi-Fi and the shade channels
+
+- **Overlap:** the shades use ch 33/52/71 = 2433/2452/2471 MHz. Wi-Fi channel 6 covers 2433; channel 11 covers 2452 and 2471. Putting the router on Wi-Fi channel 1 avoids all three.
+- **The bridge's own Wi-Fi is quiet when idle (Claude).** As a client with the Arduino default modem sleep, the ESP32 wakes for the router's DTIM beacons (every 100–300 ms typically) and transmits only occasionally (acks, power-save frames, ARP/mDNS, keepalives). Receiving doesn't disturb the nRF24; only its transmissions can. The router and other devices on the channel are the bigger source.
+- **The handheld's setup page is noisier:** an access point beacons about every 102 ms whether or not anyone is connected. That's one more reason for its timeout.
+- **Shade commands repeat each frame many times, so they tolerate the odd collision. Sniffing is more fragile.**
+- **Possible `scan` command (Claude, idea):** step the nRF24's received power detector (RPD, above about −64 dBm) across channels for a rough 2.4 GHz activity view. Si24R1 clones may not implement RPD the same way; check first.
+
+### Testing on a rev 1 board (John's suggestion)
+
+A rev 1 board on USB already has the bridge's parts: WROOM-32E, the nRF24 socket, USB-C, and the LED and keys for status and local control. Proposed (Claude):
+
+- **A `bridge` build environment** for the handheld board (`-DHD_BOARD_HANDHELD` plus a bridge-role flag), using `pins.h` as is and skipping IR, deep sleep and key handling. It runs Wi-Fi as a client, the web page, and `grp` / `pos` / `pair`, and keeps the serial console. LED: green when Wi-Fi is connected, a red flash per RF send.
+- **One test answers two questions.** The board's antenna geometry is the handheld's, so the Wi-Fi coexistence margin measured as a bridge also applies to the handheld's setup page.
+- **Battery loss for free.** With no cell fitted, the foil pouch isn't under the nRF24 antenna (HARDWARE.md, nRF24 socket: about 12.5 mm below it). Comparing with and without a cell on the bench measures that loss.
+- **The handheld case doubles as a tidy bridge box.**
+- **Order:** the board must pass bring-up stages 1–6 first (stage 7, the battery, is optional on USB). One board goes to the handheld firmware and user trial, another to this.
+- **Flash:** about 31 % of the 1.25 MB app slot is used now (fw 0.9.13, 2026-11-24). Wi-Fi and a web server add several hundred KB (estimate, not measured), which still fits.
+
+### Open before building
+
+1. **Which rail do position frames move on a top-down/bottom-up shade**, and can the middle rail be targeted at all? `pos 08 0/255` ran our shades fully down and up, but which rail moved isn't recorded. If only one rail can be set, a preset like "half open from the top" may not be possible. Testable now with `pos` on the breadboard.
+2. **A new target while a shade is moving** (also listed as untested in RF_PROTOCOL). A slider dragged twice does exactly this. Testable now.
+3. **Range margin from the bridge's location:** send `grp` to the farthest shades 10 times at each nRF24 power level (MIN/LOW/HIGH/MAX, about 6 dB apart; a clone's steps may differ), stepping down from MAX. 10/10 at LOW means about 12 dB in hand. Firmware may need a command to set the level.
+4. **Wi-Fi coexistence:** repeat 3 with Wi-Fi idle and busy (streaming to the device), and with the router on different channels.
+5. **Sniffing while also sending**, if the bridge is to track the handhelds.
+6. **Safety:** any network path that moves shades keeps the 5 s send cap in firmware, needs a password, and puts destructive pairing actions behind a confirmation. Wi-Fi credentials go in NVS through the setup page, never in the repo.
+7. **Compare with spitcool's bridge work** (their public repo only; ask John before posting anything to it).

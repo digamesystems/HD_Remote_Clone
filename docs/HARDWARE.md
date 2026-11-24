@@ -1,6 +1,6 @@
 # Handheld board: design spec
 
-> **TL;DR** (summary checked 2026-11-18 10:59): the spec for the rev 1 handheld board. It has:
+> **TL;DR** (summary checked 2026-11-24): the spec for the rev 1 handheld board. It has:
 > - an ESP32-WROOM-32E
 > - one LiPo cell, charged over USB-C (MCP73831), with a power path and a 3.3 V LDO
 > - a CP2102N USB-serial bridge with auto-reset
@@ -120,6 +120,9 @@ That's years of standby on 500 mAh. Real battery life will be set by use: each p
 - **TX0's pull-up into the unpowered CP2102N.** GPIO 1 (U0TXD) has a weak internal pull-up at reset. If it stays on in deep sleep, it feeds the CP2102N's RXD clamp through R107: about (3.3 − 0.6 V) / (~45 kΩ + 10 kΩ) ≈ **50 µA**, three to five times the whole budget. The pull-up, not R107, sets most of that current. The pads are believed to go high-impedance in deep sleep, but that's unconfirmed. If the JP101 measurement shows it, fix it in firmware (disable the pull-up or isolate the pin before sleeping); no hardware change is needed. *verify*
 - **Pin states before sleep.** The firmware must leave every GPIO at its idle level (nRF24 powered down, CSN high, CE low, IR drive low). A pin driving against one of the 100 kΩ pulls costs ~33 µA; one floating at a mid level can cost more.
 - **Not on the board:** the cell's protection IC (typically ~3 µA) and its self-discharge (a few % a month) cost about as much again. JP101 doesn't see either.
+
+**Sleep and power source (preference, not a design decision).** John's preference (2026-11-24): a handheld with a cell always drops into deep sleep when idle, whether charging or not; a board running from USB alone (no cell, e.g. a bridge or bench board) doesn't sleep. Suggested (John): a setting in flash, set by a serial command, that selects the behaviour, so no hardware change is needed. Deep sleep isn't in the firmware yet, so nothing sleeps today.
+- Noted (Claude): with the setting, the board needs no USB-present signal (rev 1 has none: VBUS reaches only the charger, the power path and the CP2102N). Charging is all hardware, so it continues in deep sleep, and opening the serial port resets the board through the CP2102N's auto-reset.
 
 ## IR transmitter
 
