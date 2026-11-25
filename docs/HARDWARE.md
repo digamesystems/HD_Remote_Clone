@@ -1,6 +1,6 @@
 # Handheld board: design spec
 
-> **TL;DR** (summary checked 2026-11-24): the spec for the rev 1 handheld board. It has:
+> **TL;DR** (summary checked 2026-11-25): the spec for the rev 1 handheld board. It has:
 > - an ESP32-WROOM-32E
 > - one LiPo cell, charged over USB-C (MCP73831), with a power path and a 3.3 V LDO
 > - a CP2102N USB-serial bridge with auto-reset
@@ -11,7 +11,7 @@
 >
 > Build status is in the [README](../README.md#status) and [BRINGUP.md](BRINGUP.md).
 
-**Status (2026-11-17):** the schematic and layout are complete (DRC and ERC clean; see [hardware/README.md](../hardware/README.md)) and the parts list is in [BOM.md](BOM.md). The board was ordered from JLCPCB on 2026-11-17 (5 assembled) and hasn't been built yet, so items marked *verify* still need a breadboard test, a datasheet check or the first board ([BRINGUP.md](BRINGUP.md)).
+**Status (2026-11-25):** the schematic and layout are complete (DRC and ERC clean; see [hardware/README.md](../hardware/README.md)) and the parts list is in [BOM.md](BOM.md). Five assembled boards were ordered from JLCPCB on 2026-11-17 and arrived 2026-11-25. Bring-up is under way and not complete, so items marked *verify* still need a breadboard test, a datasheet check or more of the bring-up ([BRINGUP.md](BRINGUP.md)).
 
 The goal is a battery handheld that replaces the original Platinum remote. It sends point-and-press IR with our RF wake, and RF group commands, using the firmware developed on the DevKitC breadboard.
 
@@ -74,7 +74,7 @@ Rules: buttons must be RTC GPIOs for `ext1` deep-sleep wake (`ESP_EXT1_WAKEUP_AN
 
 Free afterwards: 21 (spare since 2026-11-14), 2, 12, 15 (strapping; leave alone or use carefully). Firmware: enable an internal pull on unused pins (Espressif checklist).
 
-**Firmware profile (2026-11-14):** this map is `include/pins.h` under `HD_BOARD_HANDHELD`, built with `pio run -e handheld` (Tier 2 tests: `handheld_test`). The default `esp32dev` environment keeps the breadboard map. The PCB has no IR receiver, so IR capture reports that instead of touching pins. Which A/B slider position reads high is to be confirmed at bring-up.
+**Firmware profile (2026-11-14):** this map is `include/pins.h` under `HD_BOARD_HANDHELD`, built with `pio run -e handheld` (Tier 2 tests: `handheld_test`). The default `esp32dev` environment keeps the breadboard map. The PCB has no IR receiver, so IR capture reports that instead of touching pins. The A/B slider reads high (B) with the knob toward the antenna edge and low (A) toward the BOOT edge, which puts A on the left with the remote pointing away, as on the original (bring-up of board 1, 2026-11-25, John).
 
 **Key pins re-assigned (2026-11-13, PCB layout):** the RTC pins all sit in the module's left pin column, and their order up that column decides how the eight key lines fan out to the keys. The first assignment crossed itself 20 times there. A search over every valid assignment (key pins interchangeable; VBAT_SENSE on an ADC1 pin) found 3 crossings at best; the one used has 4 but keeps VBAT_SENSE on GPIO 39 and only one key (G4) on GPIO 36/39, the same as before. UP, DOWN and ALL are unchanged, so the breadboard firmware (UP 32, DOWN 33) still matches. Across the whole board the ratsnest crossings fell from 187 to 159.
 
@@ -347,7 +347,7 @@ Part references are numbered by sheet: 1xx Power and USB, 2xx MCU, 3xx IR.
 | Keys | Same Sky TS02-66-130-BK-160-SCR-D (13 mm, 160 gf) for the 7 keys; TS02-66-50-BK-160-SCR-D (5 mm) for SETUP, on the board's underside | footprints `SW_PUSH_6mm_H13mm` / `_H5mm` (6.5 × 4.5 mm legs); see [Key switch sourcing](#key-switch-sourcing-checked-2026-11-13). Part numbers in each symbol's MPN field (2026-11-13) |
 | Mounting holes | H601–H604, M2 (2.2 mm, unplated) on the Test and debug sheet | at (±61, ±15.5) mm from the board centre, ~5.5 mm head keep-outs; for M2 self-tappers into the case standoffs (2026-11-13) |
 | Key pull-downs | 100 kΩ each, plus 100 nF debounce caps C501–C508 (fitted by JLC since 2026-11-15; were DNP) | ~10 ms release filter; the firmware still debounces |
-| A/B switch | SPDT slide (PCM12 footprint): common to GPIO 14 via R202 (moved from 21 on 2026-11-14), throws to GND (A) and 3V3 (B) | which throw is "A" depends on the part and its orientation |
+| A/B switch | SPDT slide (PCM12 footprint): common to GPIO 14 via R202 (moved from 21 on 2026-11-14), throws to GND (A) and 3V3 (B) | confirmed on board 1 (2026-11-25): A is the knob toward the BOOT edge, left with the remote pointing away, as on the original |
 | Indicator | 3-lead red/green common cathode, 5 mm; red 330 Ω, green 270 Ω | *check which outer leg is red* on the part bought |
 
 ## Test points (2026-11-12)

@@ -1,15 +1,15 @@
 # Firmware and pin map
 
-> **TL;DR** (summary checked 2026-11-22 11:21): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
+> **TL;DR** (summary checked 2026-11-25): one PlatformIO codebase with a serial menu (type `help`). The default build is for the breadboard DevKitC; `pio run -e handheld` builds for the handheld PCB. Pins for both are in [`include/pins.h`](../include/pins.h).
 
 One PlatformIO codebase runs on **two hardware targets**. Which one you get depends on the build environment you pick.
 
 | Target | Build env | What it is | Status |
 |---|---|---|---|
 | **Breadboard** | `esp32dev` (default) | An ESP32-DevKitC wired to an IR receiver, an IR LED and an nRF24 module. This is where the reverse engineering was done and where the firmware is tested. | Working |
-| **Handheld PCB, rev 1** | `handheld` | The custom remote board (ESP32-WROOM-32E, keys, A/B slider, indicator LED, no IR receiver). | Builds. Not yet run on hardware (boards ordered 2026-11-17) |
+| **Handheld PCB, rev 1** | `handheld` | The custom remote board (ESP32-WROOM-32E, keys, A/B slider, indicator LED, no IR receiver). | Runs on board 1 (2026-11-25): flashes over its own USB, serial menu and `btn` work. Keys, LED, IR and radio not yet tested |
 
-**What this firmware is today.** It is a serial-menu toolkit (type `help` in the monitor): IR capture and replay, nRF24 self-test, scan and sniff, and commands that drive shades directly (`send`, `grp`, `pair`). It is not yet the finished handheld firmware. The remote's key logic (group window, red/green arrows, setup mode, the 5 s cap, debouncing) is written and host-tested in [`lib/hdcore/src/handheld.h`](../lib/hdcore/src/handheld.h) (fw 0.9.11), and the breadboard's laptop keys 1–4 and arrows already run through it. Still to write: reading the PCB's real keys, the LED's PWM patterns, and deep sleep. They wait for the boards.
+**What this firmware is today.** It is a serial-menu toolkit (type `help` in the monitor): IR capture and replay, nRF24 self-test, scan and sniff, and commands that drive shades directly (`send`, `grp`, `pair`). It is not yet the finished handheld firmware. The remote's key logic (group window, red/green arrows, setup mode, the 5 s cap, debouncing) is written and host-tested in [`lib/hdcore/src/handheld.h`](../lib/hdcore/src/handheld.h) (fw 0.9.11), and the breadboard's laptop keys 1–4 and arrows already run through it. Still to write: reading the PCB's real keys, the LED's PWM patterns, and deep sleep. The boards arrived 2026-11-25; these are still to be written.
 
 **How the targets are switched.** The `handheld` environment sets a compile-time flag, `-DHD_BOARD_HANDHELD`. Two headers then select what differs:
 

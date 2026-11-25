@@ -592,7 +592,7 @@ void handle(String cmdline) {
                   digitalRead(PIN_BTN_UP), digitalRead(PIN_BTN_DN), digitalRead(PIN_BTN_ALL),
                   digitalRead(PIN_BTN_G1), digitalRead(PIN_BTN_G2), digitalRead(PIN_BTN_G3),
                   digitalRead(PIN_BTN_G4), digitalRead(PIN_BTN_SETUP),
-                  digitalRead(PIN_AB_SW) ? 'B' : 'A',  // which rail = which channel: confirm at bring-up
+                  digitalRead(PIN_AB_SW) ? 'B' : 'A',  // high = B, as on the original (rev 1 bring-up)
                   (unsigned)(analogReadMilliVolts(PIN_VBAT_SENSE) * 2));  // 1M/1M divider
 #else
     Serial.printf("UP=%d DOWN=%d\n", digitalRead(PIN_BTN_UP), digitalRead(PIN_BTN_DN));

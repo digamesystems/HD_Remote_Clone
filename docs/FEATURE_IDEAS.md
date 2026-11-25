@@ -27,7 +27,7 @@ Ideas for the clone that go beyond what the stock Platinum remote does. **Nothin
 
 **Open before building:**
 
-- **Which slider position is A** on the handheld PCB (GPIO 14), to be confirmed at bring-up.
+- ~~Which slider position is A on the handheld PCB~~ Answered at bring-up (2026-11-25, John): A is GPIO 14 low, the knob toward the BOOT edge, matching the original remote's orientation.
 - **Does the stock slider change any RF frame?** Sniff with the switch on B.
 
 ## A swoopier case for a later revision
@@ -45,7 +45,7 @@ Raised by John (2026-11-21), while moving the A/B knob over its drive block: on 
 - **Rotate SW509 180°** so its actuator points toward the front (the indicator). The drive block and knob then sit in front of the switch, moving away from the arrows by roughly 5–6 mm (estimate). Reroute AB_SW to match.
 - **Move R509 and R510** to give the drive block and its support pad more room around the switch.
 - **Case:** move the slot, knob and support pad to the new actuator position, and give the arrow oval back its full length.
-- **Firmware:** the rotation reverses which slider position reads as A, so swap them in the firmware or its settings. Which position is A is already to be confirmed at rev 1 bring-up.
+- **Firmware:** the rotation reverses which slider position reads as A, so swap them in the firmware or its settings. On rev 1, A is GPIO 14 low (confirmed at bring-up, 2026-11-25).
 
 ## Web interface and an always-on bridge
 

@@ -80,7 +80,7 @@ To undo, type `pair 1 remove` while aimed at the shade. On ours, removing the cl
 
 ## The handheld
 
-The handheld is a battery remote with the original's seven keys, an A/B slider, a red/green light and USB-C charging. It is designed, and the first five boards were ordered on 2026-11-17, but nothing has been powered up yet. Until the bring-up ([BRINGUP.md](BRINGUP.md)) passes, treat the design files as unproven. This page will get a handheld section once they work.
+The handheld is a battery remote with the original's seven keys, an A/B slider, a red/green light and USB-C charging. It is designed, and the first five assembled boards arrived on 2026-11-25. Bring-up has started: one board powers from USB and flashes, but its keys, indicator, IR, radio and battery are still untested, and it hasn't been in a case. Until the bring-up ([BRINGUP.md](BRINGUP.md)) passes, treat the design files as unproven. This page will get a handheld section once they work.
 
 Design details: [HARDWARE.md](HARDWARE.md) (spec), [BOM.md](BOM.md) (parts), [hardware/](../hardware/README.md) (PCB), [hardware/enclosure/](../hardware/enclosure/README.md) (case).
 

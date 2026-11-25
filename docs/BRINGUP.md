@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-25 11:23): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-25 13:13): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -171,14 +171,36 @@ What to watch for (proposed):
 
 ## Log
 
+### Board 1
+
 | Stage | Result | Notes (readings, surprises) |
 |---|---|---|
-| 1 Unpowered | | |
-| 2 First power-up | | VBUS / VSYS / 3V3 / idle mA: |
-| 3 Serial + flash | | COM port: |
-| 4 Inputs + indicator | | A/B position that reads high: |
+| 1 Unpowered | Pass on the bare board, 2026-11-25 (hand-fitted-part checks pending) | J101 shell pegs topped up by hand; readings below |
+| 2 First power-up | Pass, 2026-11-25 | VBUS 5.0 V / VSYS 4.5 V / 3V3 3.25 V / idle about 20 mA |
+| 3 Serial + flash | Pass, 2026-11-25 | COM port: COM13. Details below |
+| 4 Inputs + indicator | Partial, 2026-11-25 (keys and D501 not fitted yet) | A/B position that reads high: knob toward the near (antenna) edge, shown as B. Details below |
 | 5 IR | | |
 | 6 nRF24 | | |
 | 7 Battery | | run mA / sleep µA: |
 | 8 In the case | | |
 | User trial | | |
+
+**Board 1, stage 1 (2026-11-25; checks and readings by John, no hand-fitted parts, USB, battery or nRF24 module):**
+
+- **Visual:** no bridges seen on U102 or U201; J101 flat on the board and overhanging as designed.
+- **J101 shell pegs:** as delivered, the four slots were only partly filled from underneath (solder or pegs sitting down in the slots, copper rings bare; judged from John's photos by Claude, and the top-side fillets weren't assessed). John topped them up from underneath. Afterwards all four look filled and wetted in his photo, the top-side pins look clean, and VBUS to shell still read about 40 kΩ. Check this on the other boards.
+- **Resistance to GND** (black probe on the USB shell): TP604 0 Ω; TP603 (VBUS) 40 kΩ (40.8 kΩ calculated from R104, R105 and R114); TP602 (+3V3) 8 MΩ; TP102 (VSYS) climbed to tens of MΩ.
+- **TP601 (VBAT):** first read 4 MΩ, falling slowly to about 3.5 MΩ, with about 0.1 V left on VSYS and half that on VBAT. After discharging VSYS and VBAT to the shell: TP601 to shell 0.7 MΩ, TP608 to shell 0.7 MΩ, TP601 to TP608 0.67 MΩ. These fit R112 = R113 = 1 MΩ plus about 1 MΩ of other leakage from VBAT to GND (probably inside U103; not confirmed). The high first reading was most likely leftover charge. **Discharge both rails before measuring VBAT.**
+- **Diode:** TP603 (red) to TP102 0.3 V; reversed, open.
+
+**Board 1, stages 2 and 3 (2026-11-25; no hand-fitted parts, battery or nRF24 module):**
+
+- **Power** (readings by John): VBUS 5.0 V, VSYS 4.5 V, +3V3 3.25 V, VBAT 4.17 V with no cell, idle current about 20 mA; charge LED D101 flickering (expected with no cell); nothing warm. The power source wasn't recorded.
+- **Serial and flashing** (run by Claude): the CP2102N appeared as COM13. `pio run -e handheld -t upload` (fw 0.9.13) connected through auto-reset, with no buttons pressed, and verified. Boot output showed the banner and help text, with `nRF24 not responding` as expected; no further output in 8 s idle.
+- **Buttons** (John): RESET (SW201) reboots cleanly; holding BOOT (SW202) while tapping RESET gives `waiting for download`.
+
+**Board 1, stage 4, bare-board part (2026-11-25, John; USB power, nothing hand-fitted):**
+
+- **`btn` with nothing pressed:** every key reads 0 (the switches aren't fitted, so this checks only that no input floats or sticks high).
+- **A/B slider:** the two positions read A and B. With the board face up and USB on the left, the knob toward the **far (BOOT) edge reads A**; toward the near (antenna) edge it reads B (GPIO high). In the remote pointing away from the user, that puts A on the left. This is the **same A/B orientation as the original remote** (checked by John), so the firmware needs no change.
+- **VBAT:** `btn` showed about 4356 mV with no cell, against 4.17 V metered on TP601 (about 4.5 % high). Probably the ESP32's ADC reading (not confirmed); compare again with a cell in stage 7.
