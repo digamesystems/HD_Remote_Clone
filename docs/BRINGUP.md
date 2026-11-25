@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-25 14:45): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-25 15:03): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -219,3 +219,4 @@ What to watch for (proposed):
 - **`test`:** PASS at 1 Mbps, 2 Mbps and 250 kbps, with 0 read-back errors in 402 channel/PA checks.
 - **`sniff`** (ch 33, 2 Mbps): 1270 packets from an original remote (ID `xx xx`), mode `20`, group 2, with action bytes `A4` then `24`, and `A3` then `23`. The firmware shows these as `?`: they aren't the `A1`/`A2` and `21`/`22` recorded in [RF_PROTOCOL.md](RF_PROTOCOL.md). The remote was the damaged one, **set to channel B** (John). A follow-up with the working remote settled it: the slider changes the group action byte (B: `A3`/`23` UP, `A4`/`24` DOWN), and the shades moved in either position. See [RF_PROTOCOL.md](RF_PROTOCOL.md#the-ab-slider-in-group-mode).
 - **All four groups respond** to the new board, and the position **presets work** (John).
+- **The board's own keys drive the shades** (fw 0.9.14, USB power): John reports it works. `pio test -e native` passed (108 of 108) before the upload.

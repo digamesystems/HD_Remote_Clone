@@ -66,8 +66,8 @@ Commands and pin map: [docs/FIRMWARE.md](docs/FIRMWARE.md).
 | RF transmit emulation | ✅ red-mode wake (`wake`, `send`) and group commands (`grp`): groups 1–4 and All, up and down (2026-11-11); group pairing under the clone's own ID (`pair`, 2026-11-12) |
 | Handheld PCB (KiCad, [hardware/](hardware/README.md)) | ✅ schematic and layout complete, DRC/ERC clean; 5 assembled boards ordered from JLCPCB 2026-11-17, received 2026-11-25. ⏳ Bring-up under way: board 1 passes the unpowered, USB power and flashing stages; log in [docs/BRINGUP.md](docs/BRINGUP.md) |
 | Enclosure (3D-printed clamshell, [hardware/enclosure/](hardware/enclosure/README.md)) | ✅ modelled, fit checks pass against the board; test print arrived 2026-11-20 and its values are in the model; the case order waits for the first board's measurements |
-| Firmware pin profile for the PCB (`pio run -e handheld`) | ⏳ runs on board 1 (2026-11-25): serial menu, A/B slider and battery reading work (the voltage reads about 4.5 % high); keys, indicator LED, IR and radio not yet tested |
-| Final remote: button UX, indicator LED, deep sleep, enclosure | ⏳ key logic written and host-tested, and running on the breadboard through the laptop keys (fw 0.9.11–0.9.12); real keys, LED patterns and deep sleep still to be written |
+| Firmware pin profile for the PCB (`pio run -e handheld`) | ⏳ runs on board 1 (2026-11-25): serial menu, keys, A/B slider, radio and battery reading work (the voltage reads about 4.5 % high), and the board's keys move shades in group mode; indicator LED and IR not yet tested |
+| Final remote: button UX, indicator LED, deep sleep, enclosure | ⏳ key logic written and host-tested, and running on the breadboard through the laptop keys (fw 0.9.11–0.9.12) and on the PCB through its own keys (fw 0.9.14); LED patterns and deep sleep still to be written |
 
 ## Technical approach
 ### What the original remote does

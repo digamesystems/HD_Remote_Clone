@@ -10,6 +10,7 @@
 #include "hold_tracker.h"
 #include "ir_tools.h"
 #include "key_parser.h"
+#include "keypad.h"
 #include "parse.h"
 #include "pins.h"
 #include "rf_tools.h"
@@ -19,7 +20,7 @@ namespace {
 
 // Bring-up firmware version, shown at boot and in `help`. Bump the last digit
 // with each improvement.
-constexpr const char* kFwVersion = "0.9.13";
+constexpr const char* kFwVersion = "0.9.14";
 
 enum class Mode { Idle, IrCapture, RfBusy } mode = Mode::Idle;
 String line;
@@ -102,7 +103,10 @@ void help() {
       "Commands (any line except a # comment stops a running mode):\n\n"
       " USER COMMANDS\n"
       " -------------\n\n"
-      "  Up/Down arrow keys      the handheld's arrows, via its key logic and TX scheduler:\n"
+      "  Board keys (PCB)        act as the remote's keys: group key, then an arrow within\n"
+      "                          10 s = group command; an arrow alone = red mode; SETUP =\n"
+      "                          pairing. Ignored while ir / sniff / scan runs\n"
+      "  Up/Down arrow keys     the handheld's arrows, via its key logic and TX scheduler:\n"
       "                          red mode = wake + IR steps (see seq); in a group window,\n"
       "                          the group command + tail. A tap is 300 ms; hold on to\n"
       "                          send while the key repeats. Prints a summary per press\n"
@@ -234,22 +238,28 @@ uint32_t holdFirstGapMs = 700;          // > keyboard repeat delay (Windows defa
 constexpr uint32_t kHoldRepeatGapMs = 200;  // > one step (~100 ms) + repeat interval (~33 ms)
 constexpr uint32_t kTapMs = 300;  // hold off: released this long after the press (3 RF+IR cycles)
 
-// Handheld behaviour (lib/hdcore handheld.h), driven from the laptop until the
-// boards' keys are wired: digits 1-4 on an empty command line are group keys 1-4
-// (open the green window), and the arrow keys follow the window like the real
-// remote's arrows. On the handheld build the LED shows it too.
+// Handheld behaviour (lib/hdcore handheld.h). It's driven by the board's keys
+// on the handheld PCB, and from the laptop on either board: digits 1-4 on an
+// empty command line are group keys 1-4 (open the green window), and the arrow
+// keys follow the window like the real remote's arrows. On the handheld build
+// the LED shows it too.
 hd::ui::Handheld ui;
 bool windowShown = false;
+constexpr uint32_t kBlinkMs = 250;  // setup mode's blinking green: on and off time
 
-// Drives the LED only when the handheld's LED state changes, so the bring-up
-// `led` command still works in between.
+// Drives the LED only when what the handheld wants shown changes, so the
+// bring-up `led` command still works in between.
 void showLed(hd::ui::Led led) {
-  static hd::ui::Led shown = hd::ui::Led::Off;
-  if (led == shown) return;
-  shown = led;
+  const bool red = led == hd::ui::Led::Red;
+  const bool green = led == hd::ui::Led::Green ||
+                     (led == hd::ui::Led::GreenBlink && (millis() / kBlinkMs) % 2 == 0);
+  static bool shownRed = false, shownGreen = false;
+  if (red == shownRed && green == shownGreen) return;
+  shownRed = red;
+  shownGreen = green;
 #if defined(HD_BOARD_HANDHELD)
-  digitalWrite(PIN_LED_RED, led == hd::ui::Led::Red ? HIGH : LOW);
-  digitalWrite(PIN_LED_GREEN, led == hd::ui::Led::Green ? HIGH : LOW);
+  digitalWrite(PIN_LED_RED, red ? HIGH : LOW);
+  digitalWrite(PIN_LED_GREEN, green ? HIGH : LOW);
 #endif
 }
 
@@ -269,7 +279,7 @@ void pollUi() {
   const hd::ui::Output o = ui.update(millis());
   showLed(o.led);
   const bool green = o.led == hd::ui::Led::Green;
-  if (windowShown && !green) {
+  if (windowShown && !green && !ui.inSetup()) {
     Serial.print("\nGroup window closed: arrow keys back to red mode (wake + IR)\n> ");
     Serial.print(line);
   }
@@ -282,19 +292,17 @@ hd::tx::Scheduler txs;
 
 struct ArrowStats {
   hd::ui::Tx kind = hd::ui::Tx::None;  // what the press started as
+  bool up = false;
   uint8_t group = 0;
+  uint8_t irCode = 0;
   uint32_t rfSteps = 0, irSteps = 0, heldMs = 0, tailMs = 0;
   long packets = 0;
   uint32_t worstOverrunMs = 0;  // longest a step ran past its nominal length
 };
 
-// Runs one arrow press through the handheld logic and the scheduler, step by
-// step, until there's nothing left to send (the group tail included). The
-// release comes from the key repeats (hold on) or after kTapMs (hold off).
-void runArrow(uint8_t code) {
-  const bool up = code == hd::ir::kCodeUp;
-  const hd::ui::Key k = up ? hd::ui::Key::Up : hd::ui::Key::Down;
-  const hd::KeyEvent mine = up ? hd::KeyEvent::Up : hd::KeyEvent::Down;
+// Readies the scheduler for a new transmission: the `seq` timings, the `wake`
+// setting and the stored remote ID.
+void startTx() {
   hd::tx::Config& c = txs.config();
   c.rfMs = seq.rfMs;
   c.gapMs = seq.gapMs;
@@ -304,6 +312,63 @@ void runArrow(uint8_t code) {
   rf::getRemoteId(id);  // sendStep reports a missing ID
   txs.setId(id[0], id[1]);
   txs.reset();
+}
+
+void noteStart(ArrowStats& st, const hd::ui::Output& o) {
+  st.kind = o.tx;
+  st.up = o.up;
+  st.group = o.group;
+  st.irCode = o.irCode;
+}
+
+// Runs one scheduler step (blocking for the step's length) and counts it.
+// False if the radio couldn't send (no ID or no module; reason already printed).
+bool runStep(const hd::tx::Step& s, ArrowStats& st) {
+  if (s.kind == hd::tx::StepKind::None) return true;
+  const uint32_t start = millis();
+  if (s.kind == hd::tx::StepKind::Rf) {
+    long n = rf::sendStep(s.payload, s.channel, s.ms);
+    if (n < 0) return false;
+    st.packets += n;
+    st.rfSteps++;
+    if (s.payload[2] == hd::rf::kModeGroup) (s.payload[4] & 0x80 ? st.heldMs : st.tailMs) += s.ms;
+  } else if (s.kind == hd::tx::StepKind::Ir) {
+    ir::sendCode(s.irCode, s.ms, true);
+    st.irSteps++;
+  } else {
+    delay(s.ms);
+  }
+  const uint32_t took = millis() - start;
+  if (took > s.ms && took - s.ms > st.worstOverrunMs) st.worstOverrunMs = took - s.ms;
+  return true;
+}
+
+// The first part of a press summary: what was sent.
+void printSent(const ArrowStats& st) {
+  Serial.printf("Arrow %s, ", st.up ? "UP" : "DOWN");
+  if (st.kind == hd::ui::Tx::Group)
+    Serial.printf("group %s: A%c %lu ms, tail %lu ms, %ld packets rotating ch 33/52/71",
+                  hd::rf::groupName(st.group).c_str(), st.up ? '1' : '2',
+                  (unsigned long)st.heldMs, (unsigned long)st.tailMs, st.packets);
+  else if (st.kind == hd::ui::Tx::Setup)
+    Serial.printf("setup %s group %s, IR %s: %lu RF steps (%ld packets), %lu IR steps",
+                  st.up ? "add" : "remove", hd::rf::groupName(st.group).c_str(),
+                  hd::ir::codeToBits(st.irCode).c_str(), (unsigned long)st.rfSteps, st.packets,
+                  (unsigned long)st.irSteps);
+  else
+    Serial.printf("red %s%s: %lu RF steps (%ld wake packets), %lu IR steps",
+                  hd::ir::codeToBits(st.irCode).c_str(), autoWake ? "" : " (wake off)",
+                  (unsigned long)st.rfSteps, st.packets, (unsigned long)st.irSteps);
+}
+
+// Runs one arrow press through the handheld logic and the scheduler, step by
+// step, until there's nothing left to send (the group tail included). The
+// release comes from the key repeats (hold on) or after kTapMs (hold off).
+void runArrow(uint8_t code) {
+  const bool up = code == hd::ir::kCodeUp;
+  const hd::ui::Key k = up ? hd::ui::Key::Up : hd::ui::Key::Down;
+  const hd::KeyEvent mine = up ? hd::KeyEvent::Up : hd::KeyEvent::Down;
+  startTx();
 
   hd::HoldTracker hold(holdFirstGapMs, kHoldRepeatGapMs);
   const uint32_t t0 = millis();
@@ -324,10 +389,7 @@ void runArrow(uint8_t code) {
     }
     const hd::ui::Output o = ui.update(now);
     showLed(o.led);
-    if (st.kind == hd::ui::Tx::None) {
-      st.kind = o.tx;
-      st.group = o.group;
-    }
+    if (st.kind == hd::ui::Tx::None) noteStart(st, o);
     const hd::tx::Step s = txs.next(o);
     if (s.kind == hd::tx::StepKind::None) {
       if (released) break;
@@ -335,21 +397,7 @@ void runArrow(uint8_t code) {
       delay(1);
       continue;
     }
-    const uint32_t start = millis();
-    if (s.kind == hd::tx::StepKind::Rf) {
-      long n = rf::sendStep(s.payload, s.channel, s.ms);
-      if (n < 0) { failed = true; break; }  // no ID or no radio; reason already printed
-      st.packets += n;
-      st.rfSteps++;
-      if (s.payload[2] == hd::rf::kModeGroup) (s.payload[4] & 0x80 ? st.heldMs : st.tailMs) += s.ms;
-    } else if (s.kind == hd::tx::StepKind::Ir) {
-      ir::sendCode(s.irCode, s.ms, true);
-      st.irSteps++;
-    } else {
-      delay(s.ms);
-    }
-    const uint32_t took = millis() - start;
-    if (took > s.ms && took - s.ms > st.worstOverrunMs) st.worstOverrunMs = took - s.ms;
+    if (!runStep(s, st)) { failed = true; break; }
   }
   if (failed) {
     if (!released) ui.release(k, millis());
@@ -358,15 +406,7 @@ void runArrow(uint8_t code) {
   }
   const uint32_t total = millis() - t0;
 
-  Serial.printf("Arrow %s, ", up ? "UP" : "DOWN");
-  if (st.kind == hd::ui::Tx::Group)
-    Serial.printf("group %s: A%c %lu ms, tail %lu ms, %ld packets rotating ch 33/52/71",
-                  hd::rf::groupName(st.group).c_str(), up ? '1' : '2', (unsigned long)st.heldMs,
-                  (unsigned long)st.tailMs, st.packets);
-  else
-    Serial.printf("red %s%s: %lu RF steps (%ld wake packets), %lu IR steps",
-                  hd::ir::codeToBits(code).c_str(), autoWake ? "" : " (wake off)",
-                  (unsigned long)st.rfSteps, st.packets, (unsigned long)st.irSteps);
+  printSent(st);
   if (!holdMode) Serial.printf("; tap (%lu ms)", (unsigned long)kTapMs);
   else if (hold.repeats())
     Serial.printf("; held %lu ms (%lu key repeats)", (unsigned long)hold.heldMs(),
@@ -407,6 +447,70 @@ void sendArrow(uint8_t code) {
     Serial.print(line);  // restore anything typed before the arrow
   }
 }
+
+#if defined(HD_BOARD_HANDHELD)
+// The board's keys, in hd::ui::Key order.
+constexpr uint8_t kKeyPins[hd::ui::kKeyCount] = {PIN_BTN_UP, PIN_BTN_DN, PIN_BTN_G1,
+                                                 PIN_BTN_G2, PIN_BTN_G3, PIN_BTN_G4,
+                                                 PIN_BTN_ALL, PIN_BTN_SETUP};
+constexpr const char* kKeyNames[hd::ui::kKeyCount] = {"UP", "DOWN", "1",   "2",
+                                                      "3",  "4",    "ALL", "SETUP"};
+hd::ui::Keypad pad;
+
+// Called from loop(): reads the keys and the A/B slider, and runs at most one
+// transmit step (about 50 ms) if the key logic wants one, so the keys are read
+// again between steps. The key logic ends every transmission at the 5 s cap.
+// Prints a summary when a transmission ends.
+void serviceKeys() {
+  static ArrowStats st;
+  static bool sending = false, failed = false;
+  static hd::ui::Tx lastTx = hd::ui::Tx::None;
+  static uint32_t t0 = 0;
+
+  uint8_t raw = 0;
+  for (int i = 0; i < hd::ui::kKeyCount; i++)
+    if (digitalRead(kKeyPins[i])) raw |= static_cast<uint8_t>(1u << i);
+  ui.setChannelB(digitalRead(PIN_AB_SW));  // high = B
+  const uint8_t pressed = pad.poll(raw, millis(), ui);
+  const hd::ui::Output o = ui.update(millis());
+  showLed(o.led);
+
+  const uint8_t arrows = hd::ui::keyBit(hd::ui::Key::Up) | hd::ui::keyBit(hd::ui::Key::Down);
+  // A new arrow press during a release tail starts a new summary.
+  const bool done = sending && (o.tx == hd::ui::Tx::None ||
+                                ((pressed & arrows) && lastTx == hd::ui::Tx::GroupTail));
+  lastTx = o.tx;
+  if (done) {
+    sending = false;
+    if (!failed) {
+      const hd::ui::Key k = st.up ? hd::ui::Key::Up : hd::ui::Key::Down;
+      const bool capped = o.tx == hd::ui::Tx::None && (pad.held() & hd::ui::keyBit(k));
+      Serial.println();
+      printSent(st);
+      Serial.printf("; total %lu ms, worst step overrun %lu ms%s\n> %s",
+                    (unsigned long)(millis() - t0), (unsigned long)st.worstOverrunMs,
+                    capped ? ", STOPPED at the 5 s limit" : "", line.c_str());
+    }
+  }
+
+  for (int i = 0; i < hd::ui::kKeyCount; i++)
+    if (pressed & (1u << i))
+      Serial.printf("\nKey %s%s\n> %s", kKeyNames[i], ui.inSetup() ? " (setup mode)" : "",
+                    line.c_str());
+  if (o.led == hd::ui::Led::Green) windowShown = true;  // pollUi reports it closing
+
+  if (o.tx == hd::ui::Tx::None) return;
+  if (!sending) {
+    sending = true;
+    failed = false;
+    st = ArrowStats();
+    noteStart(st, o);
+    t0 = millis();
+    startTx();
+  }
+  if (!failed && !runStep(txs.next(o), st)) failed = true;  // quiet until this press ends
+}
+#endif
 
 // slot argument: "" / "last" -> -1, else number
 int parseSlot(const String& s) {
@@ -682,6 +786,9 @@ void loop() {
     }
   }
 
+#if defined(HD_BOARD_HANDHELD)
+  if (mode == Mode::Idle) serviceKeys();  // not while the radio or IR is receiving
+#endif
   pollUi();
   if (mode == Mode::IrCapture) ir::pollCapture();
   else if (mode == Mode::RfBusy) {

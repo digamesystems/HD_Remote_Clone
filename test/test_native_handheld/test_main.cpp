@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Tier 1 (host): handheld key behaviour (hd::ui::Handheld) and the key debouncer.
+// Tier 1 (host): handheld key behaviour (hd::ui::Handheld), the key debouncer
+// and the eight-key pad that feeds the behaviour.
 #include <unity.h>
 
 #include "handheld.h"
+#include "keypad.h"
 
 using namespace hd::ui;
 
@@ -271,6 +273,74 @@ void test_debouncer_ignores_bounce() {
   TEST_ASSERT_FALSE(d.pressed());
 }
 
+// Two polls 30 ms apart, so the 25 ms debounce passes. Returns the keys pressed.
+static uint8_t settle(Keypad& p, Handheld& h, uint8_t raw, uint32_t t) {
+  const uint8_t early = p.poll(raw, t, h);
+  return early | p.poll(raw, t + 30, h);
+}
+
+void test_keypad_group_key_then_arrow_sends_group_and_tail() {
+  Keypad p;
+  Handheld h;
+  TEST_ASSERT_EQUAL_HEX8(0, p.poll(keyBit(Key::G3), 0, h));  // not debounced yet
+  assertIdleOut(h.update(0));
+  TEST_ASSERT_EQUAL_HEX8(keyBit(Key::G3), p.poll(keyBit(Key::G3), 30, h));
+  TEST_ASSERT_EQUAL(Led::Green, h.update(30).led);
+  settle(p, h, 0, 100);
+  TEST_ASSERT_EQUAL_HEX8(keyBit(Key::Down), settle(p, h, keyBit(Key::Down), 200));
+  Output o = h.update(230);
+  TEST_ASSERT_EQUAL(Tx::Group, o.tx);
+  TEST_ASSERT_FALSE(o.up);
+  TEST_ASSERT_EQUAL_HEX8(0x04, o.group);
+  settle(p, h, 0, 800);
+  TEST_ASSERT_EQUAL_HEX8(0, p.held());
+  TEST_ASSERT_EQUAL(Tx::GroupTail, h.update(830).tx);
+}
+
+void test_keypad_ignores_bounce() {
+  Keypad p;
+  Handheld h;
+  for (uint32_t t = 0; t < 200; t += 10)
+    TEST_ASSERT_EQUAL_HEX8(0, p.poll((t / 10) % 2 ? 0 : keyBit(Key::Up), t, h));
+  assertIdleOut(h.update(200));
+}
+
+void test_keypad_group_and_arrow_together_is_a_group_command() {
+  Keypad p;
+  Handheld h;
+  settle(p, h, keyBit(Key::Up) | keyBit(Key::G2), 0);
+  Output o = h.update(30);
+  TEST_ASSERT_EQUAL(Tx::Group, o.tx);
+  TEST_ASSERT_EQUAL_HEX8(0x02, o.group);
+}
+
+void test_keypad_held_arrow_stops_at_5s() {
+  Keypad p;
+  Handheld h;
+  const uint8_t up = keyBit(Key::Up);
+  settle(p, h, up, 0);
+  TEST_ASSERT_EQUAL(Tx::Wake, h.update(30).tx);
+  uint8_t pressedAgain = 0;
+  for (uint32_t t = 50; t <= 8000; t += 50) pressedAgain |= p.poll(up, t, h);
+  TEST_ASSERT_EQUAL_HEX8(0, pressedAgain);  // one press, however long it's held
+  TEST_ASSERT_EQUAL(Tx::None, h.update(8000).tx);
+  TEST_ASSERT_EQUAL_HEX8(up, p.held());
+}
+
+void test_keypad_setup_group_arrow_pairs() {
+  Keypad p;
+  Handheld h;
+  settle(p, h, keyBit(Key::Setup), 0);
+  settle(p, h, 0, 100);
+  settle(p, h, keyBit(Key::G1), 200);
+  settle(p, h, 0, 300);
+  settle(p, h, keyBit(Key::Down), 400);
+  Output o = h.update(430);
+  TEST_ASSERT_EQUAL(Tx::Setup, o.tx);
+  TEST_ASSERT_FALSE(o.up);
+  TEST_ASSERT_EQUAL_HEX8(0x01, o.group);
+}
+
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_group_bytes);
@@ -295,5 +365,10 @@ int main(int, char**) {
   RUN_TEST(test_setup_times_out_from_last_key);
   RUN_TEST(test_window_survives_millis_wrap);
   RUN_TEST(test_debouncer_ignores_bounce);
+  RUN_TEST(test_keypad_group_key_then_arrow_sends_group_and_tail);
+  RUN_TEST(test_keypad_ignores_bounce);
+  RUN_TEST(test_keypad_group_and_arrow_together_is_a_group_command);
+  RUN_TEST(test_keypad_held_arrow_stops_at_5s);
+  RUN_TEST(test_keypad_setup_group_arrow_pairs);
   return UNITY_END();
 }
