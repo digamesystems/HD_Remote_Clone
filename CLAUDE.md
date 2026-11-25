@@ -44,7 +44,7 @@ This file holds rules and stable facts only. Status, results and plans live in t
 - **Never Master Reset either original remote** (may erase pairing).
 - Holding OPEN 6 s at a fully open shade resets its limits (manual p. 21), so `send` caps both directions at 5 s (decided 2026-11-18, John). Keep any new transmit path under the same cap.
 - Pairing capacity per shade is unknown: remove test IDs (`pair <g> remove`) when done with them.
-- Our shades are top-down/bottom-up with **reversed arrows (DOWN opens, UP closes)**; test from mid-travel. They sleep after a few seconds idle: a press from sleep needs ~1–2 s of wake + IR.
+- Our shades each have **one moving rail**, in two types (John, 2026-11-25): **top-down** (fabric from the top of the window down to the rail) and **bottom-up** (fabric from the bottom of the window up to the rail). On the bottom-up shades **DOWN opens, UP closes**; test from mid-travel. They sleep after a few seconds idle: a press from sleep needs ~1–2 s of wake + IR.
 
 ## Hardware in one paragraph
 Breadboard: ESP32-DevKitC (WROOM-32D, `board = esp32dev`, CP210x on COM11), TSOP38238/VS1838B receiver, TSAL6200 IR LED via NPN, one hiBCTR "nRF24L01+" module (likely Si24R1 clone) on VSPI; pin map in `docs/FIRMWARE.md`. Handheld PCB rev 1 (WROOM-32E, envs `handheld` / `handheld_test`, `-DHD_BOARD_HANDHELD`): pin map in `include/pins.h` (source of truth) and `docs/HARDWARE.md`. Tools: 24 MS/s 8-ch logic analyzer (PulseView, `fx2lafw`). Radio B was dropped (decided 2026-11-18, John).

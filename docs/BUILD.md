@@ -1,12 +1,12 @@
 # Build your own
 
-> **TL;DR** (summary checked 2026-11-18 11:33): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
+> **TL;DR** (summary checked 2026-11-25): today you can build a **breadboard** version: an ESP32, an nRF24 radio module and an IR LED, driven from a PC over USB. It moves Platinum shades by point-and-press, and by group once paired, with no original remote. The **handheld** (custom PCB, battery, case) is designed but hasn't been built or tested yet, so don't order boards from these files yet.
 
 This page is the short path. The reasons, measurements and evidence are in the other docs: [IR_PROTOCOL.md](IR_PROTOCOL.md), [RF_PROTOCOL.md](RF_PROTOCOL.md) and [FIRMWARE.md](FIRMWARE.md).
 
 ## Before you start
 
-- **Shades:** Hunter Douglas shades with **Platinum Technology** (the 2013-era system, before PowerView) that work with the Platinum handheld remote. We've tested on our own shades only: top-down/bottom-up models, battery versions converted to DC power. Other Platinum shades haven't been tried; reports are welcome (open an issue).
+- **Shades:** Hunter Douglas shades with **Platinum Technology** (the 2013-era system, before PowerView) that work with the Platinum handheld remote. We've tested on our own shades only: top-down and bottom-up models (one moving rail each), battery versions converted to DC power. Other Platinum shades haven't been tried; reports are welcome (open an issue).
 - **What you get:** a breadboard you control by typing commands in a serial terminal on a PC. It isn't a handheld yet.
 - **Skills:** basic breadboard wiring and [PlatformIO](https://platformio.org/). Soldering is optional (a capacitor on the radio module).
 - **Original remote:** not needed.
@@ -63,7 +63,7 @@ Type `id` to see it again. You don't need to do anything else. A random ID matte
 Things to know:
 
 - **The shade sleeps.** After a few seconds idle it needs RF and IR together for about 1–2 s before it responds. Once it's moving, a short press of the opposite arrow stops it.
-- **Direction:** on top-down/bottom-up shades the arrows can be reversed (on ours, DOWN opens).
+- **Direction:** on a bottom-up shade (fabric rising from the bottom of the window), DOWN lowers the rail and so opens the shade.
 - **Channel B:** shades listen on IR channel A by default. For a shade set to B, use `send 1001` (up) or `send 1010` (down).
 - **Range:** with our single LED, it's reliable at about 30 cm with the LED fixed in place. Farther away it works, but less reliably, and it depends on aim.
 - **Don't hold OPEN for 6 s at a fully open shade:** the manual says that resets its limits. `send` caps every code at 5 s for this reason, in both directions, because on some shades DOWN is the one that opens.

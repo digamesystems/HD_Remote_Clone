@@ -1,6 +1,6 @@
 # HD Platinum IR protocol (point-and-press / red mode)
 
-> **TL;DR** (summary checked 2026-11-18 10:59): only the UP and DOWN arrows send IR, and only outside the green group window. A frame is a 2.75 ms header mark and space, then 4 pulse-distance bits (MSB first). Frames repeat back to back every 17.19 ms while the key is held, with no toggle bit, counter or shade address. Codes: channel A UP `0101`, DOWN `0110`; channel B UP `1001`, DOWN `1010`. The carrier is 40 kHz per the manual; the clone's 39.7 kHz works. **IR alone doesn't move a shade:** it also needs the RF wake frame `ID 01 00 80` ([RF_PROTOCOL.md](RF_PROTOCOL.md)), and a sleeping shade needs RF and IR together for about 1–2 s.
+> **TL;DR** (summary checked 2026-11-25): only the UP and DOWN arrows send IR, and only outside the green group window. A frame is a 2.75 ms header mark and space, then 4 pulse-distance bits (MSB first). Frames repeat back to back every 17.19 ms while the key is held, with no toggle bit, counter or shade address. Codes: channel A UP `0101`, DOWN `0110`; channel B UP `1001`, DOWN `1010`. The carrier is 40 kHz per the manual; the clone's 39.7 kHz works. **IR alone doesn't move a shade:** it also needs the RF wake frame `ID 01 00 80` ([RF_PROTOCOL.md](RF_PROTOCOL.md)), and a sleeping shade needs RF and IR together for about 1–2 s.
 
 Reverse engineered on 2026-11-07 from the original Platinum remote. The source of truth in code is [`lib/hdcore/src/hd_ir.h`](../lib/hdcore/src/hd_ir.h).
 
@@ -72,7 +72,7 @@ In normal use, the arrows are the only keys that send IR (checked with the logic
 
 It's unknown what the shades do with the 12 unused codes, or whether setup procedures use any of them. Sending unused codes at a shade is a possible experiment, at our own risk.
 
-**Caution:** per the manual (p. 21), holding OPEN for 6 s while aimed at a fully open shade clears its stops and motor limits. A long IR send could do the same, so `send` limits every code to 5 s (CLOSE included since fw 0.9.5, decided 2026-11-18 (John): on top-down/bottom-up shades DOWN is the arrow that opens, and it isn't known whether the reset follows the OPEN code or holding at the open limit).
+**Caution:** per the manual (p. 21), holding OPEN for 6 s while aimed at a fully open shade clears its stops and motor limits. A long IR send could do the same, so `send` limits every code to 5 s (CLOSE included since fw 0.9.5, decided 2026-11-18 (John): on bottom-up shades DOWN is the arrow that opens, and it isn't known whether the reset follows the OPEN code or holding at the open limit).
 
 ### Up arrow, `0101`
 
@@ -163,7 +163,7 @@ Widths are read from the screenshots to about ±0.1 ms. The proportions are the 
 
 All tests used one shade, with the remote's switch on A. The shade is a battery model converted to DC power, so it has the same electronics and firmware as a battery shade. The original remote operates it in red mode from more than 10 ft.
 
-**These shades are top-down/bottom-up, and the arrows act reversed: DOWN opens, UP closes.** Before any shade test, put the shade mid-travel and check that the original remote moves it both ways. Otherwise a command can fail only because the shade is already at that end.
+**This is a bottom-up shade (one moving rail, fabric rising from the bottom of the window), so DOWN opens and UP closes.** Before any shade test, put the shade mid-travel and check that the original remote moves it both ways. Otherwise a command can fail only because the shade is already at that end.
 
 ### Summary
 

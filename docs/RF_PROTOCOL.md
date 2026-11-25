@@ -1,6 +1,6 @@
 # HD Platinum RF protocol (2.4 GHz, nRF24)
 
-> **TL;DR** (summary checked 2026-11-22): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
+> **TL;DR** (summary checked 2026-11-25): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
 
 What the Platinum handheld remote sends over RF, from our sniffs of two remotes on 2026-11-11. For the IR side, and the shade tests that showed the shade needs RF alongside IR, see [IR_PROTOCOL.md](IR_PROTOCOL.md).
 
@@ -142,7 +142,7 @@ So RF group control works from our own radio. This also confirms, by the shades'
 
 - **A group command latches.** A ~0.63 s `grp` send (300 ms held + 330 ms tail) moved the shade from one limit to the other. So the 5 s cap on `grp` doesn't limit travel.
 - **The release tail isn't a stop.** The shade kept moving after the `21` / `22` tail.
-- **Travel times**, from the `RF group` line to John's Enter (add about 0.3–0.6 s for reaction): down 20.6, 20.8, 21.5 s (mean about 21.0 s); up 28.7, 26.6, 25.7 s (mean about 27.0 s). Up is about 25% slower. These are top-down/bottom-up shades, where DOWN opens.
+- **Travel times**, from the `RF group` line to John's Enter (add about 0.3–0.6 s for reaction): down 20.6, 20.8, 21.5 s (mean about 21.0 s); up 28.7, 26.6, 25.7 s (mean about 27.0 s). Up is about 25% slower. These are bottom-up shades, where DOWN opens.
 - **One miss:** at 14:51:03 a `grp 4 down` sent all its packets and the shade didn't move. About 1 miss in 35 group commands so far.
 - **Not tested yet:** whether an opposite group command stops a moving shade (the opposite IR arrow does). A timed preset would need it.
 
@@ -167,7 +167,7 @@ spitcool saw these at 2433 and 2452 MHz, none at 2471. Whether a shade moves whe
 
 The firmware's `pos <mask> <0-255> [ms50 ms32]` (fw 0.9.7) sends them with the stored ID, rotating ch 33/52/71 like `grp`, with spitcool's phase timings.
 
-**Shade test, 2026-11-18 (John; [log](../captures/rf_position_20261118.log)).** Clone only, no bridge, using the working remote's ID (a handheld group pairing, not a bridge room ID). Watched: the two group-4 shades (top-down/bottom-up).
+**Shade test, 2026-11-18 (John; [log](../captures/rf_position_20261118.log)).** Clone only, no bridge, using the working remote's ID (a handheld group pairing, not a bridge room ID). Watched: the two group-4 shades (bottom-up: one moving rail, fabric rising from the bottom of the window; John, 2026-11-25).
 
 | Test | Result |
 |---|---|
@@ -186,7 +186,7 @@ So, on our shades:
 - **The mask is the handheld group byte** (`01`, `02`, `04`, `08`), and bits combine. spitcool's bridge masks run up to `40`; groups 5–7 don't exist on our handheld.
 - **The ID is checked**, as for group commands (the red-mode wake isn't checked).
 
-Not yet tested: "up" and "down" on a standard (bottom-up) shade, the shortest phase timings that work, whether the `32` phase is needed, a shade that's moving when a new position arrives, and the first command of the run (mask `04`), whose note said group 4 moved; John's later check showed group 4 doesn't respond to `04`, so that note is unresolved.
+Not yet tested: a top-down shade (fabric from the top of the window down to the rail), where it isn't known whether 255 still puts the rail at the top, the shortest phase timings that work, whether the `32` phase is needed, a shade that's moving when a new position arrives, and the first command of the run (mask `04`), whose note said group 4 moved; John's later check showed group 4 doesn't respond to `04`, so that note is unresolved.
 
 ## Pairing (group assignment)
 

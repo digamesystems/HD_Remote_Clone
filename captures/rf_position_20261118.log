@@ -8,7 +8,7 @@
 #
 # Clone ID: the working remote's (redacted as yy yy), which is paired to the
 # household's groups by handheld group assignment. No bridge involved.
-# Watched: the two group-4 shades (top-down/bottom-up). "# ..." lines are the
+# Watched: the two group-4 shades (bottom-up, one moving rail; corrected 2026-11-25, John). "# ..." lines are the
 # tester's (John's) notes. Timestamps are the PC's; each one marks when the
 # command was typed, so the gaps between commands are think time.
 
