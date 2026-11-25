@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-25 13:13): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-25 14:45): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -178,9 +178,9 @@ What to watch for (proposed):
 | 1 Unpowered | Pass on the bare board, 2026-11-25 (hand-fitted-part checks pending) | J101 shell pegs topped up by hand; readings below |
 | 2 First power-up | Pass, 2026-11-25 | VBUS 5.0 V / VSYS 4.5 V / 3V3 3.25 V / idle about 20 mA |
 | 3 Serial + flash | Pass, 2026-11-25 | COM port: COM13. Details below |
-| 4 Inputs + indicator | Partial, 2026-11-25 (keys and D501 not fitted yet) | A/B position that reads high: knob toward the near (antenna) edge, shown as B. Details below |
+| 4 Inputs + indicator | Partial, 2026-11-25: all 8 keys and A/B pass (D501 not fitted yet) | A/B position that reads high: knob toward the near (antenna) edge, shown as B. Details below |
 | 5 IR | | |
-| 6 nRF24 | | |
+| 6 nRF24 | 2026-11-25: `test` passes, `sniff` receives an original remote, group commands move a shade (point-and-press waits for the IR LEDs) | Run before stage 5 and before D501 was fitted. Details below |
 | 7 Battery | | run mA / sleep µA: |
 | 8 In the case | | |
 | User trial | | |
@@ -204,3 +204,18 @@ What to watch for (proposed):
 - **`btn` with nothing pressed:** every key reads 0 (the switches aren't fitted, so this checks only that no input floats or sticks high).
 - **A/B slider:** the two positions read A and B. With the board face up and USB on the left, the knob toward the **far (BOOT) edge reads A**; toward the near (antenna) edge it reads B (GPIO high). In the remote pointing away from the user, that puts A on the left. This is the **same A/B orientation as the original remote** (checked by John), so the firmware needs no change.
 - **VBAT:** `btn` showed about 4356 mV with no cell, against 4.17 V metered on TP601 (about 4.5 % high). Probably the ESP32's ADC reading (not confirmed); compare again with a cell in stage 7.
+
+**Board 1, stage 4, keys (2026-11-25, John; the seven top keys, SETUP and the J401 socket hand-soldered):**
+
+- **USB failed once after soldering:** on the first plug-in (13:53) Windows reported `Unknown USB Device (Device Descriptor Request Failed)`. Unplugged, the error cleared; John's checks all passed (TP603, TP602 and TP102 to shell; no continuity from TP603 to any J401 pin or between neighbouring J401 pins; J401 pin 2 to TP602). Plugged in again at 14:03 on the same USB port, it enumerated normally as COM13. Cause not established; a poor cable connection is suspected.
+- **Seven top keys:** `btn` showed exactly one key at a time, and each matched its position. With the IR end pointing away, pressing down the left column, then the centre, then the right read G1, G3, UP, DOWN, ALL, G2, G4.
+- **SETUP** (underside): 0 at rest, 1 when pressed, soldered after the other keys.
+
+**Board 1, stage 6, first radio control (2026-11-25, John; nRF24 module in J401, USB power):**
+
+- **A shade moves from the new board:** using an ID already paired to the group (borrowed; the board's own new ID isn't paired), the shade moved up and down on command.
+- **Laptop keys in the serial monitor** (group keys followed by arrow keys, the handheld's key logic) work too. The board's own keys don't drive anything yet: the firmware doesn't read them.
+- Pairing and point-and-press aren't possible on this board yet (the IR LEDs aren't fitted).
+- **`test`:** PASS at 1 Mbps, 2 Mbps and 250 kbps, with 0 read-back errors in 402 channel/PA checks.
+- **`sniff`** (ch 33, 2 Mbps): 1270 packets from an original remote (ID `xx xx`), mode `20`, group 2, with action bytes `A4` then `24`, and `A3` then `23`. The firmware shows these as `?`: they aren't the `A1`/`A2` and `21`/`22` recorded in [RF_PROTOCOL.md](RF_PROTOCOL.md). The remote was the damaged one, **set to channel B** (John). A follow-up with the working remote settled it: the slider changes the group action byte (B: `A3`/`23` UP, `A4`/`24` DOWN), and the shades moved in either position. See [RF_PROTOCOL.md](RF_PROTOCOL.md#the-ab-slider-in-group-mode).
+- **All four groups respond** to the new board, and the position **presets work** (John).

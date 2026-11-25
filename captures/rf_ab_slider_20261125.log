@@ -1,0 +1,60 @@
+# A/B slider and group commands, sniffed from the original remotes, 2026-11-25
+#
+# Receiver: handheld PCB rev 1, board 1, with an nRF24 module, firmware
+# v0.9.13, command `sniff` (ch 33, 2 Mbps, address E7E7E7, CRC-16, 5-byte
+# payload). Channels 52 and 71 weren't sniffed.
+#
+# Remote IDs redacted: yy yy = working remote, xx xx = weak (damaged) remote.
+# Lines are copied from the serial monitor; times at the left are the PC's.
+# "# ..." lines inside a capture are the tester's (John's) notes.
+
+## 1. Working remote, group 2, slider on A and then on B
+
+# John's description: in each sequence, A and B, he started with the shades
+# up, commanded them down, pressed the UP arrow to stop them, then pressed
+# UP again to close. Both shades moved with the slider in either position.
+# (The A capture has a fourth press, DOWN, after those three.) The shades are
+# set to channel A.
+
+14:40:12.005 > > sniff
+14:40:16.928 > ch 33 (2433 MHz)  rate 2m  aw 3  addr(on-air) E7 E7 E7  crc 2  pl 5  filter off (runs)
+14:40:16.928 > Sniffing. One line per run of identical packets. Send any line to stop.
+14:40:16.943 > > 1226.892859 s  ch33  x737   yy yy 20 02 A2  ID yyyy  mode 20  group 2  DOWN held  span 432.4 ms  gap 561-686 us
+14:40:24.797 > 1227.325874 s  ch33  x263   yy yy 20 02 22  ID yyyy  mode 20  group 2  DOWN release  span 154.1 ms  gap 304-867 us
+14:40:26.341 > 1228.702825 s  ch33  x600   yy yy 20 02 A1  ID yyyy  mode 20  group 2  UP held  span 351.9 ms  gap 562-1759 us
+14:40:26.594 > 1229.055317 s  ch33  x395   yy yy 20 02 21  ID yyyy  mode 20  group 2  UP release  span 231.8 ms  gap 486-676 us
+14:40:29.269 > 1231.602044 s  ch33  x656   yy yy 20 02 A1  ID yyyy  mode 20  group 2  UP held  span 382.7 ms  gap 561-1162 us
+14:40:29.495 > 1231.985294 s  ch33  x342   yy yy 20 02 21  ID yyyy  mode 20  group 2  UP release  span 200.6 ms  gap 561-677 us
+14:40:31.306 > 1233.698639 s  ch33  x542   yy yy 20 02 A2  ID yyyy  mode 20  group 2  DOWN held  span 317.8 ms  gap 561-652 us
+14:40:31.600 > 1234.016986 s  ch33  x457   yy yy 20 02 22  ID yyyy  mode 20  group 2  DOWN release  span 268.8 ms  gap 527-1162 us
+14:40:39.298 > # Movement was as expected.
+14:40:52.334 > # Switch to B position.
+14:41:09.428 > 1271.525339 s  ch33  x1060  yy yy 20 02 A4  ID yyyy  mode 20  group 2  ?  span 622.1 ms  gap 561-755 us
+14:41:10.015 > 1272.148045 s  ch33  x939   yy yy 20 02 24  ID yyyy  mode 20  group 2  ?  span 552.2 ms  gap 342-1197 us
+14:41:11.894 > 1274.400191 s  ch33  x363   yy yy 20 02 A3  ID yyyy  mode 20  group 2  ?  span 211.0 ms  gap 561-677 us
+14:41:12.304 > 1274.611759 s  ch33  x636   yy yy 20 02 23  ID yyyy  mode 20  group 2  ?  span 374.1 ms  gap 502-1203 us
+14:41:14.102 > 1276.355788 s  ch33  x785   yy yy 20 02 A3  ID yyyy  mode 20  group 2  ?  span 457.7 ms  gap 561-1756 us
+14:41:14.246 > 1276.814116 s  ch33  x213   yy yy 20 02 23  ID yyyy  mode 20  group 2  ?  span 124.7 ms  gap 530-705 us
+
+## 2. Follow-up without a capture: the group-4 shades
+
+# Reported by John the same afternoon, working remote. In red mode (point and
+# press) the group-4 shades respond with the slider on A and not on B, so
+# they're set to channel A. A group-4 command with the slider on B moves them.
+
+## 3. Weak remote, group 2, slider on B
+
+# Taken a few minutes earlier. The keys pressed weren't noted, and shade
+# movement wasn't recorded (this remote doesn't move the shades reliably).
+
+14:30:29.329 > > test
+14:33:17.397 > RESULT module #0: PASS
+14:33:17.397 > > sniff
+14:33:44.909 > ch 33 (2433 MHz)  rate 2m  aw 3  addr(on-air) E7 E7 E7  crc 2  pl 5  filter off (runs)
+14:33:44.909 > Sniffing. One line per run of identical packets. Send any line to stop.
+14:33:44.925 > > 832.912375 s  ch33  x630   xx xx 20 02 A4  ID xxxx  mode 20  group 2  ?  span 638.8 ms  gap 561-7612 us
+14:33:51.379 > 833.552292 s  ch33  x416   xx xx 20 02 24  ID xxxx  mode 20  group 2  ?  span 519.6 ms  gap 88-7594 us
+14:34:00.638 > 842.812003 s  ch33  x210   xx xx 20 02 A3  ID xxxx  mode 20  group 2  ?  span 540.1 ms  gap 561-27762 us
+14:34:00.685 > 843.366110 s  ch33  x14    xx xx 20 02 23  ID xxxx  mode 20  group 2  ?  span 22.2 ms  gap 571-4683 us
+14:34:08.588 >
+14:34:08.588 > Sniff stopped. 1270 packets.

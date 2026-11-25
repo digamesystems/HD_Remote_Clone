@@ -85,7 +85,7 @@ Commands and pin map: [docs/FIRMWARE.md](docs/FIRMWARE.md).
   | Original TX power | about −6 dBm |
 
   - `ID0 ID1` identify the remote. Group commands are checked against the ID (a made-up ID gets no response), but the red-mode wake isn't (2026-11-12). Our two remotes have different IDs, and both work.
-  - `MODE` is `20` with a group active, `01` for a red-mode press, and `30` / `31` for a setup-mode (pairing) add / remove. `GROUP` is `01/02/04/08` for groups 1–4, `FF` for All. `ACTION` is `A1` up held, `A2` down held, then `21` / `22` as a release tail.
+  - `MODE` is `20` with a group active, `01` for a red-mode press, and `30` / `31` for a setup-mode (pairing) add / remove. `GROUP` is `01/02/04/08` for groups 1–4, `FF` for All. `ACTION` is `A1` up held, `A2` down held, then `21` / `22` as a release tail; with the remote's A/B slider on B they are `A3` / `A4` and `23` / `24` (our sniff, 2026-11-25).
   - **A red-mode (IR) arrow press also sends RF:** `ID 01 00 80` while held, with no direction. The shade needs it before it will act on the IR. Our finding, 2026-11-11.
   - Example from the forum (another remote's ID): `03 C1 20 01 A1`, group 1 up.
   - Channel 7 / 1 Mbps, quoted in one forum thread, conflicts with this. spitcool's notes associate those settings with the later PowerView Pebble remote.

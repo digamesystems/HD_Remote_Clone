@@ -1,6 +1,6 @@
 # HD Platinum RF protocol (2.4 GHz, nRF24)
 
-> **TL;DR** (summary checked 2026-11-25): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
+> **TL;DR** (summary checked 2026-11-25 14:51): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail; `A3/A4` and `23/24` with the remote's A/B slider on B) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
 
 What the Platinum handheld remote sends over RF, from our sniffs of two remotes on 2026-11-11. For the IR side, and the shade tests that showed the shade needs RF alongside IR, see [IR_PROTOCOL.md](IR_PROTOCOL.md).
 
@@ -18,7 +18,8 @@ The air settings come from prior work by [spitcool/hd-platinum-rf](https://githu
 | Release tail `ID 01 00 00` after the wake | weak remote only; the working remote sends none |
 | Nothing is sent when the green window expires | ✅ one observation (working remote) |
 | A clone sending the wake + IR moves the shade | ✅ 2026-11-11, no original remote involved: reliable with the LED about 1 ft from the sensor eye; misses traced to IR aim. See [Shade tests](IR_PROTOCOL.md#2026-11-11-clone-only-rf-wake--ir) |
-| Clone group commands move the shades (`grp`) | ✅ 2026-11-11: groups 1–4 independently and All, UP and DOWN, with the working remote's ID. RF only, no aiming. DOWN (`A2` / `22`) and groups 2–4 / All are confirmed by the shades' response; we haven't sniffed them from a remote |
+| Clone group commands move the shades (`grp`) | ✅ 2026-11-11: groups 1–4 independently and All, UP and DOWN, with the working remote's ID. RF only, no aiming. DOWN (`A2` / `22`) and groups 2–4 / All are confirmed by the shades' response. DOWN and group 2 were also sniffed from the working remote on 2026-11-25; groups 3, 4 and All haven't been |
+| **Remote's A/B slider changes the group action byte** | ✅ 2026-11-25: on B, UP = `A3` then `23`, DOWN = `A4` then `24`. Channel-A shades obeyed both. See [The A/B slider](#the-ab-slider-in-group-mode) |
 | Shade checks the ID | **Group commands: yes.** With a made-up ID (`12 34`), `grp 4` got 0 responses in 12 trials; with the working remote's ID, 12 of 12 (2026-11-12). **Red-mode wake: no.** A wake with `12 34` or `C1 0E`, then IR, moved a group-4 shade, as did both real IDs (2026-11-12). The 2026-11-11 result, where `12 34` also failed for wake + IR, is put down to hand-aimed IR (trials not counted) |
 | Group assignment (setup mode) frames | ✅ 2026-11-12, working remote: add (setup + group 4 + OPEN) = `ID 30 08 80`; remove (setup + group 4 + CLOSE) = `ID 31 08 80`, then a `00` tail. SETUP and the group key send nothing |
 | **Clone pairs under its own ID** | ✅ **2026-11-12:** `pair 4 add` with a made-up ID (`C1 0E`) at a group-4 shade: the shade jogged, then `grp 4` with that ID moved it 5 of 5 up and 5 of 5 down. Before pairing it got no response. **2026-11-15:** `pair 4 remove` jogged the shade, and `grp 4` with that ID then got no response, while `grp 4` with the working remote's ID still worked. So removal drops only the clone's entry |
@@ -47,11 +48,11 @@ Our receiver was a clone module marked `NRF24L01+` (see [WIRING.md](WIRING.md)),
 | `ID0 ID1` | The remote's ID. **Our two remotes have different IDs, and both move the shade**, so a shade accepts more than one remote. Treat an ID as private. It's redacted as `xx xx` / `yy yy` here |
 | `MODE` | `20` group command; `01` red-mode (IR) press; `30` setup-mode add (group assignment, OPEN); `31` setup-mode remove (CLOSE); `50` then `32` absolute position (the Platinum bridge's frames; there GROUP is a group mask and ACTION a position, see [Absolute position](#absolute-position-experimental)) |
 | `GROUP` | one-hot `01/02/04/08` for groups 1–4, `FF` All (from spitcool); `00` none. We sniffed `01`; the others work when the clone sends them |
-| `ACTION` | `A1` UP held, `21` UP release tail (sniffed); `A2` DOWN held, `22` DOWN release tail (from spitcool, and they work when the clone sends them); `80` held and `00` release tail, for both the red-mode wake and setup-mode frames |
+| `ACTION` | Group commands with the slider on **A**: `A1` UP held, `21` UP release tail; `A2` DOWN held, `22` DOWN release tail (sniffed; `A2`/`22` first from spitcool). On **B**: `A3` / `23` UP and `A4` / `24` DOWN (sniffed 2026-11-25). `80` held and `00` release tail, for both the red-mode wake and setup-mode frames |
 
 No counter or rolling code: every packet of a press is identical, and presses repeat the same payload.
 
-In both pairs, bit 7 is set while the key is held and cleared in the tail (`A1` → `21`, `80` → `00`). That's a pattern, not a confirmed meaning.
+In each pair, bit 7 is set while the key is held and cleared in the tail (`A1` → `21`, `A3` → `23`, `80` → `00`). Between the slider positions, the group action bytes differ by 2 (`A1` → `A3`, `A2` → `A4`). Those are patterns, not confirmed meanings.
 
 ### All known frames
 
@@ -61,26 +62,43 @@ Every frame type we know of, in one place. "Works" means a shade responded when 
 |---|---|---|---|
 | `ID 01 00 80` while held; some remotes add a `00` tail | red-mode wake; the IR carries the command | our sniff | works from any ID (not checked) |
 | `ID 20 <group> A1`, then tail `21` | group UP | our sniff | works; ID checked |
-| `ID 20 <group> A2`, then tail `22` | group DOWN | spitcool | works; ID checked |
+| `ID 20 <group> A2`, then tail `22` | group DOWN | spitcool; our sniff | works; ID checked |
+| `ID 20 <group> A3`, then tail `23` | group UP, slider on B | our sniff | moved channel-A shades from the original remote; not yet sent by our clone |
+| `ID 20 <group> A4`, then tail `24` | group DOWN, slider on B | our sniff | moved channel-A shades from the original remote; not yet sent by our clone |
 | `ID 30 <group> 80` + OPEN IR | setup: add the shade that sees the IR to the group | our sniff | works (the clone pairs its own ID) |
 | `ID 31 <group> 80`, then tail `00` + CLOSE IR | setup: remove the shade from the group | our sniff | works |
 | `ID 50 <mask> <pos>` ~1.49 s, then `ID 32 <mask> <pos>` ~0.30 s | go to an absolute position (0 = fully down, 255 = fully up on our shades) | spitcool (Platinum bridge) | works from a handheld-paired ID; ID checked |
 
 `<group>` is one-hot (`01`, `02`, `04`, `08` = groups 1–4) or `FF` for All. A position `<mask>` uses the same bits, and they combine (`06` = groups 2 and 3).
 
-Not known: whether the A/B slider changes any frame, the duplicate-remote copy (manual p. 7), intermediate stop and express mode, and anything else the bridge sends.
+Not known: whether the A/B slider changes the red-mode wake or setup-mode frames, the duplicate-remote copy (manual p. 7), intermediate stop and express mode, and anything else the bridge sends.
 
 ## What each key press sends
 
 | Press | RF |
 |---|---|
 | Group key (1–4, All) alone | **nothing.** It only opens the green window on the remote |
-| Arrow within the green window | `ID 20 <group> A1` (UP) while held, then `ID 20 <group> 21` for ~0.3 s |
+| Arrow within the green window | `ID 20 <group> A1` (UP) while held, then `ID 20 <group> 21` for ~0.3 s. With the slider on B the bytes differ ([below](#the-ab-slider-in-group-mode)) |
 | Arrow in red mode (IR) | `ID 01 00 80` while held, alongside the IR. No direction: the IR carries it |
 | SETUP, and the group key after it | nothing |
 | OPEN in setup mode, after a group key | `ID 30 <group> 80` while held, plus the **normal OPEN IR** (`0101` on channel A). Adds the shade that sees the IR to the group |
 | CLOSE in setup mode, after a group key | `ID 31 <group> 80` while held, then `ID 31 <group> 00`, plus the **normal CLOSE IR** (`0110`). Removes the shade that sees the IR from the group |
 | SETUP again (save and exit) | nothing |
+
+### The A/B slider in group mode
+
+The slider is the remote's IR channel selector ([IR_PROTOCOL.md](IR_PROTOCOL.md)), and it also changes the **last byte** of a group command. ID, mode and group stay the same. Sniffed on ch 33 on 2026-11-25 from the working remote, group 2 (tester John):
+
+| Slider | UP: held, tail | DOWN: held, tail |
+|---|---|---|
+| A | `A1`, `21` | `A2`, `22` |
+| B | `A3`, `23` | `A4`, `24` |
+
+The weak remote, set to B, sent the same four bytes. In each sequence John started with the shades up, sent them down, pressed UP to stop them, then pressed UP again to close them.
+
+- **A shade set to channel A moves on group commands with the slider in either position**, so its channel setting doesn't filter them. Shown on the group-4 shades (2026-11-25, John): in red mode they respond with the slider on A and not on B, yet they move on a group command sent with the slider on B (those presses weren't sniffed). The two group-2 shades also moved on both settings; their red-mode channel wasn't checked.
+- **The opposite arrow stopped a moving shade** in group mode, with the slider on A and on B.
+- Untested: how a shade set to channel B treats `A1`–`A4`, and whether the red-mode wake or the setup frames change with the slider.
 
 ### Red-mode wake timing
 
@@ -242,7 +260,8 @@ The manual doesn't say how many remotes a shade can store. With `pair ... remove
 - The shortest wake that works (needs a setting for the automatic wake length).
 - Sniff channels 52 and 71 to confirm the rotation.
 - ~~Do shades accept spitcool's bridge position frames from a handheld-paired ID?~~ Yes, and the position is absolute (2026-11-18; see [Absolute position](#absolute-position-experimental)). Still open: the shortest timings that work, and whether the `32` phase is needed.
-- Does an opposite group command stop a moving shade?
+- ~~Does an opposite group command stop a moving shade?~~ Yes from the original remote, on both slider positions (2026-11-25; see [The A/B slider](#the-ab-slider-in-group-mode)). Still to try from the clone.
+- Does a shade set to channel B respond differently to the A and B group bytes?
 - ~~Group commands from the clone~~ Done 2026-11-11 (see [Group commands from the clone](#group-commands-from-the-clone)). Still open: does a shorter hold or tail work, and how does a long hold behave (does the shade keep moving only while frames arrive)?
 
 ## Evidence
@@ -253,3 +272,4 @@ The manual doesn't say how many remotes a shade can store. With `pair ... remove
 | [`captures/rf_ir_setup_mode_20261112.log`](../captures/rf_ir_setup_mode_20261112.log) | Setup-mode group assignment: RF for add and remove, IR summaries, and the clone pairing result. ID redacted |
 | [`captures/rf_position_20261118.log`](../captures/rf_position_20261118.log) | Absolute-position frames from the clone (`pos`): serial lines for the first runs, John's notes for the rest. ID redacted |
 | [`captures/shade_timing_20261115.log`](../captures/shade_timing_20261115.log) | Clone shade timing tests, and the clone's pairing remove (section 7) |
+| [`captures/rf_ab_slider_20261125.log`](../captures/rf_ab_slider_20261125.log) | Group commands with the A/B slider on A and B (working remote), and on B (weak remote), received by handheld board 1. IDs redacted |

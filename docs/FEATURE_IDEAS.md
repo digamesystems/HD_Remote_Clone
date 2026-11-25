@@ -28,7 +28,7 @@ Ideas for the clone that go beyond what the stock Platinum remote does. **Nothin
 **Open before building:**
 
 - ~~Which slider position is A on the handheld PCB~~ Answered at bring-up (2026-11-25, John): A is GPIO 14 low, the knob toward the BOOT edge, matching the original remote's orientation.
-- **Does the stock slider change any RF frame?** Sniff with the switch on B.
+- ~~Does the stock slider change any RF frame?~~ Yes: on B the group action bytes are `A3`/`23` (UP) and `A4`/`24` (DOWN), and channel-A shades obeyed them (sniffed 2026-11-25; [RF_PROTOCOL.md](RF_PROTOCOL.md#the-ab-slider-in-group-mode)).
 
 ## A swoopier case for a later revision
 

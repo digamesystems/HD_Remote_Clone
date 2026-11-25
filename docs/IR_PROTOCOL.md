@@ -1,6 +1,6 @@
 # HD Platinum IR protocol (point-and-press / red mode)
 
-> **TL;DR** (summary checked 2026-11-25): only the UP and DOWN arrows send IR, and only outside the green group window. A frame is a 2.75 ms header mark and space, then 4 pulse-distance bits (MSB first). Frames repeat back to back every 17.19 ms while the key is held, with no toggle bit, counter or shade address. Codes: channel A UP `0101`, DOWN `0110`; channel B UP `1001`, DOWN `1010`. The carrier is 40 kHz per the manual; the clone's 39.7 kHz works. **IR alone doesn't move a shade:** it also needs the RF wake frame `ID 01 00 80` ([RF_PROTOCOL.md](RF_PROTOCOL.md)), and a sleeping shade needs RF and IR together for about 1–2 s.
+> **TL;DR** (summary checked 2026-11-25 14:45): only the UP and DOWN arrows send IR, and only outside the green group window. A frame is a 2.75 ms header mark and space, then 4 pulse-distance bits (MSB first). Frames repeat back to back every 17.19 ms while the key is held, with no toggle bit, counter or shade address. Codes: channel A UP `0101`, DOWN `0110`; channel B UP `1001`, DOWN `1010`. The carrier is 40 kHz per the manual; the clone's 39.7 kHz works. **IR alone doesn't move a shade:** it also needs the RF wake frame `ID 01 00 80` ([RF_PROTOCOL.md](RF_PROTOCOL.md)), and a sleeping shade needs RF and IR together for about 1–2 s.
 
 Reverse engineered on 2026-11-07 from the original Platinum remote. The source of truth in code is [`lib/hdcore/src/hd_ir.h`](../lib/hdcore/src/hd_ir.h).
 
@@ -16,7 +16,7 @@ Reverse engineered on 2026-11-07 from the original Platinum remote. The source o
 
 ## When the remote sends IR
 
-The remote has 7 keys: **UP, DOWN, 1, 2, 3, 4, ALL**, plus an **A/B slide switch**, which the manual calls the **Infrared Channel Selector**. It changes the IR code (see [Codes](#codes)). Each shade listens on one channel, and most are set to A (manual pp. 18, 22). Whether the switch also affects RF is unknown.
+The remote has 7 keys: **UP, DOWN, 1, 2, 3, 4, ALL**, plus an **A/B slide switch**, which the manual calls the **Infrared Channel Selector**. It changes the IR code (see [Codes](#codes)). Each shade listens on one channel, and most are set to A (manual pp. 18, 22). In group mode it also changes the RF action byte (2026-11-25; [RF_PROTOCOL.md](RF_PROTOCOL.md#the-ab-slider-in-group-mode)).
 
 - **Group keys (1–4, ALL) are RF-only.** Pressing one always flashes the green LED and opens an **RF window of ≈ 6.5 s** (stopwatch measurement, 2026-11-07; the manual says 5 s). Pressing a group key again during the window **restarts** it.
 - **The arrow keys are IR by default (red LED).** During an RF window they act as RF group commands instead (green). Once the window expires, they go back to IR.
