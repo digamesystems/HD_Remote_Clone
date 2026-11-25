@@ -98,10 +98,9 @@ def main():
         ds = c.get("datasheet") or ("" if blank(r["Datasheet"]) else r["Datasheet"])
         desc = r["Description"] if not blank(r["Description"]) else c.get("description", "")
         tht = fp.split(":")[0].startswith(THT_LIBS)
-        if r["LCSC"]:
-            fit = "JLC (THT) or hand" if tht else "JLC"
-        else:
-            fit = "hand"
+        # Through-hole parts are hand-fitted even with an LCSC number: make_jlc.py leaves them out
+        # of the JLC order unless named in --tht.
+        fit = "JLC" if r["LCSC"] and not tht else "hand"
         qty = len(g["refs"])
         if dnp:
             fit = "**DNP** (not fitted)"

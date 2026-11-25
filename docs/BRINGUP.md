@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-25): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-25 11:23): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -166,6 +166,7 @@ What to watch for (proposed):
 - **Shipped (reported by John, 2026-11-23):** the boards have left JLCPCB, **expected to arrive 2026-11-27**.
 - **Hand-fitted parts (DigiKey, ordered 2026-11-17):** in transit by FedEx Ground, **estimated delivery Tuesday 2026-11-24** (status reported by John, 2026-11-21). **Arrived 2026-11-23** (reported by John), ahead of the boards.
 - **Batteries (Adafruit #1578 ×5, ordered 2026-11-17):** on the way by UPS, **estimated delivery Wednesday 2026-11-25** (status reported by John, 2026-11-21). **Delivered 2026-11-24** to the mail room (reported by John), a day early. On arrival, measure a cell and its plug for the case (battery ribs, `PLUG_L`) and meter each plug's polarity (stage 7).
+- **Boards arrived 2026-11-25** (reported by John), ahead of the 2026-11-27 estimate. J102 came unpopulated, as ordered: it's on the hand-fitted list above. In John's photo of one board, J101 (USB-C) is fitted and the empty positions that can be made out are on the hand-fitted or not-fitted lists (read from the photo by Claude; the stage 1 checks are still to be done).
 - **After the board arrives:** follow the stages below, and solder the hand-fitted parts soon, since OSP has a short shelf life.
 
 ## Log

@@ -11,13 +11,13 @@ python -I hardware/tools/make_bom.py
 
 `make_bom.py` rewrites only the table between the GENERATED markers below. Manufacturer, MPN, datasheet and description come from the schematic's fields where set, otherwise from LCSC's page for the part's LCSC number (cached in `hardware/bom/lcsc_cache.json`). To change a board part, change the schematic, not this table.
 
-**Fit column:** *JLC* = SMD, assembled by JLCPCB. *JLC (THT) or hand* = through-hole with an LCSC number: JLC's paid THT assembly, or solder it yourself. *hand* = not stocked by LCSC; buy it separately and solder it by hand.
+**Fit column:** *JLC* = SMD, assembled by JLCPCB. *hand* = not assembled by JLCPCB; buy it separately and solder it by hand. That covers the through-hole parts, including any with an LCSC number (J102), and parts without one. (`make_jlc.py --tht` can add a through-hole part to a JLC order; rev 1 didn't use it.)
 
 ## Board parts
 
 <!-- BEGIN GENERATED: hardware/tools/make_bom.py -->
 
-43 lines, 93 fitted parts: 77 SMD parts JLC assembles, 16 through-hole or hand-fitted; plus 2 footprints left empty (DNP, population options). Generated 2026-11-16 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** TP604–TP606.
+43 lines, 93 fitted parts: 77 SMD parts JLC assembles, 16 through-hole or hand-fitted; plus 2 footprints left empty (DNP, population options). Generated 2026-11-25 from `hardware/hd_remote/hd_remote.kicad_sch`; don't edit this table by hand. **No part chosen yet:** TP604–TP606.
 
 | Ref | Qty | Value | Manufacturer | MPN | LCSC | Fit | Datasheet | Description |
 |---|---|---|---|---|---|---|---|---|
@@ -35,7 +35,7 @@ python -I hardware/tools/make_bom.py
 | D501 | 1 | Red/Green CC | Kingbright | WP59EGW | — | hand | [PDF](https://www.kingbrightusa.com/images/catalog/SPEC/WP59EGW.pdf) | 5 mm bi-color LED, red/green, common cathode, white diffused (1 = red anode, 2 = cathode, 3 = green anode). Seated flush on the board, under a Bivar PLP2-250 light pipe |
 | FB401 | 1 | 0R (or bead) | UNI-ROYAL | 0603WAF0000T5E | [C21189](https://www.lcsc.com/product-detail/C21189.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/f42da6c80a0747bae77c2f98f4e46d1d.pdf?productCode=C21189) | 0 ohm link by default; ferrite bead option for the nRF24 supply |
 | J101 | 1 | USB_C_Receptacle | Korean Hroparts Elec | TYPE-C-31-M-12 | [C165948](https://www.lcsc.com/product-detail/C165948.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/9e56b777c022540fcce7c7f67825f55e.pdf?productCode=C165948) | USB 2.0-only 16P Type-C Receptacle connector |
-| J102 | 1 | Battery | JST | S2B-PH-K-S(LF)(SN) | [C173752](https://www.lcsc.com/product-detail/C173752.html) | JLC (THT) or hand | [PDF](https://datasheet.lcsc.com/datasheet/pdf/6c6fce4367275d84ec6a99bf09f1250f.pdf?productCode=C173752) | Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/) |
+| J102 | 1 | Battery | JST | S2B-PH-K-S(LF)(SN) | [C173752](https://www.lcsc.com/product-detail/C173752.html) | hand | [PDF](https://datasheet.lcsc.com/datasheet/pdf/6c6fce4367275d84ec6a99bf09f1250f.pdf?productCode=C173752) | Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/) |
 | J401 | 1 | nRF24_socket | Samtec | SLW-104-01-G-D | — | hand | [PDF](https://suddendocs.samtec.com/catalog_english/slw.pdf) | nRF24 module socket: low-profile 2x4 female, 2.54 mm, 4.57 mm tall (decided 2026-11-16, John). Trim the module's header pins to ~2.6 mm (insertion depth 2.16-2.92 mm) |
 | JP101 | 1 | 0R | UNI-ROYAL | 0805W8F0000T5E | [C17477](https://www.lcsc.com/product-detail/C17477.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/0a975aaa49b7c97f38a963127be4a823.pdf?productCode=C17477) | 0 ohm link in the battery path (I_BAT): lift it to measure battery current, then refit. Drawn with the solder-jumper symbol |
 | Q101, Q102 | 2 | MMBT3904 | JSCJ | MMBT3904(RANGE:100-300) | [C20526](https://www.lcsc.com/product-detail/C20526.html) | JLC | [PDF](https://datasheet.lcsc.com/datasheet/pdf/9335632bcfa83df8351353eab379720e.pdf?productCode=C20526) | 0.2A Ic, 40V Vce, Small Signal NPN Transistor, SOT-23 |
