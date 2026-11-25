@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-24): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-25): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -165,7 +165,7 @@ What to watch for (proposed):
 - **Production (status reported by John, 2026-11-22):** in production since 2026-11-18 07:04 (manufacturing data for the PCB and the SMT job finished that afternoon). The bare PCBs went into JLC's factory on 2026-11-19, estimated to finish 2026-11-21 16:55. Since 2026-11-22 05:20 the assembly (SMT) job has been running in JLCPCB Factory No. 2, **estimated finish 2026-11-24 20:00** (JLC's time).
 - **Shipped (reported by John, 2026-11-23):** the boards have left JLCPCB, **expected to arrive 2026-11-27**.
 - **Hand-fitted parts (DigiKey, ordered 2026-11-17):** in transit by FedEx Ground, **estimated delivery Tuesday 2026-11-24** (status reported by John, 2026-11-21). **Arrived 2026-11-23** (reported by John), ahead of the boards.
-- **Batteries (Adafruit #1578 ×5, ordered 2026-11-17):** on the way by UPS, **estimated delivery Wednesday 2026-11-25** (status reported by John, 2026-11-21). On arrival, measure a cell and its plug for the case (battery ribs, `PLUG_L`) and meter each plug's polarity (stage 7).
+- **Batteries (Adafruit #1578 ×5, ordered 2026-11-17):** on the way by UPS, **estimated delivery Wednesday 2026-11-25** (status reported by John, 2026-11-21). **Delivered 2026-11-24** to the mail room (reported by John), a day early. On arrival, measure a cell and its plug for the case (battery ribs, `PLUG_L`) and meter each plug's polarity (stage 7).
 - **After the board arrives:** follow the stages below, and solder the hand-fitted parts soon, since OSP has a short shelf life.
 
 ## Log
