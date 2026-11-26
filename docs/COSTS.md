@@ -12,6 +12,7 @@ What the prototypes actually cost to get into hand, per board and per case. Upda
 
 | Date | Vendor | What | Merchandise | Shipping | Duties and tax | Landed | Charged to |
 |---|---|---|---|---|---|---|---|
+| 2026-11-26 | JLC3DP | 5 cases, `case-rev1`: shells ×5 each (black), 7 caps and the A/B slider ×5 each (natural grey) | $121.95 | $35.61 | $65.45 | $223.01 | Case batch (5) |
 | 2026-11-17 | JLCPCB | 5 assembled boards (PCB $17.69, PCBA $148.20) | $165.89 | $37.92 | $82.17 | $285.98 | Board batch (5) |
 | 2026-11-17 | DigiKey | J401 sockets ×10, D501 ×10, light pipes ×15, J102 ×10 | $25.40 | $7.40 | $6.11 | $38.91 | Board batch (5) |
 | 2026-11-17 | DigiKey | IR sink-test parts (diodes, PN2222A, resistors) | $3.76 | $1.09 | $0.91 | $5.76 | Development |
@@ -20,6 +21,8 @@ What the prototypes actually cost to get into hand, per board and per case. Upda
 | 2026-11-15 | Amazon | M2/M2.5/M3 pan-head self-tapping screws, 1200-piece assortment | $8.49 | $0.00 | $0.85 | $9.34 | Case batch (5), hardware |
 | 2026-11-13 | DigiKey | Key switches TS02-66-130-BK-160-SCR-D ×100 | $10.33 | $8.49 | $3.27 | $22.09 | Board batch (5) |
 | 2026-11-13 | JLC3DP | Enclosure test piece (7 parts) | $10.79 | $31.65 | $23.08 | $65.52 | Development (case) |
+
+The case order (placed and paid 2026-11-26, John): MJF PA12-HP, 3-day build. The merchandise is the top shell $40.05 and the bottom shell $43.90 for five each; the black dye came with the Black colour at $0.00. The seven caps and the slider cost $4.75 each for five, so every small part sits at the $0.95 minimum per piece. Its duties and tax are customs $48.78, disbursement fee $4.44 and sales tax $12.23. Shipping is UPS Express Saver (DDP), so the duties were paid at checkout, and no duty bill should come on arrival (unlike the test piece). Correct this row if one does.
 
 The key-switch order's duties and tax are a $2.03 tariff and $1.24 sales tax. Its 100 switches cover the 5 boards (8 each) with 60 spare, and one went into the test piece's key fixture; as spares, all of it is charged to the batch.
 
@@ -41,7 +44,17 @@ JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales t
 | Batteries | $63.40 | $12.68 |
 | **Electronics plus battery** | **$430.16** | **$86.03** |
 
-**Case:** no case print has been ordered yet, so there is no per-case figure (see the estimate below). Hardware bought so far: the screw assortment, $9.34 landed, charged to the case batch (each case uses 4 board screws and 4 case screws, so the assortment covers many more than five; as spares, all of it counts). Proposed charge (Claude); change it if the screws should count as development stock. The test piece ($65.52 landed: $10.79 of parts, $31.65 shipping, $23.08 duties and tax) is development, not a case. Shipping dominates small JLC3DP orders, so a case order's cost per case will fall a lot if several cases, or the case with spare caps and slider knobs, go in one shipment. Record each case print order as a row above, then divide by the cases it makes.
+**Case batch, 5 cases** (landed):
+
+| | Batch | Per case |
+|---|---|---|
+| JLC3DP, printed parts (2026-11-26) | $223.01 | $44.60 |
+| Screw assortment (with spares) | $9.34 | $1.87 |
+| **Case** | **$232.35** | **$46.47** |
+
+The screw assortment is charged to the case batch: each case uses 4 board screws and 4 case screws, so it covers many more than five, and as spares all of it counts. That charge is Claude's proposal; change it if the screws should count as development stock. The test piece ($65.52 landed: $10.79 of parts, $31.65 shipping, $23.08 duties and tax) is development, not a case.
+
+**One remote, landed** (electronics plus battery plus case): $86.03 + $46.47 = **$132.50**, before any development costs.
 
 **Development, not spread over the units:** IR sink-test parts $5.76; the test piece $65.52 (total $71.28).
 
@@ -49,7 +62,9 @@ JLCPCB's duties and taxes are customs $58.07, disbursement fee $7.52 and sales t
 
 ## Estimates (not spending)
 
-Kept apart from the ledger and the summary above; none of it is counted there. Replace it with real figures when a case is ordered.
+Kept apart from the ledger and the summary above; none of it is counted there.
+
+**Outcome (2026-11-26):** the real case order is in the ledger at $44.60 per case landed, against the estimate below of $32–35 plus a share of $20–25 of duty per shipment (about $36–40 per case). The printing came out close: $24.39 per case against about $22.50, with the shells a little above the volume rule. Duties and tax were higher: $65.45 for the shipment, about 54 % of the merchandise. The combined caps-and-slider file wasn't possible, because JLC3DP asked for each part as its own file, so the saving below didn't apply.
 
 **Printing one case in MJF nylon at JLC3DP** (estimated 2026-11-17). The test piece's seven parts fit a simple price rule: about **$0.34 per cm³ with a $0.95 minimum per part** (plate 12.9 cm³ for $4.37, key base 4.9 cm³ for $1.67; the key face and caps sit at the minimum). Volumes come from the case model.
 

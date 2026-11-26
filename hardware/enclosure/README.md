@@ -1,6 +1,6 @@
 # Enclosure (3D-printed)
 
-> **TL;DR** (summary checked 2026-11-26 11:57): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
+> **TL;DR** (summary checked 2026-11-26 12:40): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
@@ -162,8 +162,15 @@ What stands between now and a case order. Items are open unless ticked; the reco
 **Preparing the order**
 - [ ] Apply what's decided, rerun `python assembly.py --board out/hd_remote_board.step`: all checks pass, and no guess left that a check depends on.
 - [ ] Export STL and STEP from a tagged commit and check the meshes are watertight. Expect JLC's "< 0.8 mm wall" warning on the engraved legends; it's harmless (the test piece had it). `export_case.py` does both (see Exporting for an order). A trial run on 2026-11-26 passed after the three fixes listed there. **Tagged `case-rev1`** on the commit that adds this line (2026-11-26, John), with the files exported from it. The commit is recorded in `out/case/MANIFEST.txt`.
-- [ ] Get a JLC3DP quote for the real parts to replace the estimates. Try uploading the caps and slider as one file (about $6 a case less, if JLC accepts it).
-- [ ] Record the order in `docs/COSTS.md` and in this README.
+- [x] Get a JLC3DP quote for the real parts to replace the estimates. The combined caps-and-slider file wasn't possible: JLC3DP asked for each part as its own file.
+- [x] Record the order in `docs/COSTS.md` and in this README.
+
+**Case order: placed and paid 2026-11-26 (John), JLC3DP.** Five cases from `case-rev1` (`2a3db70`), 10 STLs × 5:
+- **Material and build:** MJF PA12-HP Nylon, no threads, 3-day build.
+- **Shells:** Black. The dye came with the Black colour, at $0.00.
+- **Caps and A/B slider:** Natural Gray, no surface finish, as on the test piece.
+- **Cost:** $223.01 in all, including the duties paid at checkout (UPS Express Saver, DDP). That's $44.60 per case; the breakdown is in `docs/COSTS.md`.
+- **Watch:** two lines were in JLC's review when the order was placed. If their engineers query a part (thin walls, for instance), answer before production.
 
 ## Test piece: `parts/test_piece.py`
 
