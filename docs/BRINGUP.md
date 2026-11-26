@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-25 15:03): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-26): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -210,6 +210,7 @@ What to watch for (proposed):
 - **USB failed once after soldering:** on the first plug-in (13:53) Windows reported `Unknown USB Device (Device Descriptor Request Failed)`. Unplugged, the error cleared; John's checks all passed (TP603, TP602 and TP102 to shell; no continuity from TP603 to any J401 pin or between neighbouring J401 pins; J401 pin 2 to TP602). Plugged in again at 14:03 on the same USB port, it enumerated normally as COM13. Cause not established; a poor cable connection is suspected.
 - **Seven top keys:** `btn` showed exactly one key at a time, and each matched its position. With the IR end pointing away, pressing down the left column, then the centre, then the right read G1, G3, UP, DOWN, ALL, G2, G4.
 - **SETUP** (underside): 0 at rest, 1 when pressed, soldered after the other keys.
+- **Parts and trimming** (reported by John, 2026-11-26): the seven top keys are the DigiKey 13 mm switches; SETUP is a BOJACK 5 mm switch. The soldered leads stick out no more than 1 mm. The nRF24 module's pins are **not yet trimmed** (stage 6, step 1) and protrude above the socket, so the module presumably sits higher than the case model assumes (inferred; not measured).
 
 **Board 1, stage 6, first radio control (2026-11-25, John; nRF24 module in J401, USB power):**
 
