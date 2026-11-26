@@ -27,7 +27,9 @@ FLOOR_TOP = Z0 + WALL
 # BATT_W is 30, not Adafruit's 29 (2026-11-15): the cell's own datasheet drawing (PKCELL LP-503035)
 # says 30 +-0.1 x 35 +-0.1 x 5.0 mm. With BATT_CLEAR the rib pocket is 31 mm wide, so a 30 mm cell
 # gets 0.5 mm per side and a 29 mm cell 1.0 mm; never a press fit. The board's battery keep-out is
-# already +-15.5 mm (31 mm). Measure the real cell, including the protection-board bulge.
+# already +-15.5 mm (31 mm). One real cell measures 35.5 x 29.4 x 5.0 mm (John, 2026-11-26), inside
+# these sizes: about 0.8 mm per side and 0.75 mm per end in the pocket. The pocket is still sized for
+# the datasheet cell, so the other cells don't have to match this one.
 BATT_T, BATT_W, BATT_L = 5.0, 30.0, 36.0
 BATT_SWELL = 0.10      # allow ~10 % thickness growth over the cell's life
 BATT_FRONT_FROM_FRONT = 92.0  # cell's front edge, mm from the front end (behind the ALL pad)
@@ -104,8 +106,9 @@ PIPE_GAP_MIN, PIPE_GAP_MAX = 0.5, 1.5   # pipe end to LED dome: clear of toleran
 AB_FROM_FRONT = 26
 AB_TRAVEL = 1.5        # = the switch's travel (the slider moves 1:1)
 AB_KNOB_W, AB_KNOB_L = 8.0, 3.6   # knob in the slot: across the width, along the length
-AB_SW_BODY = (2.8, 6.7, 1.4)      # along X, across Y, height. C&K PCM12SMTR datasheet (I-44): 6.7 long, 1.4 tall
-AB_SW_ACT = (1.5, 1.3, 1.0)       # actuator: sticks out 1.5, 1.3 wide (datasheet); thickness 1.0 a guess
+AB_SW_BODY = (2.8, 6.7, 1.7)      # along X, across Y, height. C&K PCM12SMTR datasheet (I-44): 6.7 long, 1.4 tall;
+                                   # the fitted switch's can stands about 1.7 above the board (John, 2026-11-26)
+AB_SW_ACT = (1.5, 1.3, 1.0)       # actuator: sticks out 1.5, 1.3 wide (datasheet); about 1.0 thick (John, 2026-11-26)
 # Slider drive (2026-11-14): a solid block with a notch for the actuator, not a two-prong fork.
 AB_BLOCK_T, AB_BLOCK_W = 2.4, 4.0  # along X (grows toward the back); across Y (4.6 until 2026-11-21: narrowed
                                    # to clear the switch's mounting tabs now that the foot is on the board)
@@ -133,7 +136,8 @@ AB_SLOT = (AB_FROM_FRONT + AB_KNOB_SHIFT, 0, AB_KNOB_L + 0.6, AB_KNOB_W + AB_TRA
 # locating-peg holes, 2.7 mm from the pad's centre to their edges; tented vias 3.95 mm).
 AB_PAD_XY = (L / 2 - AB_FROM_FRONT - AB_KNOB_SHIFT, 0.0)
 # SETUP: pinhole in the floor (as on the original's back), over a 5 mm tactile switch mounted on
-# the board's underside, plunger down. Paperclip travels ~4.5 mm. 10 mm right of centre
+# the board's underside, plunger down. Its plunger tip is 4.5 mm below the board (John, 2026-11-26),
+# so about 3.0 mm above the floor: a paperclip goes in ~5 mm from outside. 10 mm right of centre
 # (2026-11-13, PCB placement): on the centre line its through-hole pins land on the A/B switch's
 # pads (26 mm) or the indicator's leads (14 mm); DRC is clean from 8 mm off-centre outward.
 SETUP_FROM_FRONT, SETUP_Y, SETUP_HOLE_D = 22, -10, 1.6

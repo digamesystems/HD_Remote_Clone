@@ -1,6 +1,6 @@
 # Enclosure (3D-printed)
 
-> **TL;DR** (summary checked 2026-11-22): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
+> **TL;DR** (summary checked 2026-11-26): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
@@ -106,16 +106,33 @@ What stands between now and a case order. Items are open unless ticked; the reco
 **Design items still open**
 - [x] **South-west post relief (decided 2026-11-21, John): cut through.** A window into the counterbore replaces the 0.2 mm skin (`POST_WINDOW_D`); the screw-head seat stays whole.
 - [x] **Corner post walls (decided 2026-11-21, John: 1.0 mm if the checks allow):** done by narrowing the counterbore to 4.0 mm (`CB_D`, was 4.2), 0.4 mm clear of the 3.2 mm heads; the posts keep their size.
-- [ ] **A/B hard stop:** the switch's own end stops still take the push at full travel; the slot could be made the stop instead.
-- [ ] **nRF24 hold-down rib** under the key face, against drops: now or later.
+- [x] **A/B hard stop (decided 2026-11-26, John): leave it as is; the slider is rarely moved.** The slot allows 2.1 mm of knob travel against the 1.8 mm needed (1.5 mm switch travel plus 0.3 mm notch play), so the switch's own end stops take the push at each end. A slot cut to 1.8 mm would put the stop inside MJF's ±0.3 mm tolerance and could keep the switch from reaching its end position. Check on the first case: the switch clicks fully at both ends.
+- [x] **nRF24 hold-down rib (decided 2026-11-26, John): no rib.** Worst case, tape holds the module.
+- [x] **Case geometry for the battery leads (decided 2026-11-26, John):** keep the J102 post relief, its window and the −Y lip gap, so a board fits either way. John decides at assembly, board by board, whether to fit the connector or solder the leads. Claude's reading: the relief isn't a structural risk. It's on one post, the head seat stays whole, the remaining wall passes the 1.0 mm check, and the screw clamps through solid post above the counterbore. Snug that screw rather than torquing it.
+- [ ] **Battery leads per board: connector, shortened leads, or soldered straight to the board** (raised 2026-11-26; the method for each board is decided at assembly, John). Background:
+  - **The problem:** the cell's leads are about 11 cm long, and the route through the board notch to J102 needs about 3 cm. Pushed under the board, the extra 8 cm goes into the gap beside the cell, directly under the ESP32's antenna (89–107 mm from the front, at the −Y edge). John spotted this in the viewer. The handheld doesn't use Wi-Fi today, but the bridge build and the setup page in `docs/FEATURE_IDEAS.md` would.
+  - **Option A, keep J102 and shorten the leads** to about 4.5 cm: a re-crimped PH plug, or a solder splice with heat-shrink placed by the notch, behind the antenna. The case stays as it is.
+  - **Option B, no connector:** solder the leads into J102's plated holes, fed up from **underneath** so they never cross the top of the board. The leads are about 2 cm plus about 1 cm of slack to tilt the board during assembly. Strain relief: tack the wires to the underside a few mm from the joints (hot glue or Kapton).
+    - For: no connector or plug height, no extra lead, nothing to work loose, one hand-fitted part fewer.
+    - Against: the cell and board become one unit. Replacing the cell means desoldering a live cell, one wire at a time.
+  - **How often a cell needs replacing** (Claude's estimate): one or two charge cycles a year (`docs/HARDWARE.md`), so cycle wear doesn't matter. Age sets the life, typically 4–6 years at room temperature, and visible swelling would be the usual sign.
+  - **What option B would change in the case:** the J102 post relief flat and its window into the counterbore exist only for the connector body (decided 2026-11-17 and 2026-11-21, John). The lip gap at 127–134 mm on the −Y side (`LIP_GAPS`) exists only for the leads crossing the board edge. Without the connector, both could go, and the post would get its full wall back. The PCB's lead notch stays on rev 1 and does no harm. On a rev 2 board, J102 could become two plain pads and the notch could go.
+  - **Still to work out:** which boards get which build (board 1 might keep its connector for bring-up). The case keeps the relief and lip gap either way (above). If any board is soldered directly, add that route to the assembly steps; the model's lead route (over the board to the plug) stays as the case's worst case.
 - [x] **Screw pilots (decided 2026-11-22, John):** 1.8 mm for the board standoffs and the case-screw bosses, from the test piece's three pilot sizes.
 - [x] **Light pipe hole (decided 2026-11-21, John):** the datasheet's 2.92 mm; ream it or use a touch of glue on the first case if the fit is off.
 
 **Measurements from parts arriving** (they replace the inputs `assembly.py` lists as guesses)
-- [ ] **PCB outline and thickness** against 145.4 × 40.4 × 1.6 mm: the last fit-margin check (Fit margins, below).
+- [x] **PCB outline and thickness** against 145.4 × 40.4 × 1.6 mm: the last fit-margin check (Fit margins, below). **Board 1 measures 145.5 × 40.4 × 1.6 mm** (John, 2026-11-26): 0.1 mm long, inside the ±0.1 mm outline tier. With the test print's scale, about 0.45 mm per end and 0.30 mm per side remain (Claude's arithmetic, under Measurements that decide it).
 - [ ] **Battery cell and plug** (Adafruit #1578, due 2026-11-25): the cell's size for the ribs, the plug's envelope (`PLUG_L`).
+  - **Cell:** 35.5 × 29.4 × 5.0 mm (John, 2026-11-26). It's inside the modelled 36 × 30 × 5.0, so the rib pocket (37 × 31 mm) leaves about 0.75 mm at each end and 0.8 mm each side; the tape pad holds it. Left at the datasheet size so other cells still fit (Claude's recommendation).
+  - **Leads** (John, 2026-11-26, with a photo): about **11 cm** long. They leave at one corner of the end with the protection board (the 29.4 mm end). The cell's label reads PKCELL LP503035, 3.7 V 500 mAh. In the model, the run from the cell's back end through the board notch to J102 is about 3 cm (Claude's estimate), so about 8 cm is extra. Open: shorten the leads or stow the extra.
+  - **J102** (a loose S2B-PH-K, John, 2026-11-26): 4.8 mm tall and 5.5 mm wide, against the 6.0 and 5.9 modelled (`JST_H` now 4.8; the width stays 5.9, the footprint's). The cell's plug snaps in securely.
+  - **Plug** (estimated by Claude from John's side photo of a mated pair, 2026-11-26, scaled by J102's 4.8 mm height): the housing reaches about **2.2 mm** out of J102's mouth, about 4 mm tall, and the wires leave straight out of it, low down. `PLUG_L` is now 3.0, from that estimate plus margin (was a 6.0 guess); `PLUG_H` stays 4.5. A caliper reading would replace the estimate.
 - [x] **M2 screw heads:** **3.2 mm** across, **1.3 mm** tall (measured by John, 2026-11-21; `HEAD_D`, `HEAD_H`), 0.4 mm clear in the 4.0 mm counterbore.
 - [ ] **On the first fitted board:** THT pin protrusion below the board (`PIN_PROTRUDE`), the IR LED tip positions after bending, the A/B actuator's thickness (`AB_SW_ACT`), and the solder on SW509's mounting tabs beside the slider's foot.
+  - Board 1 (John, 2026-11-26): the key and SETUP leads stick out no more than 1 mm (under the 1.5 mm allowance). SW509's metal can stands about **1.7 mm** above the board, against the datasheet's 1.4 (`AB_SW_BODY` updated; the notch roof follows it). There's no obvious solder in the slider's path. In his photo, the tab fillets stay on their pads (Claude's reading). The actuator is about **1.0 mm** thick, as modelled (John, 2026-11-26). **Key plunger tops** above the board, five of the seven DigiKey TS02 keys (John, 2026-11-26): 13.3, 12.9, 13.2, 13.0 and 13.3 mm, against `SW_H` 13.0. With the 0.3 mm modelled cap play, that gives about 0.0–0.4 mm of play at rest (Claude's arithmetic), so the two 13.3 mm keys have none. Not recorded: which keys these are, and whether each switch body sits flat on the board. **J101 overhangs the board edge by 1.3 mm** (John, 2026-11-26), which is what the model gives (2.3 mm from the outer wall to the board edge, minus the 1.0 mm `USB_RECESS`). The recess and the 1.0 mm wall behind the plug pocket come out as designed. **The SETUP switch's plunger tip is 4.5 mm below the board** (John, 2026-11-26). The board's underside is 7.5 mm above the floor, which leaves about 3.0 mm of clearance. A paperclip reaches the plunger about 5 mm in from outside. Still open: the IR LEDs, and the leads of J102 and D501 once they're fitted.
+
+**Decided 2026-11-26 (John):** order the cases without first measuring the IR LEDs, D501, the trimmed nRF24 module or the remaining pin tips on board 1. Those parts are fitted to the printed case when it arrives, using it as the jig.
 
 **Preparing the order**
 - [ ] Apply what's decided, rerun `python assembly.py --board out/hd_remote_board.step`: all checks pass, and no guess left that a check depends on.
@@ -230,7 +247,9 @@ From the test print, when it arrives. Its plate and wall are printed from the sa
 
 From the first boards:
 
-4. **PCB outline length, width and thickness** against 145.4 × 40.4 × 1.6 mm.
+4. **PCB outline length, width and thickness** against 145.4 × 40.4 × 1.6 mm. **Measured on board 1: 145.5 × 40.4 × 1.6 mm** (John, 2026-11-26).
+   - Reading (Claude): the extra 0.1 mm takes 0.05 mm from each end. Each end has 0.30 nominal, −0.05 from the board and about +0.2 from the print's scale (test piece), so about **0.45 mm**. Each side has 0.30 nominal and no change from the board or print, so **0.30 mm**, or up to 0.4 mm if the walls print thin.
+   - Both clear the 0.2 mm threshold, so the gap and case size stand as decided on 2026-11-21. That rests on one board and one test print: check the other four boards' lengths.
 
 How to read them (proposal): take the worst case of the printed cavity shrinking and the board outline growing. If the nominal 0.3 mm gap still leaves at least about 0.2 mm after both, keep it and add only the checks (E). If not, adopt A to C (or D), scaled to what was measured.
 

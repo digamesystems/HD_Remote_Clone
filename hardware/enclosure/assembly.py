@@ -76,8 +76,9 @@ USB_SH = [(-4.32, -3.13, 2.1), (4.32, -3.13, 2.1), (-4.32, 1.05, 1.6), (4.32, 1.
 # Battery connector: JST PH S2B-PH-K side entry (footprint 5.9 x 7.6 mm; 6.0 mm tall per JST's PH
 # catalogue p.3) on top of the board, mouth facing the front. The mating plug's envelope is a guess.
 JST_MOUTH_D, JST_Y = 140.0, -9.15          # mouth position (mm from the front), centre y
-JST_W, JST_DEPTH, JST_H = 5.9, 7.6, 6.0
-PLUG_L, PLUG_H = 6.0, 4.5                  # plug housing in front of the mouth
+JST_W, JST_DEPTH, JST_H = 5.9, 7.6, 4.8    # H measured on a loose S2B-PH-K (John, 2026-11-26; its width 5.5)
+PLUG_L, PLUG_H = 3.0, 4.5                  # plug housing in front of the mouth (L: about 2.2 in John's
+                                           # photo of a mated pair, 2026-11-26, plus margin; was 6.0)
 # Battery leads go from the plug, across to a notch in the -Y (right-hand) board edge, down through
 # it and under the board to the cell's back end. Keep-out bundle 2 mm wide x 2 mm tall.
 NOTCH_FROM, NOTCH_TO, NOTCH_DEPTH = 128.0, 133.0, 3.0   # board-edge notch, mm from the front
@@ -101,12 +102,13 @@ INPUT_SOURCES = {
     "HEAD_D": ("measured", "John 2026-11-21: HanTof M2 pan head 3.2 mm"),
     "HEAD_H": ("measured", "John 2026-11-21: HanTof M2 pan head 1.3 mm"),
     "SW_PIN_X": ("datasheet", "Same Sky TS02, 6.5 x 4.5 pitch"),
-    "JST_H": ("datasheet", "JST PH catalogue p.3"),
-    "PLUG_L": ("guess", "battery plug envelope 6.0 x 4.5: measure the cell's plug"),
+    "JST_H": ("measured", "John 2026-11-26: 4.8 tall, 5.5 wide (loose part); the catalogue's 6.0 was high"),
+    "PLUG_L": ("photo estimate", "about 2.2 out of the mouth, from John's side photo 2026-11-26 scaled by "
+               "J102's 4.8 mm height; 3.0 used. Height 4.5 kept (the photo suggests about 4)"),
     "SW_H": ("datasheet", "TS02-66-130, 13.0 mm"), "IND_LED_H": ("datasheet", "Kingbright WP59EGW"),
     "PIPE_L": ("datasheet", "Bivar PLP2-250"), "USB_W": ("datasheet", "HRO TYPE-C-31-M-12 shell"),
-    "BATT_W": ("datasheet", "cell drawing 30 x 35 x 5; measure on arrival"),
-    "AB_SW_BODY": ("datasheet", "C&K PCM12SMTR"), "AB_SW_ACT": ("guess", "actuator thickness 1.0"),
+    "BATT_W": ("datasheet", "cell drawing 30 x 35 x 5; one cell measured 35.5 x 29.4 x 5.0 (John 2026-11-26)"),
+    "AB_SW_BODY": ("measured", "board 1: can about 1.7 above the board (John 2026-11-26); 2.8 x 6.7 datasheet"), "AB_SW_ACT": ("measured", "board 1: about 1.0 thick (John 2026-11-26)"),
     "PIN_PROTRUDE": ("guess", "THT pin tips below the board (design allowance)"),
     # test print, reported by John 2026-11-21 (README, Test piece)
     "SO_HOLE_D": ("measured", "test print: M2 x 6 held well in the key fixture's 1.8 mm posts"),

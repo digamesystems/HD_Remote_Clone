@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-26): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-26 10:46): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -210,7 +210,10 @@ What to watch for (proposed):
 - **USB failed once after soldering:** on the first plug-in (13:53) Windows reported `Unknown USB Device (Device Descriptor Request Failed)`. Unplugged, the error cleared; John's checks all passed (TP603, TP602 and TP102 to shell; no continuity from TP603 to any J401 pin or between neighbouring J401 pins; J401 pin 2 to TP602). Plugged in again at 14:03 on the same USB port, it enumerated normally as COM13. Cause not established; a poor cable connection is suspected.
 - **Seven top keys:** `btn` showed exactly one key at a time, and each matched its position. With the IR end pointing away, pressing down the left column, then the centre, then the right read G1, G3, UP, DOWN, ALL, G2, G4.
 - **SETUP** (underside): 0 at rest, 1 when pressed, soldered after the other keys.
+- **SW501's plunger tip** was touched by the soldering iron (John, 2026-11-26): it has a small rough patch that stands slightly proud of the top. He'll smooth it with an emery board before it goes in the case.
 - **Parts and trimming** (reported by John, 2026-11-26): the seven top keys are the DigiKey 13 mm switches; SETUP is a BOJACK 5 mm switch. The soldered leads stick out no more than 1 mm. The nRF24 module's pins are **not yet trimmed** (stage 6, step 1) and protrude above the socket, so the module presumably sits higher than the case model assumes (inferred; not measured).
+
+**Board 1, stage 7, before fitting J102 (2026-11-26, John):** with a cell plugged into a loose S2B-PH-K, the cell reads 3.96 V, red wire + and black GND. Still to check once J102 is soldered: pin 1 (pad 1) reads + against TP604.
 
 **Board 1, stage 6, first radio control (2026-11-25, John; nRF24 module in J401, USB power):**
 
