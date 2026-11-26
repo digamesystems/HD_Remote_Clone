@@ -1,6 +1,6 @@
 # HD Platinum RF protocol (2.4 GHz, nRF24)
 
-> **TL;DR** (summary checked 2026-11-25 14:51): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail; `A3/A4` and `23/24` with the remote's A/B slider on B) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
+> **TL;DR** (summary checked 2026-11-26): the remote's radio is an nRF24 at 2 Mbps on channels 33/52/71 in rotation, with address `E7E7E7`, CRC-16 and auto-ack off. Its payload is a static 5 bytes, `ID0 ID1 MODE GROUP ACTION`, with no rolling code. The air settings are from spitcool's research, and our sniffs confirmed them on ch 33. A red-mode arrow sends the **wake** `ID 01 00 80` while held; the shade needs it alongside the IR and accepts it from any ID. **Group commands** (`ID 20 <group> A1/A2`, then a `21/22` release tail; `A3/A4` and `23/24` with the remote's A/B slider on B) work only from an ID paired to the shade. A clone can **pair its own ID** by sending `ID 30|31 <group> 80` together with the OPEN/CLOSE IR. **Absolute position** (spitcool's bridge frames `ID 50|32 <mask> <pos>`) also works from a handheld-paired ID: the mask is the group byte (bits combine), and the position runs 0–255 between the limits, so resending is harmless.
 
 What the Platinum handheld remote sends over RF, from our sniffs of two remotes on 2026-11-11. For the IR side, and the shade tests that showed the shade needs RF alongside IR, see [IR_PROTOCOL.md](IR_PROTOCOL.md).
 
@@ -200,11 +200,12 @@ So, on our shades:
 
 - **Position frames work from a handheld-paired ID.** No bridge or bridge room ID is needed.
 - **The position is absolute.** 0 is one limit (fully down here) and 255 the other (fully up), roughly linear in between. Repeating a command at the target doesn't move the shade, so resending is safe, and presets don't need to know where a shade starts.
+- **The position is the rail's height on both shade types.** 0 puts the moving rail at the bottom and 255 at the top on bottom-up shades (group 4, above) and on top-down shades too: on 2026-11-26 [hd-shade-bridge](https://github.com/digamesystems/hd-shade-bridge), running on the handheld with its stored ID and sending these frames exactly as this firmware does, set groups 1 and 3 (top-down) to 100 and 50, and the shades ended where its page draws them (John). So 255 is open on a top-down shade and closed on a bottom-up one.
 - **Each shade goes to the target on its own.** Shades of different speeds end up level.
 - **The mask is the handheld group byte** (`01`, `02`, `04`, `08`), and bits combine. spitcool's bridge masks run up to `40`; groups 5–7 don't exist on our handheld.
 - **The ID is checked**, as for group commands (the red-mode wake isn't checked).
 
-Not yet tested: a top-down shade (fabric from the top of the window down to the rail), where it isn't known whether 255 still puts the rail at the top, the shortest phase timings that work, whether the `32` phase is needed, a shade that's moving when a new position arrives, and the first command of the run (mask `04`), whose note said group 4 moved; John's later check showed group 4 doesn't respond to `04`, so that note is unresolved.
+Not yet tested: the shortest phase timings that work, whether the `32` phase is needed, a shade that's moving when a new position arrives, and the first command of the run (mask `04`), whose note said group 4 moved; John's later check showed group 4 doesn't respond to `04`, so that note is unresolved.
 
 ## Pairing (group assignment)
 

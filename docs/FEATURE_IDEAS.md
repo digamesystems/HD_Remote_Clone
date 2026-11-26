@@ -97,7 +97,7 @@ A rev 1 board on USB already has the bridge's parts: WROOM-32E, the nRF24 socket
 
 ### Open before building
 
-1. **What position means on a top-down shade.** Our shades each have one moving rail (John, 2026-11-25). On group 4's bottom-up shades, `pos 08 0/255` ran the rail fully down and up, so there the position is the rail's height. Whether 255 also puts a top-down shade's rail at the top (open), or means closed, isn't recorded. Testable now with `pos` on the breadboard, aimed at a top-down group.
+1. **What position means on a top-down shade: answered.** Our shades each have one moving rail (John, 2026-11-25), and the position is the rail's height on both types: 0 at the bottom, 255 at the top. Bottom-up from `pos 08 0/255` (2026-11-18); top-down from hd-shade-bridge on the handheld, which set groups 1 and 3 where its page draws them (John, 2026-11-26; [RF_PROTOCOL.md](RF_PROTOCOL.md#absolute-position-experimental)).
 2. **A new target while a shade is moving** (also listed as untested in RF_PROTOCOL). A slider dragged twice does exactly this. Testable now.
 3. **Range from the bridge's location:** send `grp` to the farthest shades 10 times at each nRF24 power level, from MIN upward, and note the lowest level that gets 10/10. Run the bridge a few dB above that and within the transmit limit (see Bridge hardware). A clone's power steps may differ from the datasheet's 6 dB. The firmware's `pa` command sets the level ([FIRMWARE.md](FIRMWARE.md)).
 4. **Wi-Fi coexistence:** repeat 3 with Wi-Fi idle and busy (streaming to the device), and with the router on different channels.
