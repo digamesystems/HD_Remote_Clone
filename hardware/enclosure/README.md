@@ -1,6 +1,6 @@
 # Enclosure (3D-printed)
 
-> **TL;DR** (summary checked 2026-11-26 12:40): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
+> **TL;DR** (summary checked 2026-11-26 13:26): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
@@ -170,7 +170,7 @@ What stands between now and a case order. Items are open unless ticked; the reco
 - **Shells:** Black. The dye came with the Black colour, at $0.00.
 - **Caps and A/B slider:** Natural Gray, no surface finish, as on the test piece.
 - **Cost:** $223.01 in all, including the duties paid at checkout (UPS Express Saver, DDP). That's $44.60 per case; the breakdown is in `docs/COSTS.md`.
-- **Watch:** two lines were in JLC's review when the order was placed. If their engineers query a part (thin walls, for instance), answer before production.
+- **JLC's review:** two lines were held for an automated warning about features under 0.8 mm. **John accepted the risk** and confirmed the parts as they are (2026-11-26). Which features JLC flagged wasn't recorded. Most likely it's the engraved legends, which drew the same warning on the test piece and printed well.
 
 ## Test piece: `parts/test_piece.py`
 
