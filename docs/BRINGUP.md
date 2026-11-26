@@ -1,6 +1,6 @@
 # Handheld board bring-up plan (rev 1)
 
-> **TL;DR** (summary checked 2026-11-26 10:46): first power-up of a rev 1 board in eight stages:
+> **TL;DR** (summary checked 2026-11-26 10:52): first power-up of a rev 1 board in eight stages:
 > 1. unpowered checks
 > 2. USB power with a current limit
 > 3. serial and flashing
@@ -134,6 +134,7 @@ Underside test pads: TP102 VSYS, TP602 +3V3, TP603 VBUS, TP601 VBAT, TP608 VBAT_
 
 ## Stage 8: in the case
 
+0. Fit the hand-set parts using the case as the guide: the IR LEDs, D501, the nRF24 pin trim and the pin tips. See "Case assembly" in [hardware/enclosure/README.md](../hardware/enclosure/README.md).
 1. Board into the bottom shell on its standoffs; check the USB-C, charge LED window and IR LEDs line up with their openings.
 2. Keys through the top shell: every key clicks, none stuck; the A/B slider moves the switch both ways.
 3. Repeat stage 4's `btn` check closed up.

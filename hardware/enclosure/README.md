@@ -1,6 +1,6 @@
 # Enclosure (3D-printed)
 
-> **TL;DR** (summary checked 2026-11-26): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
+> **TL;DR** (summary checked 2026-11-26 10:52): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
@@ -86,6 +86,12 @@ The remaining placeholders (USB-C, whose model KiCad's library lacks, the batter
 ## Case assembly
 
 After the board is assembled (see `docs/HARDWARE.md`, Board assembly):
+
+**The case is the fitting guide for the hand-set parts.** The cases were ordered before these parts were fitted and measured on board 1 (decided 2026-11-26, John, under Before ordering the cases). Fit them with the board in the printed bottom shell, or held against it:
+- **IR LEDs D303/D304:** solder them with the leads long, bend them so each dome sits centred in its hole in the front wall (half in each shell), with the tip about 1.5 mm proud of the face, then trim. Close the top shell to check that neither LED is pinched at the split.
+- **nRF24 module:** trim the header pins (start at about 2.6 mm below the spacer; the socket grips 2.16–2.92 mm), seat it, and check it clears the key face's underside when the top shell is on. The model expects about 2.0 mm. If it's close, trim a little more.
+- **D501 (indicator):** seat it so its dome is 0.5–1.5 mm below the light pipe's end, with the top shell on. The model expects 0.95 mm.
+- **Pin tips under the board** (J102, D501, the IR LEDs): trim them to 1.5 mm or less, so they clear the battery.
 
 1. Stick a thin (≤ 0.2 mm) double-sided tape pad on the floor and press the cell down between its four corner ribs, leads toward the back.
 2. Put Kapton tape or fish paper on the board's underside over the cell area.
