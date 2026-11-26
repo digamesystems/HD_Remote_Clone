@@ -84,7 +84,11 @@ FLANGE_W, FLANGE_T = 1.0, 0.8   # retaining flange under the face: overhang and 
 CAP_PLAY = 0.3         # gap between the flange underside and the switch plunger at rest. Generous
                        # on purpose (review 2026-11-13): MJF is +-0.3 mm per part, and shims under
                        # the board can only take the gap down, so start large and tune on the print
-ARROW_GAP = 0.6        # gap between the UP and DOWN halves of the arrow oval
+# Rib across the arrow oval between the UP and DOWN caps (decided 2026-11-26, John): 2.4 mm, the
+# same as the webs round the oval, replacing a 0.6 mm gap between the two caps (2026-11-13). Each
+# cap sits in its own hole, held on all four sides; the two can't rub or press each other.
+ARROW_RIB = 2.4
+ARROW_FLANGE_GAP = 1.2  # the two caps' flanges end this far apart under the rib
 LEGEND_DEPTH = 1.0     # legends recessed into the cap tops. Test print: 0.8 read best of 0.4/0.6/0.8;
                        # deepest and largest practical (decided 2026-11-21, John; was 0.8, before that 0.4)
 LEGEND_SIZE_DIGIT, LEGEND_SIZE_WORD = 5.5, 4.5   # font sizes for 1-4 and ALL (2026-11-21, John; were 4.5, 4.0)
@@ -171,6 +175,7 @@ CHG_Z = PCB_TOP_Z + 0.3
 # --- Split, lip and case screws ---
 SPLIT = Z0 + LED_Z     # parting plane at the IR LED axis, so each shell holds half of each hole
 LIP_H, LIP_W, LIP_GAP = 2.0, 1.5, 0.2   # lip on the top shell, inside the long walls
+LIP_SHELF_H = 1.5      # shelf above the split that joins the lip to the top shell's wall
 # Gaps in the lip (mm from the front to, side +1/-1) where parts reach the board edge near the
 # split, in the current placeholder layout (assembly.py).
 LIP_GAPS = [(88, 108, -1),   # ESP32 antenna end at the -Y board edge (rotated 2026-11-13, PCB routing)
@@ -183,12 +188,15 @@ CB_D = 4.0             # counterbore for the head, from underneath. 4.0 (was 4.2
 CB_TOP_BELOW_SPLIT = 3.0  # counterbore stops this far below the split (screw-head seat)
 PILOT_D, PILOT_DEPTH = 1.8, 6.0   # pilot in the top boss (1.8 decided 2026-11-22, John). M2 x 8
 # Post centres: with small corners, in the corner touching both walls; with corners big enough to
-# matter, on the corner's diagonal, touching the curved inner wall.
-_arc = CORNER_R - WALL - BOSS_D / 2          # inner-arc centre to post centre, along the diagonal
+# matter, on the corner's diagonal, touching the curved inner wall. POST_SINK sinks each post that
+# far into the wall: exactly tangent, the post's outline touched the key face's edge at one point,
+# and the mesher couldn't triangulate the face's underside (found by the export, 2026-11-26).
+POST_SINK = 0.2
+_arc = CORNER_R - WALL - BOSS_D / 2 + POST_SINK   # inner-arc centre to post centre, along the diagonal
 if _arc > 0:
     _post_off = CORNER_R - _arc / 2 ** 0.5   # post centre's distance in from each outer face
 else:
-    _post_off = BOSS_INSET
+    _post_off = BOSS_INSET - POST_SINK
 POST_X, POST_Y = L / 2 - _post_off, W / 2 - _post_off
 POSTS = [(sx * POST_X, sy * POST_Y) for sx in (-1, 1) for sy in (-1, 1)]
 # Relief flat on the back (-X), -Y corner post (decided 2026-11-17, John). The battery connector J102
@@ -303,6 +311,10 @@ with BuildPart() as body:
         with Locations((L / 2 - IND_FROM_FRONT, 0)):
             Circle(PIPE_HOLE_D / 2)       # light pipe press-fit hole
     extrude(amount=TOP_T + 0.2, mode=Mode.SUBTRACT)
+    # rib across the arrow oval, between the UP and DOWN caps (decided 2026-11-26, John)
+    _ad, _ay, _al, _aw = KEY_HOLES["ARROWS"]
+    with Locations((L / 2 - _ad, _ay, Z_TOP - TOP_T)):
+        Box(ARROW_RIB, _aw + 2 * CAP_CLEAR + 0.4, TOP_T, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
     # SETUP pinhole through the floor
     with Locations((L / 2 - SETUP_FROM_FRONT, SETUP_Y, Z0 - 0.1)):
@@ -316,15 +328,17 @@ with BuildPart() as body:
                      align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
             Cylinder(SCREW_CLEAR_D / 2, SPLIT - Z0 + 0.2,
                      align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
-    # window through the relief side of the J102 post's counterbore (see POST_WINDOW_D)
+        with Locations((x, y, SPLIT)):
+            Cylinder(PILOT_D / 2, PILOT_DEPTH, align=(Align.CENTER, Align.CENTER, Align.MIN),
+                     mode=Mode.SUBTRACT)
+    # window through the relief side of the J102 post's counterbore (see POST_WINDOW_D). It sat
+    # between the two blocks above from 2026-11-21 (0cb7c50) to 2026-11-26, and the pilot cut,
+    # left nested inside it, missed all four bosses: assembly.py now checks the pilots.
     _win_z0 = Z0 + PCB_BOT_Z - POST_RELIEF_BELOW
     _win_z1 = SPLIT - CB_TOP_BELOW_SPLIT - POST_WINDOW_BELOW_SEAT
     _win_x = 2 * (BOSS_D ** 2 / 4 - POST_WINDOW_D ** 2) ** 0.5 + 0.2     # the post's chord there
     with Locations((-POST_X, -POST_Y + POST_WINDOW_D + 1.0, _win_z0)):
         Box(_win_x, 2.0, _win_z1 - _win_z0, align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
-        with Locations((x, y, SPLIT)):
-            Cylinder(PILOT_D / 2, PILOT_DEPTH, align=(Align.CENTER, Align.CENTER, Align.MIN),
-                     mode=Mode.SUBTRACT)
 
 bottom = body.part.split(Plane.XY.offset(SPLIT), keep=Keep.BOTTOM)
 top = body.part.split(Plane.XY.offset(SPLIT), keep=Keep.TOP)
@@ -338,11 +352,18 @@ with BuildPart() as lip:
         y_c = side * (W / 2 - WALL - LIP_GAP - LIP_W / 2)
         with Locations((0, y_c, SPLIT)):
             Box(2 * lip_x, LIP_W, LIP_H, align=(Align.CENTER, Align.CENTER, Align.MAX))
+        # Shelf above the split joining the lip to the top shell's wall. The lip stands LIP_GAP
+        # inside the wall (to clear the bottom shell's wall), so without this it is a loose strip:
+        # it was, until 2026-11-26, when the export's one-solid check found it.
+        y_s = side * (W / 2 - WALL - LIP_GAP - LIP_W + (LIP_W + LIP_GAP + 0.1) / 2)
+        with Locations((0, y_s, SPLIT)):
+            Box(2 * lip_x, LIP_W + LIP_GAP + 0.1, LIP_SHELF_H, align=(Align.CENTER, Align.CENTER, Align.MIN))
     for d_from, d_to, side in LIP_GAPS:
-        with Locations((L / 2 - (d_from + d_to) / 2, side * (W / 2 - WALL - LIP_GAP - LIP_W / 2),
-                        SPLIT)):
-            Box(d_to - d_from, LIP_W + 0.2, LIP_H + 0.2,
-                align=(Align.CENTER, Align.CENTER, Align.MAX), mode=Mode.SUBTRACT)
+        # lip and shelf both, from 0.1 inside the lip up to the wall's inner face (not into the wall)
+        gap_w = LIP_W + LIP_GAP + 0.1
+        with Locations((L / 2 - (d_from + d_to) / 2, side * (W / 2 - WALL - gap_w / 2), SPLIT - LIP_H - 0.1)):
+            Box(d_to - d_from, gap_w, LIP_H + LIP_SHELF_H + 0.2,
+                align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
 top = top + lip.part
 
 case = bottom + top    # closed assembly, for clearance checks
@@ -402,10 +423,12 @@ ad, ay, al, aw = KEY_HOLES["ARROWS"]
 mid_x = L / 2 - ad
 oval_body, oval_flange = _outline(ad, ay, al, aw), _outline(ad, ay, al, aw, FLANGE_W + CAP_CLEAR)
 for name, sign in (("UP", 1), ("DOWN", -1)):
-    # keep the half on the UP (front, +X) or DOWN side of the centre line, minus half the gap
-    keep = Pos(mid_x + sign * (25 + ARROW_GAP / 2), ay) * Rectangle(50, 40)
-    body_half = oval_body & keep
-    flange_half = oval_flange & keep
+    # keep the half on the UP (front, +X) or DOWN side of the rib: the body stops CAP_CLEAR short of
+    # the rib, the flange reaches under it but stops ARROW_FLANGE_GAP / 2 from the centre line
+    keep_body = Pos(mid_x + sign * (25 + ARROW_RIB / 2 + CAP_CLEAR), ay) * Rectangle(50, 40)
+    keep_flange = Pos(mid_x + sign * (25 + ARROW_FLANGE_GAP / 2), ay) * Rectangle(50, 40)
+    body_half = oval_body & keep_body
+    flange_half = oval_flange & keep_flange
     # switch sits under the half's centre of travel; the arrow mark is centred on the switch
     sd, sy = SWITCHES[name]
     caps[name], legend_fill[name] = _cap(body_half, flange_half, (L / 2 - sd, sy), arrow=sign)
@@ -416,7 +439,34 @@ for name in ("1", "2", "3", "4", "ALL"):
         _outline(d, y, lx, wy, FLANGE_W + CAP_CLEAR, r=KEY_CORNER_R.get(name)),
         (L / 2 - SWITCHES[name][0], SWITCHES[name][1]), legend=LEGENDS[name])
 
+# --- A/B slider: one printed part, modelled at position A (moved here from assembly.py 2026-11-26
+# so the exported part is the one the checks use) ---
+# Board-riding (decided 2026-11-21, John): the drive block reaches down to the board and slides on
+# it, so downward pressure goes into the board, not the switch. The plate under the face only stops
+# it lifting out; it has AB_FACE_PLAY of room.
+_ab_sw_x, _ab_pos_a, _ab_board = L / 2 - AB_FROM_FRONT, -AB_TRAVEL / 2, Z0 + PCB_TOP_Z
+_ab_plate_top = FACE_UNDER - AB_FACE_PLAY
+_ab_knob = extrude(Plane.XY.offset(_ab_plate_top) * Pos(_ab_sw_x - AB_KNOB_SHIFT, _ab_pos_a)
+                   * RectangleRounded(AB_KNOB_L, AB_KNOB_W, AB_KNOB_L / 2 - 0.01),
+                   amount=FACE_UNDER - _ab_plate_top + TOP_T + 1.0)
+_ab_plate = Pos(_ab_sw_x + (AB_PLATE_X0 + AB_PLATE_X1) / 2, _ab_pos_a, _ab_plate_top) * Box(
+    AB_PLATE_X1 - AB_PLATE_X0, AB_PLATE_W, AB_PLATE_T, align=(Align.CENTER, Align.CENTER, Align.MAX))
+# Drive block: one solid block from the plate down to the board, with a notch cut up into its foot
+# that takes the actuator; the foot's edges are rounded so it glides over the mask and trace.
+_ab_blk_x = _ab_sw_x - AB_SW_BODY[0] / 2 - 0.2 - AB_BLOCK_T / 2   # 0.2 mm behind the switch body
+_ab_blk_top = _ab_plate_top - AB_PLATE_T
+_ab_block = Pos(_ab_blk_x, _ab_pos_a, _ab_blk_top) * Box(
+    AB_BLOCK_T, AB_BLOCK_W, _ab_blk_top - _ab_board, align=(Align.CENTER, Align.CENTER, Align.MAX))
+AB_NOTCH_TOP = _ab_board + AB_SW_BODY[2] / 2 + AB_SW_ACT[2] / 2 + AB_NOTCH_ROOF
+_ab_block -= Pos(_ab_blk_x, _ab_pos_a, _ab_board - 0.1) * Box(
+    AB_BLOCK_T + 0.2, AB_SW_ACT[1] + 2 * AB_NOTCH_PLAY, AB_NOTCH_TOP - _ab_board + 0.1,
+    align=(Align.CENTER, Align.CENTER, Align.MIN))
+# round every bottom edge of both teeth, inside the notch too: glides over the board, and the inner
+# rounding is a lead-in that guides the notch onto the actuator when the case closes
+_ab_block = fillet(_ab_block.edges().group_by(Axis.Z)[0], radius=AB_FOOT_R)
+ab_slider = _ab_knob + _ab_plate + _ab_block
+
 if __name__ == "__main__":
-    show(bottom, top.moved(Location((0, 0, 20))), *caps.values(),
-         names=["bottom shell", "top shell (lifted)", *[f"cap {n}" for n in caps]],
-         colors=["lightgray", "lightblue", *["dimgray"] * len(caps)])
+    show(bottom, top.moved(Location((0, 0, 20))), *caps.values(), ab_slider.moved(Location((0, 0, 20))),
+         names=["bottom shell", "top shell (lifted)", *[f"cap {n}" for n in caps], "A/B slider (lifted)"],
+         colors=["lightgray", "lightblue", *["dimgray"] * len(caps), "orange"])

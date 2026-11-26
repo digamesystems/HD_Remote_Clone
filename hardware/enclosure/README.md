@@ -1,10 +1,10 @@
 # Enclosure (3D-printed)
 
-> **TL;DR** (summary checked 2026-11-26 10:52): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
+> **TL;DR** (summary checked 2026-11-26 11:57): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
-Status (2026-11-22): `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes (the indicator through a light pipe), a lip, battery ribs and the A/B slider (since 2026-11-21 one part that rides on the board, see Decisions). `assembly.py` checks the case against the real board's STEP export (`--board`; 76 checks pass) and against placeholder models of the parts the board has no model for. The dimensions those checks depend on are labelled measured, datasheet, guess or test print (`INPUT_SOURCES` in `assembly.py`), and every run lists the guesses. The first test print (JLC3DP, ordered 2026-11-13) arrived 2026-11-20; its results are under Test piece.
+Status (2026-11-26): `parts/remote_box.py` models the case as a two-part clamshell (`bottom`, `top`) plus 7 keycaps (`caps`) and the A/B slider (`ab_slider`), 150 × 45 × 27 mm, with standoffs, key pads, IR LED and USB-C openings, key and indicator holes (the indicator through a light pipe), a lip, battery ribs and the A/B slider (since 2026-11-21 one part that rides on the board, see Decisions). `assembly.py` checks the case against the real board's STEP export (`--board`; 80 checks pass) and against placeholder models of the parts the board has no model for. The dimensions those checks depend on are labelled measured, datasheet, guess or test print (`INPUT_SOURCES` in `assembly.py`), and every run lists the guesses. `export_case.py` writes the files to order from (see Exporting for an order). The first test print (JLC3DP, ordered 2026-11-13) arrived 2026-11-20; its results are under Test piece.
 
 ## Decisions
 
@@ -42,6 +42,7 @@ Status (2026-11-22): `parts/remote_box.py` models the case as a two-part clamshe
 | 2026-11-21 | **Case order: five cases, after the first PCB arrives and is measured** (John) | The fitted board settles the outline, pin protrusion and slider clearances first; five in one shipment roughly halves the cost per case |
 | 2026-11-21 | **Counterbore 4.0 mm** (`CB_D`, was 4.2) for a 1.0 mm corner-post wall, JLC's minimum; **J102 post: cut through** (`POST_WINDOW_D` 1.7), a window into the counterbore instead of the 0.2 mm skin, stopping 0.2 mm under the screw-head seat; **light pipe hole stays 2.92 mm** (datasheet), reamed or glued on the first case if needed (all John) | The M2 heads measure 3.2 mm, so 4.0 leaves 0.4 mm per side. A skin that thin may not print; a deliberate opening prints cleanly and carries no load. New checks: post wall, head clearance, window open and below the seat (probed on the solid: no material where the skin was, the seat intact). All 76 pass with the board STEP |
 | 2026-11-22 | **1.8 mm pilots for the M2 self-tappers** (John), both the board standoffs (`SO_HOLE_D`) and the case-screw bosses (`PILOT_D`) | Test piece (John): 2.0 mm cut too easily, 1.6 mm made the driver slip, 1.8 mm had a good bite. The model already used 1.8, so no geometry changes |
+| 2026-11-26 | **A 2.4 mm rib across the arrow oval, between the UP and DOWN caps** (John), replacing the 0.6 mm gap between the two caps (2026-11-13). `ARROW_RIB` 2.4 matches the webs round the oval (to keys 1–4 and to ALL). Each cap is 1.2 mm shorter at its inner end; the flanges reach under the rib but stop 1.2 mm apart (`ARROW_FLANGE_GAP`) | Robustness over looks (John). With 0.6 mm, the gap was at JLC's minimum for moving parts with nothing to spare for MJF's ±0.3 mm, and each cap was held on only three sides, so a press near the middle could tilt one cap into the other and press both switches. Now each cap sits in its own hole, held on all four sides. The oval outline stays. New checks: the rib is at least 2.0 mm, and the two caps are at least 1.0 mm apart, flanges included (1.2) |
 
 PCB layout constraints from the case so far: 4 × 2.2 mm holes at (±61, ±15.5) mm from the board centre with ~5.5 mm head keep-outs; board outline with 9.7 mm corner radii (following the inner wall, 0.3 mm gap) and notches (radius 4 mm) around the case posts at (±67.9, ±15.4) mm; **IR LED axis on the split plane** (footprint LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm: axis 3.0 mm above the board top), LED pads 8.4 mm from the front with the tips 1.5 mm proud; USB-C face 1 mm inside the back face, board edge 0.3 mm from the inside wall; lip gap in the top shell wherever a part reaches the board edge near the split (now: the ESP32 antenna end, at the −Y edge since 2026-11-13); **battery leads**: a notch in the right-hand (−Y) board edge, 128–133 mm from the front and 3 mm deep, for the leads to pass from the cell under the board to the JST PH socket (S2B-PH-K, side entry) on top, mouth facing the front at 140 mm, centred 9 mm right of the centre line; the lip has a gap there too; bottom-side keep-outs (~4 mm) under each key switch for the pads; SETUP switch on the underside at 22 mm from the front, 10 mm right of centre; **no THT pins over the battery** (92–127 mm from the front, ±15 mm), or trim them flush, since only 0.5 mm separates pin tips from a swollen cell. Board top surface 11.1 mm above the case bottom, leaving 13.9 mm to the underside of the key face (nRF24 on a standard socket with the module measured 2026-11-16: 15.8 mm, 1.9 mm into the face; **decided 2026-11-16 (John): Samtec SLW-104-01-G-D**, 4.57 mm, module pins trimmed: 11.9 mm, 2.0 mm clear. Open: a hold-down rib for drops).
 
@@ -82,6 +83,24 @@ kicad-cli pcb export step --force --user-origin 100x80mm --subst-models -o out/h
 ```
 
 The remaining placeholders (USB-C, whose model KiCad's library lacks, the battery and its leads, the keycaps and the nRF24 module) follow the layout explored on 2026-11-13 and the module measured on 2026-11-16. KiCad's 3D model for J401 is the standard socket scaled to the SLW's 4.57 mm height, since the library has no SLW model.
+
+## Exporting for an order
+
+`python export_case.py` (from this folder) builds the files to order from:
+1. It runs every check in `assembly.py`, against the case and against the real board (`out/hd_remote_board.step`). It stops if any check fails.
+2. It writes one STL per printed part to `out/case/`: `bottom_shell`, `top_shell`, the 7 `cap_*` and `ab_slider`. Also written:
+   - `keys_and_slider.stl`, the caps and slider in one file, to try as a single upload;
+   - `case_assembled.step`;
+   - `MANIFEST.txt`, recording the commit, tag, checks and part sizes;
+   - a zip of the STLs and the manifest.
+3. It checks every STL mesh: each edge is shared by exactly two triangles in opposite directions (closed and consistently oriented), there are no degenerate triangles, the volume is positive and matches the solid within 1 %, and each file holds the expected number of bodies.
+
+It refuses to run with uncommitted changes, or from a commit without a `case-revN` tag (name agreed 2026-11-26, John). `--allow-dirty` and `--allow-untagged` are for trial runs only; the manifest then says not to order from them. `out/` isn't committed; rerun the export from the tag to regenerate.
+
+**Found by the first export run (2026-11-26).** Three faults that the checks then in place didn't catch, all now fixed and checked:
+- **No pilot holes in the top bosses.** When the J102 post window was added (`0cb7c50`, 2026-11-21), the pilot cut was left nested inside the window's block, so it missed all four bosses. A case printed from then on would have needed its four case-screw pilots drilled by hand. New check: every screw hole is probed in the geometry, not just in the constants.
+- **The lip was loose.** It stands 0.2 mm inside the wall (`LIP_GAP`) and hangs below the split, so nothing joined it to the top shell: it would have printed as four loose strips. Now a 1.5 mm shelf above the split (`LIP_SHELF_H`) joins it to the wall, and the lip gaps cut through the shelf too. New check: each printed part is one solid.
+- **The shells' meshes were broken.** Each corner post was exactly tangent to its wall, so its outline touched the key face's edge at a single point, and the mesher couldn't triangulate the face's underside. The STL had a hole, and the bottom shell had a few bad edges. Each post now sinks 0.2 mm into its wall (`POST_SINK`), which moves it about 0.14 mm outward in X and Y. J102's clearance to its post rose from 1.05 to 1.19 mm.
 
 ## Case assembly
 
@@ -142,7 +161,7 @@ What stands between now and a case order. Items are open unless ticked; the reco
 
 **Preparing the order**
 - [ ] Apply what's decided, rerun `python assembly.py --board out/hd_remote_board.step`: all checks pass, and no guess left that a check depends on.
-- [ ] Export STL and STEP from a tagged commit and check the meshes are watertight. Expect JLC's "< 0.8 mm wall" warning on the engraved legends; it's harmless (the test piece had it).
+- [ ] Export STL and STEP from a tagged commit and check the meshes are watertight. Expect JLC's "< 0.8 mm wall" warning on the engraved legends; it's harmless (the test piece had it). `export_case.py` does both (see Exporting for an order). A trial run on 2026-11-26 passed after the three fixes listed there. **Tagged `case-rev1`** on the commit that adds this line (2026-11-26, John), with the files exported from it. The commit is recorded in `out/case/MANIFEST.txt`.
 - [ ] Get a JLC3DP quote for the real parts to replace the estimates. Try uploading the caps and slider as one file (about $6 a case less, if JLC accepts it).
 - [ ] Record the order in `docs/COSTS.md` and in this README.
 

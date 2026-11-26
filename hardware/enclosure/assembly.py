@@ -275,36 +275,12 @@ def build_parts(m):
     bx, by, bh = m["AB_SW_BODY"]
     ax_, ay_w, ah = m["AB_SW_ACT"]
     sw_x, pos_a = fx(m["AB_FROM_FRONT"]), -m["AB_TRAVEL"] / 2
-    face_under = m["FACE_UNDER"]
     p["A/B switch"] = (Pos(sw_x, 0, top) * Box(bx, by, bh, align=(Align.CENTER, Align.CENTER, Align.MIN))
                        + Pos(sw_x - bx / 2 - ax_ / 2, pos_a, top + bh / 2 - ah / 2)
                        * Box(ax_, ay_w, ah, align=(Align.CENTER, Align.CENTER, Align.MIN)))
-    # Slider (board-riding version, decided 2026-11-21, John): the drive
-    # block reaches down to the board and slides on it, so downward pressure goes into the board, not
-    # the switch. The plate under the face only stops it lifting out; it has AB_FACE_PLAY of room.
-    kl, kw = m["AB_KNOB_L"], m["AB_KNOB_W"]
-    x0, x1, pt = m["AB_PLATE_X0"], m["AB_PLATE_X1"], m["AB_PLATE_T"]
-    plate_top = face_under - m["AB_FACE_PLAY"]
-    knob = extrude(Plane.XY.offset(plate_top) * Pos(sw_x - m["AB_KNOB_SHIFT"], pos_a) * RectangleRounded(kl, kw, kl / 2 - 0.01),
-                   amount=face_under - plate_top + m["TOP_T"] + 1.0)
-    plate = Pos(sw_x + (x0 + x1) / 2, pos_a, plate_top) * Box(
-        x1 - x0, m["AB_PLATE_W"], pt, align=(Align.CENTER, Align.CENTER, Align.MAX))
-    # Drive block: one solid block from the plate down to the board, with a notch cut up into its
-    # foot that takes the actuator; the foot's edges are rounded so it glides over the mask and trace.
-    blk_t, blk_w = m["AB_BLOCK_T"], m["AB_BLOCK_W"]
-    blk_x = sw_x - bx / 2 - 0.2 - blk_t / 2          # 0.2 mm behind the switch body, growing back
-    blk_top, blk_bot = plate_top - pt, top
-    block = Pos(blk_x, pos_a, blk_top) * Box(
-        blk_t, blk_w, blk_top - blk_bot, align=(Align.CENTER, Align.CENTER, Align.MAX))
-    notch_w = ay_w + 2 * m["AB_NOTCH_PLAY"]
-    notch_top = top + bh / 2 + ah / 2 + m["AB_NOTCH_ROOF"]
-    notch = Pos(blk_x, pos_a, blk_bot - 0.1) * Box(
-        blk_t + 0.2, notch_w, notch_top - blk_bot + 0.1, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    block = block - notch
-    # round every bottom edge of both teeth, inside the notch too: glides over the board, and the
-    # inner rounding is a lead-in that guides the notch onto the actuator when the case closes
-    block = fillet(block.edges().group_by(Axis.Z)[0], radius=m["AB_FOOT_R"])
-    p["A/B slider"] = knob + plate + block
+    # Slider: built in remote_box.py (the printed part), at position A
+    p["A/B slider"] = m["ab_slider"]
+    notch_top = m["AB_NOTCH_TOP"]
     # the switch's four mounting tabs (KiCad SW_SPDT_PCM12, rotated -90 on the board): the back pair
     # sits beside the block's path, with solder fillets on them
     tabs = [(dx, sy * 3.65) for dx in (-1.43, 0.78) for sy in (-1, 1)]
@@ -363,6 +339,13 @@ def check(m, p, info):
             fails.append(msg)
 
     ok(bottom.is_valid and top.is_valid, "shells are valid solids")
+    # each printed part one solid: a loose piece (the top shell's lip, until 2026-11-26) still passes
+    # every overlap check, because the checks treat a part's pieces together
+    printed = {"bottom shell": bottom, "top shell": top, "A/B slider": m["ab_slider"],
+               **{f"cap {n}": c for n, c in m["caps"].items()}}
+    loose = {n: len(s.solids()) for n, s in printed.items() if len(s.solids()) != 1}
+    ok(not loose, "each printed part is one solid, nothing loose" +
+       (f" (pieces: {', '.join(f'{n} {k}' for n, k in loose.items())})" if loose else ""))
     ok(ov(bottom, top) < 1e-6, "shells don't overlap")
     for n, part in p.items():
         ok(ov(part, shells) < 1e-6, f"{n} clears both shells")
@@ -402,6 +385,10 @@ def check(m, p, info):
     travel = m["CAP_PLAY"] + 0.25 + 0.2
     ok(all(c.is_valid for c in caps.values()), "keycaps are valid solids")
     ok(not [1 for a, b in combinations(caps, 2) if ov(caps[a], caps[b]) > 1e-6], "keycaps clear each other")
+    # UP and DOWN sit either side of the rib (2026-11-26): their nearest points are the flanges under it
+    ok(m["ARROW_RIB"] >= MIN_WEB, f"rib between the arrow caps >= {MIN_WEB} mm ({m['ARROW_RIB']})")
+    arrow_gap = caps["UP"].distance_to(caps["DOWN"])
+    ok(arrow_gap >= 1.0 - 1e-6, f"arrow caps >= 1.0 mm apart, flanges included ({arrow_gap:.2f})")
     blocked = [n for n, c in caps.items() if ov(c.moved(Location((0, 0, -travel))), shells) > 1e-6]
     ok(not blocked, f"keycaps free when pressed {travel:.2f} mm {blocked or ''}")
     # play at rest, measured: lowest point of each cap over its switch vs the plunger top
@@ -491,6 +478,38 @@ def check(m, p, info):
     wall = (m["BOSS_D"] - m["CB_D"]) / 2
     ok(wall >= 1.0 - 1e-6, f"corner post wall round the counterbore >= 1.0 mm, JLC's minimum ({wall:.2f})")
     ok(m["CB_D"] - HEAD_D >= 0.6, f"screw head clears its counterbore ({(m['CB_D'] - HEAD_D) / 2:.2f} mm per side)")
+    # Screw holes, probed in the geometry (not just the constants): the pilot cut once missed all four
+    # top bosses while every check here still passed (2026-11-21 to 2026-11-26).
+    def solid_frac(r, z0, z1, x, y, shape):
+        probe = Pos(x, y, z0) * Cylinder(r, z1 - z0, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        return ov(probe, shape) / probe.volume
+
+    split, z_0 = m["SPLIT"], m["Z0"]
+    seat = split - m["CB_TOP_BELOW_SPLIT"]
+    bad = []
+    for x, y in m["POSTS"]:
+        if solid_frac(m["PILOT_D"] / 2 - 0.1, split + 0.2, split + m["PILOT_DEPTH"] - 0.2, x, y, top) > 0.01:
+            bad.append(f"no pilot in the top boss at ({x:+.1f}, {y:+.1f})")
+        ring = solid_frac(m["BOSS_D"] / 2 - 0.2, split + 0.2, split + m["PILOT_DEPTH"] - 0.2, x, y, top)
+        pilot_share = (m["PILOT_D"] / (m["BOSS_D"] - 0.4)) ** 2
+        if ring < 1 - pilot_share - 0.10:   # 0.10: the J102 post's relief flat takes ~4 %
+            bad.append(f"top boss at ({x:+.1f}, {y:+.1f}) isn't solid round its pilot")
+        if solid_frac(m["SCREW_CLEAR_D"] / 2 - 0.1, seat + 0.1, split - 0.1, x, y, bottom) > 0.01:
+            bad.append(f"screw clearance hole blocked at ({x:+.1f}, {y:+.1f})")
+        if solid_frac(m["CB_D"] / 2 - 0.1, z_0 + 0.1, seat - 0.1, x, y, bottom) > 0.01:
+            bad.append(f"counterbore blocked at ({x:+.1f}, {y:+.1f})")
+        if solid_frac(m["CB_D"] / 2 - 0.1, seat + 0.1, seat + 0.5, x, y, bottom) < 0.3:
+            bad.append(f"no screw-head seat at ({x:+.1f}, {y:+.1f})")
+    so_top = m["FLOOR_TOP"] + m["SO_H"]
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            x, y = sx * m["SO_X"], sy * m["SO_Y"]
+            if solid_frac(m["SO_HOLE_D"] / 2 - 0.1, so_top - m["SO_H"] + 0.3, so_top - 0.1, x, y, bottom) > 0.01:
+                bad.append(f"no pilot in the board standoff at ({x:+.1f}, {y:+.1f})")
+    for msg in bad:
+        ok(False, msg)
+    ok(not bad, "screw holes present in the geometry: 4 top-boss pilots, 4 clearance holes and counterbores "
+                "with seats, 4 standoff pilots")
     win = (m["CB_D"] / 2) ** 2 - m["POST_WINDOW_D"] ** 2
     ok(win > 0, f"J102 post: the flat opens a window into the counterbore, no thin skin "
        f"({2 * max(win, 0) ** 0.5:.1f} mm wide)")
