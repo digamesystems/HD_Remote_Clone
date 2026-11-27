@@ -80,3 +80,9 @@ Day-to-day development uses fast, ungated steps; the full gate runs on a release
 Ungated commits may reach GitHub between releases; `cpdt` is what certifies a build. If any required step fails: **halt**. No commit, push or deploy. Report the failure.
 
 If Tier 2 tests are ignored because hardware is absent, the build may still be deployed, but the report must say plainly which areas were **not verified**.
+
+## CI on GitHub
+
+`.github/workflows/checks.yml` runs on every push and pull request: Tier 1, both firmware builds, `check_fp_overrides.py` and the advisory TL;DR check. It runs in full on docs-only pushes too. Left that way on 2026-11-27 (John): on a public repo it costs nothing and runs after the push.
+
+**Proposed (Claude, 2026-11-27): a CI job for the case model.** CI doesn't check the enclosure. `assembly.py`'s fit checks and the mesh check in `export_case.py` run only when they're run by hand. That's how `0cb7c50` dropped the pilot holes from the top bosses and still passed CI; the export run before the `case-rev1` order found it. A job would install build123d and run the checks on pushes that touch `hardware/enclosure/**`. The board STEP (`out/hd_remote_board.step`) comes from KiCad and isn't committed, so the job would either skip the board-fit checks or need the STEP exported in CI or committed. Not built.
