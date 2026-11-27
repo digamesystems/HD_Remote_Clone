@@ -1,6 +1,6 @@
 # Enclosure (3D-printed)
 
-> **TL;DR** (summary checked 2026-11-26 13:26): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
+> **TL;DR** (summary checked 2026-11-27): the handheld's case is a two-part 3D-printed clamshell, 150 × 45 × 27 mm, in MJF nylon (PA12), with 7 keycaps and an A/B slider. The shells split at the IR LED axis and close with M2 screws from underneath. The models are Python (build123d) scripts that output STEP and STL. `assembly.py` checks the case against the board's KiCad STEP export and lists every dimension that is still a guess. The table below records the decisions and their reasons.
 
 Code-CAD models for the handheld's case and test prints, written in Python with [build123d](https://github.com/gumyr/build123d). Each part is a script that produces STEP and STL files.
 
@@ -171,6 +171,7 @@ What stands between now and a case order. Items are open unless ticked; the reco
 - **Caps and A/B slider:** Natural Gray, no surface finish, as on the test piece.
 - **Cost:** $223.01 in all, including the duties paid at checkout (UPS Express Saver, DDP). That's $44.60 per case; the breakdown is in `docs/COSTS.md`.
 - **JLC's review:** two lines were held for an automated warning about features under 0.8 mm. **John accepted the risk** and confirmed the parts as they are (2026-11-26). Which features JLC flagged wasn't recorded. Most likely it's the engraved legends, which drew the same warning on the test piece and printed well.
+- **JLC's manual review (2026-11-27):** JLC's engineer asked about two lines, very likely the two shells. Because of the parts' geometry and size, they warned of a high risk of deformation and warping, and of stripe lines. **John confirmed the order should proceed** with the current files (2026-11-27). When the shells arrive, check them for bow along their length, the flatness of the split line and the fit of the board pocket. Claude's estimate is a few tenths of a millimetre of bow, which the case screws should pull flat at the seam. The stripe lines are cosmetic.
 
 ## Test piece: `parts/test_piece.py`
 
